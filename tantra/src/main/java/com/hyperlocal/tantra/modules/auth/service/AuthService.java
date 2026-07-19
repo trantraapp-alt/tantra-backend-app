@@ -4,6 +4,9 @@ import com.hyperlocal.tantra.modules.auth.dto.*;
 import com.hyperlocal.tantra.modules.auth.entity.User;
 import com.hyperlocal.tantra.modules.auth.repository.UserRepository;
 import com.hyperlocal.tantra.security.JwtUtil;
+import com.hyperlocal.tantra.constants.MessageConstants;
+import com.hyperlocal.tantra.utils.IdGeneratorUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,14 @@ public class AuthService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private JwtUtil jwtUtil;
 
-    // 1. SIGN UP (With Auto UserID: FIRST4-LAST5MOBILE)
+    /**
+     * 1. SIGN UP (Registers a user with a secure, time-sorted short unique ID)
+     */
     public Map<String, String> registerUser(SignUpRequestDTO dto) {
         boolean isHindi = "HI".equalsIgnoreCase(dto.getPreferredLanguage());
         Map<String, String> response = new HashMap<>();
 
+        // Check if mobile number is already taken
         if (userRepository.findByMobileNumber(dto.getMobileNumber()).isPresent()) {
             response.put("error", isHindi ? "त्रुटि: यह मोबाइल नंबर पहले से पंजीकृत है!" : "Error: Mobile number already registered!");
             return response;
@@ -38,12 +44,8 @@ public class AuthService {
         user.setAppUsageRole("ROLE_" + dto.getAppUsageRole().toUpperCase());
         user.setPreferredLanguage(dto.getPreferredLanguage() != null ? dto.getPreferredLanguage().toUpperCase() : "EN");
 
-        // Auto ID Generator
-        String fNamePart = dto.getFirstName().replaceAll("[^a-zA-Z]", "").toUpperCase();
-        fNamePart = fNamePart.length() < 4 ? String.format("%-4s", fNamePart).replace(' ', 'X') : fNamePart.substring(0, 4);
-        String mobileStr = dto.getMobileNumber();
-        String mobilePart = mobileStr.substring(Math.max(0, mobileStr.length() - 5));
-        String generatedUserId = fNamePart + "-" + mobilePart;
+        // Execute the new hybrid time-sorted unique ID generation strategy
+        String generatedUserId = IdGeneratorUtil.generateShortUniqueId();
         user.setUserId(generatedUserId);
 
         userRepository.save(user);
@@ -53,7 +55,9 @@ public class AuthService {
         return response;
     }
 
-    // 2. SIGN IN (Generates Long-Term JWT)
+    /**
+     * 2. SIGN IN (Authenticates credentials and generates long-term JWT token)
+     */
     public Map<String, Object> loginUser(SignInRequestDTO dto, String lang) {
         boolean isHindi = "HI".equalsIgnoreCase(lang);
         Map<String, Object> response = new HashMap<>();
@@ -79,7 +83,9 @@ public class AuthService {
         return response;
     }
 
-    // 3. FORGOT PASSWORD - REQUEST OTP (5 Mins Expiry)
+    /**
+     * 3. FORGOT PASSWORD - REQUEST OTP (Generates 6-digit numeric OTP with 5 mins validity)
+     */
     public String sendResetOtp(String mobileNumber, String lang) {
         boolean isHindi = "HI".equalsIgnoreCase(lang);
         Optional<User> userOpt = userRepository.findByMobileNumber(mobileNumber);
@@ -93,13 +99,15 @@ public class AuthService {
         user.setOtpExpiry(LocalDateTime.now().plusMinutes(5));
         userRepository.save(user);
 
-        // 🟢 भविष्य के लिए: यहाँ आपका SMS API कोड आ जाएगा
+        // integration checkpoint: external SMS API gateway logic will be triggered here
         System.out.println("🔥 [TANTRA SMS DUMMY] OTP for " + mobileNumber + " is: " + generatedOtp + " (Valid for 5 mins)");
 
         return isHindi ? "ओटीपी भेज दिया गया है। (जांचें टर्मिनल)" : "OTP sent successfully. (Check Terminal)";
     }
 
-    // 4. FORGOT PASSWORD - RESET ACTION
+    /**
+     * 4. FORGOT PASSWORD - RESET ACTION (Validates OTP tokens and updates password credentials)
+     */
     public String resetPassword(ForgotPasswordDTO dto, String lang) {
         boolean isHindi = "HI".equalsIgnoreCase(lang);
         Optional<User> userOpt = userRepository.findByMobileNumber(dto.getMobileNumber());
@@ -107,10 +115,12 @@ public class AuthService {
 
         User user = userOpt.get();
 
+        // Validate OTP temporal expiration window
         if (user.getOtpExpiry() == null || user.getOtpExpiry().isBefore(LocalDateTime.now())) {
             return isHindi ? "त्रुटि: ओटीपी की समय सीमा समाप्त हो गई है!" : "Error: OTP has expired!";
         }
 
+        // Validate cryptographic integrity of the incoming OTP string
         if (user.getResetOtp() == null || !user.getResetOtp().equals(dto.getOtp())) {
             return isHindi ? "त्रुटि: गलत ओटीपी!" : "Error: Invalid OTP!";
         }
@@ -121,5 +131,72 @@ public class AuthService {
         userRepository.save(user);
 
         return isHindi ? "पासवर्ड सफलतापूर्वक बदल गया है!" : "Password reset successful!";
+    }
+
+    /**
+     * 5. GET USER PROFILE (Validates incoming JWT tokens and resolves user session details)
+     */
+    public Object getUserProfile(String authHeader, String lang) {
+        boolean isHindi = "HI".equalsIgnoreCase(lang);
+
+        // 1. Verify Authorization header format constraints
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return new AppErrorResponse(
+                    LocalDateTime.now(),
+                    401,
+                    "Unauthorized",
+                    MessageConstants.getMessage("AUTH_ERROR_TOKEN", isHindi),
+                    "/api/v1/auth/profile"
+            );
+        }
+
+        String token = authHeader.substring(7); // Parse the raw token string values
+
+        try {
+            String mobileNumber = jwtUtil.extractMobileNumber(token);
+            Optional<User> userOpt = userRepository.findByMobileNumber(mobileNumber);
+
+            // 2. Validate token details against relational database records
+            if (userOpt.isEmpty() || !jwtUtil.validateToken(token, mobileNumber)) {
+                return new AppErrorResponse(
+                        LocalDateTime.now(),
+                        401,
+                        "Unauthorized",
+                        MessageConstants.getMessage("AUTH_ERROR_TOKEN", isHindi),
+                        "/api/v1/auth/profile"
+                );
+            }
+
+            User user = userOpt.get();
+
+            // Convert expiration timestamp properties to local timezone formats
+            java.util.Date expDate = jwtUtil.extractExpiration(token);
+            LocalDateTime sessionExpiry = expDate.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDateTime();
+
+            // 3. Populate and return response data transport structure
+            ProfileResponseDTO profile = new ProfileResponseDTO();
+            profile.setUserId(user.getUserId());
+            profile.setFirstName(user.getFirstName());
+            profile.setLastName(user.getLastName());
+            profile.setMobileNumber(user.getMobileNumber());
+            profile.setAppUsageRole(user.getAppUsageRole());
+            profile.setPreferredLanguage(user.getPreferredLanguage());
+            profile.setSessionToken(token);
+            profile.setSessionExpiry(sessionExpiry);
+
+            return profile;
+
+        } catch (Exception e) {
+            // Intercept parsing errors, token expiration exceptions, or signature mismatches safely
+            return new AppErrorResponse(
+                    LocalDateTime.now(),
+                    401,
+                    "Unauthorized",
+                    MessageConstants.getMessage("AUTH_ERROR_TOKEN", isHindi),
+                    "/api/v1/auth/profile"
+            );
+        }
     }
 }

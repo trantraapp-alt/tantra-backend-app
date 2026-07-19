@@ -36,4 +36,18 @@ public class AuthController {
         String res = authService.resetPassword(request, lang);
         return res.contains("Error") || res.contains("त्रुटि") ? ResponseEntity.badRequest().body(res) : ResponseEntity.ok(res);
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestParam(defaultValue = "EN") String lang) {
+
+        Object result = authService.getUserProfile(authHeader, lang);
+
+        if (result instanceof AppErrorResponse) {
+            return ResponseEntity.status(((AppErrorResponse) result).getStatus()).body(result);
+        }
+
+        return ResponseEntity.ok(result);
+    }
 }
