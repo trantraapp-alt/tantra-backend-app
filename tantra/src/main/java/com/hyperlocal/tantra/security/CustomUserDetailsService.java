@@ -32,7 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // 2. Safely capture the role from your exact field name: appUsageRole
         String roleStr = tantraUser.getAppUsageRole() != null ? tantraUser.getAppUsageRole().toUpperCase() : "USER";
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + roleStr);
+        // Normalize so we never double-prefix (stored value may already be "ROLE_ADMIN")
+        String authorityName = roleStr.startsWith("ROLE_") ? roleStr : "ROLE_" + roleStr;
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityName);
 
         // 3. Return Spring Security's built-in User wrapper using explicit full-path mapping
         // This avoids conflicts between your entity class name and Spring's internal security user class.

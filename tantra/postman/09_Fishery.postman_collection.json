@@ -1,0 +1,1073 @@
+{
+  "info": {
+    "name": "Tantra - Agri: Fishery",
+    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Fishery category. Run top-to-bottom on a clean DB.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "sellerToken",
+      "value": ""
+    },
+    {
+      "key": "moduleId",
+      "value": ""
+    },
+    {
+      "key": "catId",
+      "value": ""
+    },
+    {
+      "key": "formId",
+      "value": ""
+    },
+    {
+      "key": "listingId",
+      "value": ""
+    },
+    {
+      "key": "uploadedImages",
+      "value": "[\"https://cdn.tantra.app/fishery/a.jpg\",\"https://cdn.tantra.app/fishery/b.jpg\"]"
+    },
+    {
+      "key": "set_fishery_type",
+      "value": ""
+    },
+    {
+      "key": "set_purpose",
+      "value": ""
+    },
+    {
+      "key": "set_age_unit",
+      "value": ""
+    },
+    {
+      "key": "set_health",
+      "value": ""
+    },
+    {
+      "key": "set_production_method",
+      "value": ""
+    },
+    {
+      "key": "set_unit",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Signup Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"Tantra\",\n  \"mobileNumber\": \"9000000001\",\n  \"password\": \"Admin@123\",\n  \"appUsageRole\": \"ADMIN\",\n  \"preferredLanguage\": \"EN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signup Seller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signin Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"9000000001\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Signin Seller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Masters",
+      "item": [
+        {
+          "name": "Create Agriculture Module",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moduleKey\": \"agriculture\",\n  \"moduleNameEn\": \"Agriculture\",\n  \"moduleNameHi\": \"कृषि\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Resolve Module Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var a = pm.response.json();",
+                  "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
+                  "if (m) pm.collectionVariables.set('moduleId', m.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Fishery Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moduleId\": \"{{moduleId}}\",\n  \"categoryKey\": \"fishery\",\n  \"categoryNameEn\": \"Fishery\",\n  \"categoryNameHi\": \"मत्स्य पालन\",\n  \"displayOrder\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "Resolve Category Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules/{{moduleId}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules",
+                "{{moduleId}}",
+                "categories"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var a = pm.response.json();",
+                  "var c = a.find(function(x){return x.categoryKey==='fishery';});",
+                  "if (c) pm.collectionVariables.set('catId', c.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Admin - Dropdowns",
+      "item": [
+        {
+          "name": "Create set: fishery__fishery_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__fishery_type\",\n  \"name\": {\n    \"en\": \"Fishery Type\",\n    \"hi\": \"मत्स्य प्रकार\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_fishery_type', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__fishery_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_fishery_type}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_fishery_type}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"rohu\",\n    \"label\": {\n      \"en\": \"Rohu\",\n      \"hi\": \"रोहू\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"catla\",\n    \"label\": {\n      \"en\": \"Catla\",\n      \"hi\": \"कतला\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"mrigal\",\n    \"label\": {\n      \"en\": \"Mrigal\",\n      \"hi\": \"मृगल\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"tilapia\",\n    \"label\": {\n      \"en\": \"Tilapia\",\n      \"hi\": \"तिलापिया\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"pangasius\",\n    \"label\": {\n      \"en\": \"Pangasius\",\n      \"hi\": \"पंगेसियस\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"common_carp\",\n    \"label\": {\n      \"en\": \"Common Carp\",\n      \"hi\": \"कॉमन कार्प\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"grass_carp\",\n    \"label\": {\n      \"en\": \"Grass Carp\",\n      \"hi\": \"ग्रास कार्प\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"silver_carp\",\n    \"label\": {\n      \"en\": \"Silver Carp\",\n      \"hi\": \"सिल्वर कार्प\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"shrimp\",\n    \"label\": {\n      \"en\": \"Shrimp\",\n      \"hi\": \"झींगा\"\n    },\n    \"displayOrder\": 90\n  },\n  {\n    \"itemKey\": \"prawn\",\n    \"label\": {\n      \"en\": \"Prawn\",\n      \"hi\": \"झींगा (प्रॉन)\"\n    },\n    \"displayOrder\": 100\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 110\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: fishery__purpose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__purpose\",\n  \"name\": {\n    \"en\": \"Purpose\",\n    \"hi\": \"उद्देश्य\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_purpose', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__purpose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_purpose}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_purpose}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"consumption\",\n    \"label\": {\n      \"en\": \"Consumption\",\n      \"hi\": \"उपभोग\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"breeding\",\n    \"label\": {\n      \"en\": \"Breeding\",\n      \"hi\": \"प्रजनन\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"seed\",\n    \"label\": {\n      \"en\": \"Seed\",\n      \"hi\": \"बीज\"\n    },\n    \"displayOrder\": 30\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: fishery__age_unit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__age_unit\",\n  \"name\": {\n    \"en\": \"Age Unit\",\n    \"hi\": \"आयु इकाई\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_age_unit', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__age_unit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_age_unit}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_age_unit}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"days\",\n    \"label\": {\n      \"en\": \"Days\",\n      \"hi\": \"दिन\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"weeks\",\n    \"label\": {\n      \"en\": \"Weeks\",\n      \"hi\": \"सप्ताह\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"months\",\n    \"label\": {\n      \"en\": \"Months\",\n      \"hi\": \"महीने\"\n    },\n    \"displayOrder\": 30\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: fishery__health",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__health\",\n  \"name\": {\n    \"en\": \"Health Status\",\n    \"hi\": \"स्वास्थ्य स्थिति\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_health', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__health",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_health}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_health}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"healthy\",\n    \"label\": {\n      \"en\": \"Healthy\",\n      \"hi\": \"स्वस्थ\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"vaccinated\",\n    \"label\": {\n      \"en\": \"Vaccinated\",\n      \"hi\": \"टीकाकृत\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"organic\",\n    \"label\": {\n      \"en\": \"Organic\",\n      \"hi\": \"जैविक\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"disease_free\",\n    \"label\": {\n      \"en\": \"Disease Free\",\n      \"hi\": \"रोग मुक्त\"\n    },\n    \"displayOrder\": 40\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: fishery__production_method",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__production_method\",\n  \"name\": {\n    \"en\": \"Production Method\",\n    \"hi\": \"उत्पादन विधि\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_production_method', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__production_method",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_production_method}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_production_method}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"pond_culture\",\n    \"label\": {\n      \"en\": \"Pond Culture\",\n      \"hi\": \"तालाब पालन\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"biofloc\",\n    \"label\": {\n      \"en\": \"Biofloc\",\n      \"hi\": \"बायोफ्लॉक\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"cage_culture\",\n    \"label\": {\n      \"en\": \"Cage Culture\",\n      \"hi\": \"केज कल्चर\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"ras\",\n    \"label\": {\n      \"en\": \"RAS (Recirculating Aquaculture System)\",\n      \"hi\": \"आरएएस\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: fishery__unit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fishery__unit\",\n  \"name\": {\n    \"en\": \"Unit\",\n    \"hi\": \"इकाई\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_unit', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fishery__unit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_unit}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_unit}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"ton\",\n    \"label\": {\n      \"en\": \"Ton\",\n      \"hi\": \"टन\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"piece\",\n    \"label\": {\n      \"en\": \"Piece\",\n      \"hi\": \"नग\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"fingerlings\",\n    \"label\": {\n      \"en\": \"Fingerlings\",\n      \"hi\": \"फिंगरलिंग्स\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - Form",
+      "item": [
+        {
+          "name": "Create Fishery Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"breedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed / Variety\",\n        \"hi\": \"नस्ल / किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Fishery Form (bump version)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"breedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed / Variety\",\n        \"hi\": \"नस्ल / किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Forms by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms?categoryId={{catId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "{{catId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. App - Render",
+      "item": [
+        {
+          "name": "Get Fishery Form",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories/{{catId}}/form?listingType=SELL",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{catId}}",
+                "form"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. App - Listing",
+      "item": [
+        {
+          "name": "Upload Images (select files in Body)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uploads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uploads"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"fisheryType\": \"rohu\",\n    \"breedVariety\": \"Sample breedVariety\",\n    \"purpose\": \"consumption\",\n    \"age\": 10,\n    \"ageUnit\": \"days\",\n    \"avgWeight\": 10,\n    \"healthStatus\": [\n      \"healthy\"\n    ],\n    \"productionMethod\": \"pond_culture\",\n    \"description\": \"Sample description\",\n    \"availableQty\": 10,\n    \"unit\": \"kg\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Listings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "mine"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

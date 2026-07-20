@@ -15,6 +15,15 @@ public class MessageConstants {
     public static final String PWD_RESET_SUCCESS_EN = "Password reset successful!";
     public static final String PROFILE_ERROR_NOT_FOUND_EN = "Error: User profile not found.";
     public static final String AUTH_ERROR_TOKEN_EN = "Error: Invalid or expired session token!";
+    public static final String LISTING_CREATE_SUCCESS_EN = "Listing created successfully!";
+    public static final String LISTING_CATEGORY_REQUIRED_EN = "Error: Category is required.";
+    public static final String LISTING_USER_NOT_FOUND_EN = "Error: Authenticated user not found.";
+    public static final String LISTING_NOT_FOUND_EN = "Error: Listing not found.";
+    public static final String ADMIN_SAVE_SUCCESS_EN = "Saved successfully!";
+    public static final String ADMIN_DELETE_SUCCESS_EN = "Deleted successfully!";
+    public static final String UPLOAD_SUCCESS_EN = "Images uploaded successfully!";
+    public static final String UPLOAD_EMPTY_EN = "Error: No files provided.";
+    public static final String UPLOAD_INVALID_TYPE_EN = "Error: Only JPG, PNG and WEBP images are allowed.";
 
     // Hindi Messages
     public static final String SIGNUP_SUCCESS_HI = "पंजीकरण सफल! यूजर आईडी: %s";
@@ -29,6 +38,15 @@ public class MessageConstants {
     public static final String PWD_RESET_SUCCESS_HI = "पासवर्ड सफलतापूर्वक बदल गया है!";
     public static final String PROFILE_ERROR_NOT_FOUND_HI = "त्रुटि: यूजर प्रोफाइल नहीं मिला।";
     public static final String AUTH_ERROR_TOKEN_HI = "त्रुटि: अवैध या समाप्त हो चुका सत्र (Session) टोकन!";
+    public static final String LISTING_CREATE_SUCCESS_HI = "लिस्टिंग सफलतापूर्वक बनाई गई!";
+    public static final String LISTING_CATEGORY_REQUIRED_HI = "त्रुटि: श्रेणी आवश्यक है।";
+    public static final String LISTING_USER_NOT_FOUND_HI = "त्रुटि: प्रमाणित उपयोगकर्ता नहीं मिला।";
+    public static final String LISTING_NOT_FOUND_HI = "त्रुटि: लिस्टिंग नहीं मिली।";
+    public static final String ADMIN_SAVE_SUCCESS_HI = "सफलतापूर्वक सहेजा गया!";
+    public static final String ADMIN_DELETE_SUCCESS_HI = "सफलतापूर्वक हटाया गया!";
+    public static final String UPLOAD_SUCCESS_HI = "तस्वीरें सफलतापूर्वक अपलोड हो गईं!";
+    public static final String UPLOAD_EMPTY_HI = "त्रुटि: कोई फ़ाइल नहीं दी गई।";
+    public static final String UPLOAD_INVALID_TYPE_HI = "त्रुटि: केवल JPG, PNG और WEBP तस्वीरें ही मान्य हैं।";
 
     /**
      * Resolves localized message string based on the language key preference.

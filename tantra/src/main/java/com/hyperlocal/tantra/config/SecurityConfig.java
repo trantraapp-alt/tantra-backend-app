@@ -39,7 +39,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Admin-only: dropdown maintenance + form-metadata CRUD
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        // Listing submission/reads + image upload require a logged-in user
+                        .requestMatchers("/api/v1/uploads/**").authenticated()
+                        .requestMatchers("/api/v1/listings/**").authenticated()
                         .requestMatchers("/api/auth/verify-session").authenticated()
+                        // Uploaded images are publicly viewable
+                        .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )

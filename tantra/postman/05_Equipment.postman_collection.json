@@ -1,0 +1,824 @@
+{
+  "info": {
+    "name": "Tantra - Agri: Equipment",
+    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Equipment category. Run top-to-bottom on a clean DB.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "sellerToken",
+      "value": ""
+    },
+    {
+      "key": "moduleId",
+      "value": ""
+    },
+    {
+      "key": "catId",
+      "value": ""
+    },
+    {
+      "key": "formId",
+      "value": ""
+    },
+    {
+      "key": "listingId",
+      "value": ""
+    },
+    {
+      "key": "uploadedImages",
+      "value": "[\"https://cdn.tantra.app/equipment/a.jpg\",\"https://cdn.tantra.app/equipment/b.jpg\"]"
+    },
+    {
+      "key": "set_equipment_type",
+      "value": ""
+    },
+    {
+      "key": "set_equipment_name",
+      "value": ""
+    },
+    {
+      "key": "set_avail",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Signup Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"Tantra\",\n  \"mobileNumber\": \"9000000001\",\n  \"password\": \"Admin@123\",\n  \"appUsageRole\": \"ADMIN\",\n  \"preferredLanguage\": \"EN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signup Seller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Signin Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"9000000001\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Signin Seller",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/signin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "signin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Masters",
+      "item": [
+        {
+          "name": "Create Agriculture Module",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moduleKey\": \"agriculture\",\n  \"moduleNameEn\": \"Agriculture\",\n  \"moduleNameHi\": \"कृषि\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Resolve Module Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var a = pm.response.json();",
+                  "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
+                  "if (m) pm.collectionVariables.set('moduleId', m.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Equipment Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "categories"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"moduleId\": \"{{moduleId}}\",\n  \"categoryKey\": \"equipment\",\n  \"categoryNameEn\": \"Equipment\",\n  \"categoryNameHi\": \"उपकरण\",\n  \"displayOrder\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "Resolve Category Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/masters/modules/{{moduleId}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "masters",
+                "modules",
+                "{{moduleId}}",
+                "categories"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var a = pm.response.json();",
+                  "var c = a.find(function(x){return x.categoryKey==='equipment';});",
+                  "if (c) pm.collectionVariables.set('catId', c.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Admin - Dropdowns",
+      "item": [
+        {
+          "name": "Create set: equipment__equipment_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"equipment__equipment_type\",\n  \"name\": {\n    \"en\": \"Equipment Type\",\n    \"hi\": \"उपकरण प्रकार\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_equipment_type', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: equipment__equipment_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_equipment_type}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_equipment_type}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"tractor\",\n    \"label\": {\n      \"en\": \"Tractor\",\n      \"hi\": \"ट्रैक्टर\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"harvester\",\n    \"label\": {\n      \"en\": \"Harvester\",\n      \"hi\": \"हार्वेस्टर\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"tiller\",\n    \"label\": {\n      \"en\": \"Tiller\",\n      \"hi\": \"टिलर\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"sprayer\",\n    \"label\": {\n      \"en\": \"Sprayer\",\n      \"hi\": \"स्प्रेयर\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: equipment__equipment_name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"equipment__equipment_name\",\n  \"name\": {\n    \"en\": \"Equipment Name\",\n    \"hi\": \"उपकरण का नाम\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_equipment_name', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: equipment__equipment_name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_equipment_name}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_equipment_name}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"rotavator\",\n    \"label\": {\n      \"en\": \"Rotavator\",\n      \"hi\": \"रोटावेटर\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"cultivator\",\n    \"label\": {\n      \"en\": \"Cultivator\",\n      \"hi\": \"कल्टीवेटर\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"plough\",\n    \"label\": {\n      \"en\": \"Plough\",\n      \"hi\": \"हल\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"seed_drill\",\n    \"label\": {\n      \"en\": \"Seed Drill\",\n      \"hi\": \"सीड ड्रिल\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+            }
+          }
+        },
+        {
+          "name": "Create set: equipment__avail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"equipment__avail\",\n  \"name\": {\n    \"en\": \"Available For\",\n    \"hi\": \"उपलब्ध है\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('set_avail', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: equipment__avail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_avail}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_avail}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"rent\",\n    \"label\": {\n      \"en\": \"Rent\",\n      \"hi\": \"किराया\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"sell\",\n    \"label\": {\n      \"en\": \"Sell\",\n      \"hi\": \"बिक्री\"\n    },\n    \"displayOrder\": 20\n  }\n]"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - Form",
+      "item": [
+        {
+          "name": "Create Equipment Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"BOTH\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Equipment\",\n    \"hi\": \"उपकरण सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"equipmentType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Equipment Type\",\n        \"hi\": \"उपकरण प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"equipment__equipment_type\"\n    },\n    {\n      \"fieldKey\": \"equipmentName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Equipment Name\",\n        \"hi\": \"उपकरण का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"equipment__equipment_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"equipmentNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"equipmentName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableFor\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Available For\",\n        \"hi\": \"उपलब्ध है\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"equipment__avail\"\n    },\n    {\n      \"fieldKey\": \"rentPerHour\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Rent Per Hour (₹)\",\n        \"hi\": \"प्रति घंटा किराया (₹)\"\n      },\n      \"sectionKey\": \"rent\",\n      \"sectionTitle\": {\n        \"en\": \"Rental\",\n        \"hi\": \"किराया\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"rent\"\n      }\n    },\n    {\n      \"fieldKey\": \"brandName\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Brand Name\",\n        \"hi\": \"ब्रांड नाम\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"modelNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Model Number\",\n        \"hi\": \"मॉडल नंबर\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"fieldLength\": 60,\n      \"validation\": {\n        \"maxLength\": 60\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"modelYear\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Model Year\",\n        \"hi\": \"मॉडल वर्ष\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Equipment Form (bump version)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"BOTH\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Equipment\",\n    \"hi\": \"उपकरण सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"equipmentType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Equipment Type\",\n        \"hi\": \"उपकरण प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"equipment__equipment_type\"\n    },\n    {\n      \"fieldKey\": \"equipmentName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Equipment Name\",\n        \"hi\": \"उपकरण का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"equipment__equipment_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"equipmentNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"equipmentName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableFor\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Available For\",\n        \"hi\": \"उपलब्ध है\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"equipment__avail\"\n    },\n    {\n      \"fieldKey\": \"rentPerHour\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Rent Per Hour (₹)\",\n        \"hi\": \"प्रति घंटा किराया (₹)\"\n      },\n      \"sectionKey\": \"rent\",\n      \"sectionTitle\": {\n        \"en\": \"Rental\",\n        \"hi\": \"किराया\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"rent\"\n      }\n    },\n    {\n      \"fieldKey\": \"brandName\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Brand Name\",\n        \"hi\": \"ब्रांड नाम\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"modelNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Model Number\",\n        \"hi\": \"मॉडल नंबर\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"fieldLength\": 60,\n      \"validation\": {\n        \"maxLength\": 60\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"modelYear\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Model Year\",\n        \"hi\": \"मॉडल वर्ष\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Forms by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/forms?categoryId={{catId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "forms"
+              ],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "{{catId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. App - Render",
+      "item": [
+        {
+          "name": "Get Equipment Form",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories/{{catId}}/form?listingType=BOTH",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories",
+                "{{catId}}",
+                "form"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "BOTH"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. App - Listing",
+      "item": [
+        {
+          "name": "Upload Images (select files in Body)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uploads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uploads"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"equipmentType\": \"tractor\",\n    \"equipmentName\": \"rotavator\",\n    \"availableFor\": \"rent\",\n    \"rentPerHour\": 10,\n    \"brandName\": \"Sample brandName\",\n    \"modelNumber\": \"Sample modelNumber\",\n    \"modelYear\": 10,\n    \"availableQty\": 10\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Listings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "mine"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
