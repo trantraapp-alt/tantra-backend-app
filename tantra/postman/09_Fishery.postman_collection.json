@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Fishery",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Fishery category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Fishery category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -118,7 +118,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -156,7 +156,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -196,7 +197,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -208,7 +210,7 @@
       "name": "2. Masters",
       "item": [
         {
-          "name": "Create Agriculture Module",
+          "name": "Create Animal & Livestock Module",
           "request": {
             "method": "POST",
             "header": [
@@ -231,7 +233,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"moduleKey\": \"agriculture\",\n  \"moduleNameEn\": \"Agriculture\",\n  \"moduleNameHi\": \"कृषि\"\n}"
+              "raw": "{\n  \"moduleKey\": \"animal_livestock\",\n  \"moduleNameEn\": \"Animal & Livestock\",\n  \"moduleNameHi\": \"पशु एवं पशुधन\"\n}"
             }
           }
         },
@@ -259,8 +261,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
-                  "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
+                  "var m = a.find(function(x){return x.moduleKey==='animal_livestock';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
               }
@@ -321,7 +324,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='fishery';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -362,7 +366,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"setKey\": \"fishery__fishery_type\",\n  \"name\": {\n    \"en\": \"Fishery Type\",\n    \"hi\": \"मत्स्य प्रकार\"\n  }\n}"
+              "raw": "{\n  \"setKey\": \"fishery__fishery_type\",\n  \"name\": {\n    \"en\": \"Fish Name\",\n    \"hi\": \"मछली का नाम\"\n  }\n}"
             }
           },
           "event": [
@@ -372,7 +376,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_fishery_type', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fishery_type', d.id);"
                 ]
               }
             }
@@ -409,9 +414,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"rohu\",\n    \"label\": {\n      \"en\": \"Rohu\",\n      \"hi\": \"रोहू\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"catla\",\n    \"label\": {\n      \"en\": \"Catla\",\n      \"hi\": \"कतला\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"mrigal\",\n    \"label\": {\n      \"en\": \"Mrigal\",\n      \"hi\": \"मृगल\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"tilapia\",\n    \"label\": {\n      \"en\": \"Tilapia\",\n      \"hi\": \"तिलापिया\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"pangasius\",\n    \"label\": {\n      \"en\": \"Pangasius\",\n      \"hi\": \"पंगेसियस\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"common_carp\",\n    \"label\": {\n      \"en\": \"Common Carp\",\n      \"hi\": \"कॉमन कार्प\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"grass_carp\",\n    \"label\": {\n      \"en\": \"Grass Carp\",\n      \"hi\": \"ग्रास कार्प\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"silver_carp\",\n    \"label\": {\n      \"en\": \"Silver Carp\",\n      \"hi\": \"सिल्वर कार्प\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"shrimp\",\n    \"label\": {\n      \"en\": \"Shrimp\",\n      \"hi\": \"झींगा\"\n    },\n    \"displayOrder\": 90\n  },\n  {\n    \"itemKey\": \"prawn\",\n    \"label\": {\n      \"en\": \"Prawn\",\n      \"hi\": \"झींगा (प्रॉन)\"\n    },\n    \"displayOrder\": 100\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 110\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"rohu\",\n    \"label\": {\n      \"en\": \"Rohu\",\n      \"hi\": \"रोहू\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"catla\",\n    \"label\": {\n      \"en\": \"Catla\",\n      \"hi\": \"कतला\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"mrigal\",\n    \"label\": {\n      \"en\": \"Mrigal\",\n      \"hi\": \"मृगल\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"tilapia\",\n    \"label\": {\n      \"en\": \"Tilapia\",\n      \"hi\": \"तिलापिया\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"pangasius\",\n    \"label\": {\n      \"en\": \"Pangasius\",\n      \"hi\": \"पंगासियस\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"common_carp\",\n    \"label\": {\n      \"en\": \"Common Carp\",\n      \"hi\": \"कॉमन कार्प\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"grass_carp\",\n    \"label\": {\n      \"en\": \"Grass Carp\",\n      \"hi\": \"ग्रास कार्प\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"silver_carp\",\n    \"label\": {\n      \"en\": \"Silver Carp\",\n      \"hi\": \"सिल्वर कार्प\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"magur\",\n    \"label\": {\n      \"en\": \"Magur\",\n      \"hi\": \"मागुर\"\n    },\n    \"displayOrder\": 90\n  },\n  {\n    \"itemKey\": \"singhi\",\n    \"label\": {\n      \"en\": \"Singhi\",\n      \"hi\": \"सिंघी\"\n    },\n    \"displayOrder\": 100\n  },\n  {\n    \"itemKey\": \"murrel\",\n    \"label\": {\n      \"en\": \"Murrel\",\n      \"hi\": \"सोल\"\n    },\n    \"displayOrder\": 110\n  },\n  {\n    \"itemKey\": \"bata\",\n    \"label\": {\n      \"en\": \"Bata\",\n      \"hi\": \"बाटा\"\n    },\n    \"displayOrder\": 120\n  },\n  {\n    \"itemKey\": \"pomfret\",\n    \"label\": {\n      \"en\": \"Pomfret\",\n      \"hi\": \"पापलेट\"\n    },\n    \"displayOrder\": 130\n  },\n  {\n    \"itemKey\": \"seer_fish\",\n    \"label\": {\n      \"en\": \"Seer Fish\",\n      \"hi\": \"सुरमई\"\n    },\n    \"displayOrder\": 140\n  },\n  {\n    \"itemKey\": \"indian_mackerel\",\n    \"label\": {\n      \"en\": \"Indian Mackerel\",\n      \"hi\": \"बांगड़ा\"\n    },\n    \"displayOrder\": 150\n  },\n  {\n    \"itemKey\": \"sardine\",\n    \"label\": {\n      \"en\": \"Sardine\",\n      \"hi\": \"सार्डिन\"\n    },\n    \"displayOrder\": 160\n  },\n  {\n    \"itemKey\": \"tuna\",\n    \"label\": {\n      \"en\": \"Tuna\",\n      \"hi\": \"टूना\"\n    },\n    \"displayOrder\": 170\n  },\n  {\n    \"itemKey\": \"hilsa\",\n    \"label\": {\n      \"en\": \"Hilsa\",\n      \"hi\": \"हिलसा / इलिश\"\n    },\n    \"displayOrder\": 180\n  },\n  {\n    \"itemKey\": \"pearl_spot\",\n    \"label\": {\n      \"en\": \"Pearl Spot\",\n      \"hi\": \"करिमीन\"\n    },\n    \"displayOrder\": 190\n  },\n  {\n    \"itemKey\": \"eel\",\n    \"label\": {\n      \"en\": \"Eel\",\n      \"hi\": \"ईल\"\n    },\n    \"displayOrder\": 200\n  },\n  {\n    \"itemKey\": \"freshwater_prawn\",\n    \"label\": {\n      \"en\": \"Freshwater Prawn\",\n      \"hi\": \"मीठे पानी का झींगा\"\n    },\n    \"displayOrder\": 210\n  },\n  {\n    \"itemKey\": \"marine_shrimp\",\n    \"label\": {\n      \"en\": \"Marine Shrimp\",\n      \"hi\": \"समुद्री झींगा\"\n    },\n    \"displayOrder\": 220\n  },\n  {\n    \"itemKey\": \"crab\",\n    \"label\": {\n      \"en\": \"Crab\",\n      \"hi\": \"केकड़ा\"\n    },\n    \"displayOrder\": 230\n  },\n  {\n    \"itemKey\": \"lobster\",\n    \"label\": {\n      \"en\": \"Lobster\",\n      \"hi\": \"लॉब्स्टर\"\n    },\n    \"displayOrder\": 240\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 250\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__fishery_type_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fishery__purpose",
@@ -451,7 +473,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_purpose', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_purpose', d.id);"
                 ]
               }
             }
@@ -490,7 +513,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"consumption\",\n    \"label\": {\n      \"en\": \"Consumption\",\n      \"hi\": \"उपभोग\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"breeding\",\n    \"label\": {\n      \"en\": \"Breeding\",\n      \"hi\": \"प्रजनन\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"seed\",\n    \"label\": {\n      \"en\": \"Seed\",\n      \"hi\": \"बीज\"\n    },\n    \"displayOrder\": 30\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__purpose_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fishery__age_unit",
@@ -530,7 +570,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_age_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_age_unit', d.id);"
                 ]
               }
             }
@@ -569,7 +610,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"days\",\n    \"label\": {\n      \"en\": \"Days\",\n      \"hi\": \"दिन\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"weeks\",\n    \"label\": {\n      \"en\": \"Weeks\",\n      \"hi\": \"सप्ताह\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"months\",\n    \"label\": {\n      \"en\": \"Months\",\n      \"hi\": \"महीने\"\n    },\n    \"displayOrder\": 30\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__age_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fishery__health",
@@ -609,7 +667,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_health', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_health', d.id);"
                 ]
               }
             }
@@ -648,7 +707,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"healthy\",\n    \"label\": {\n      \"en\": \"Healthy\",\n      \"hi\": \"स्वस्थ\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"vaccinated\",\n    \"label\": {\n      \"en\": \"Vaccinated\",\n      \"hi\": \"टीकाकृत\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"organic\",\n    \"label\": {\n      \"en\": \"Organic\",\n      \"hi\": \"जैविक\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"disease_free\",\n    \"label\": {\n      \"en\": \"Disease Free\",\n      \"hi\": \"रोग मुक्त\"\n    },\n    \"displayOrder\": 40\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__health_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fishery__production_method",
@@ -688,7 +764,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_production_method', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_production_method', d.id);"
                 ]
               }
             }
@@ -727,7 +804,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"pond_culture\",\n    \"label\": {\n      \"en\": \"Pond Culture\",\n      \"hi\": \"तालाब पालन\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"biofloc\",\n    \"label\": {\n      \"en\": \"Biofloc\",\n      \"hi\": \"बायोफ्लॉक\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"cage_culture\",\n    \"label\": {\n      \"en\": \"Cage Culture\",\n      \"hi\": \"केज कल्चर\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"ras\",\n    \"label\": {\n      \"en\": \"RAS (Recirculating Aquaculture System)\",\n      \"hi\": \"आरएएस\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__production_method_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fishery__unit",
@@ -767,7 +861,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_unit', d.id);"
                 ]
               }
             }
@@ -806,7 +901,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"ton\",\n    \"label\": {\n      \"en\": \"Ton\",\n      \"hi\": \"टन\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"piece\",\n    \"label\": {\n      \"en\": \"Piece\",\n      \"hi\": \"नग\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"fingerlings\",\n    \"label\": {\n      \"en\": \"Fingerlings\",\n      \"hi\": \"फिंगरलिंग्स\"\n    },\n    \"displayOrder\": 50\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fishery__unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -841,7 +953,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"breedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed / Variety\",\n        \"hi\": \"नस्ल / किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fish Name\",\n        \"hi\": \"मछली का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Fish Name\",\n        \"hi\": \"कृपया मछली का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 30,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -851,7 +963,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -885,7 +998,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"breedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed / Variety\",\n        \"hi\": \"नस्ल / किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fishery\",\n    \"hi\": \"मत्स्य पालन सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fisheryType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fish Name\",\n        \"hi\": \"मछली का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fishery__fishery_type\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"fisheryTypeOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Fish Name\",\n        \"hi\": \"कृपया मछली का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fisheryType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"description\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 30,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"fishery__purpose\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"fishery__age_unit\"\n    },\n    {\n      \"fieldKey\": \"avgWeight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Average Weight (Kg)\",\n        \"hi\": \"औसत वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fishery__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"productionMethod\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Production Method\",\n        \"hi\": \"उत्पादन विधि\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"optionSetKey\": \"fishery__production_method\"\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"fishery__unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -953,7 +1066,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -994,7 +1107,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -1027,7 +1141,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"fisheryType\": \"rohu\",\n    \"breedVariety\": \"Sample breedVariety\",\n    \"purpose\": \"consumption\",\n    \"age\": 10,\n    \"ageUnit\": \"days\",\n    \"avgWeight\": 10,\n    \"healthStatus\": [\n      \"healthy\"\n    ],\n    \"productionMethod\": \"pond_culture\",\n    \"description\": \"Sample description\",\n    \"availableQty\": 10,\n    \"unit\": \"kg\"\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"fisheryType\": \"rohu\",\n    \"description\": \"Sample description\",\n    \"purpose\": \"consumption\",\n    \"age\": 10,\n    \"ageUnit\": \"days\",\n    \"avgWeight\": 10,\n    \"healthStatus\": [\n      \"healthy\"\n    ],\n    \"productionMethod\": \"pond_culture\",\n    \"availableQty\": 10,\n    \"unit\": \"kg\"\n  }\n}"
             }
           },
           "event": [
@@ -1037,12 +1151,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -1054,7 +1174,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1063,6 +1183,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

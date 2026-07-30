@@ -34,11 +34,21 @@ public class MasterController {
 
     // --- CATEGORY ENDPOINTS ---
 
+    /** Top-level categories under a module (parentId omitted), or subcategories of a parent (parentId set). */
     @GetMapping("/modules/{moduleId}/categories")
     public ResponseEntity<List<ModuleCategory>> getCategoriesByModule(
             @PathVariable Integer moduleId,
+            @RequestParam(required = false) Integer parentId,
             @RequestParam(defaultValue = "false") boolean onlyActive) {
-        return ResponseEntity.ok(masterService.getCategoriesByModule(moduleId, onlyActive));
+        return ResponseEntity.ok(masterService.getCategories(moduleId, parentId, onlyActive));
+    }
+
+    /** Subcategories of a category (tree children). */
+    @GetMapping("/categories/{parentId}/subcategories")
+    public ResponseEntity<List<ModuleCategory>> getSubcategories(
+            @PathVariable Integer parentId,
+            @RequestParam(defaultValue = "false") boolean onlyActive) {
+        return ResponseEntity.ok(masterService.getSubcategories(parentId, onlyActive));
     }
 
     @GetMapping("/categories/{id}")

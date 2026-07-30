@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Vegetables & Fruits",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Vegetables & Fruits category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Vegetables & Fruits category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -55,10 +55,6 @@
     },
     {
       "key": "set_vf_quality",
-      "value": ""
-    },
-    {
-      "key": "set_vf_rate_slab",
       "value": ""
     }
   ],
@@ -118,7 +114,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -156,7 +152,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -196,7 +193,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -259,7 +257,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
@@ -321,7 +320,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='veg_fruit';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -372,7 +372,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_vf_type', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_vf_type', d.id);"
                 ]
               }
             }
@@ -411,7 +412,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"vegetables\",\n    \"label\": {\n      \"en\": \"Vegetables\",\n      \"hi\": \"सब्ज़ियाँ\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"fruit\",\n    \"label\": {\n      \"en\": \"Fruit\",\n      \"hi\": \"फल\"\n    },\n    \"displayOrder\": 20\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_veg_fruit__vf_type_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: veg_fruit__vegetable_name",
@@ -451,7 +469,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_vegetable_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_vegetable_name', d.id);"
                 ]
               }
             }
@@ -490,7 +509,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"tomato\",\n    \"label\": {\n      \"en\": \"Tomato\",\n      \"hi\": \"टमाटर\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"potato\",\n    \"label\": {\n      \"en\": \"Potato\",\n      \"hi\": \"आलू\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"onion\",\n    \"label\": {\n      \"en\": \"Onion\",\n      \"hi\": \"प्याज़\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 40\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_veg_fruit__vegetable_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: veg_fruit__fruit_name",
@@ -530,7 +566,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_fruit_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fruit_name', d.id);"
                 ]
               }
             }
@@ -569,7 +606,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"apple\",\n    \"label\": {\n      \"en\": \"Apple\",\n      \"hi\": \"सेब\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"banana\",\n    \"label\": {\n      \"en\": \"Banana\",\n      \"hi\": \"केला\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"mango\",\n    \"label\": {\n      \"en\": \"Mango\",\n      \"hi\": \"आम\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 40\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_veg_fruit__fruit_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: veg_fruit__vf_unit",
@@ -609,7 +663,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_vf_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_vf_unit', d.id);"
                 ]
               }
             }
@@ -648,7 +703,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 20\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_veg_fruit__vf_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: veg_fruit__vf_quality",
@@ -688,7 +760,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_vf_quality', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_vf_quality', d.id);"
                 ]
               }
             }
@@ -727,38 +800,6 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"A\",\n    \"label\": {\n      \"en\": \"A\",\n      \"hi\": \"ए\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"B\",\n    \"label\": {\n      \"en\": \"B\",\n      \"hi\": \"बी\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"C\",\n    \"label\": {\n      \"en\": \"C\",\n      \"hi\": \"सी\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"D\",\n    \"label\": {\n      \"en\": \"D\",\n      \"hi\": \"डी\"\n    },\n    \"displayOrder\": 40\n  }\n]"
             }
-          }
-        },
-        {
-          "name": "Create set: veg_fruit__vf_rate_slab",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{adminToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "option-sets"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"setKey\": \"veg_fruit__vf_rate_slab\",\n  \"name\": {\n    \"en\": \"Rate Slab\",\n    \"hi\": \"दर स्लैब\"\n  }\n}"
-            }
           },
           "event": [
             {
@@ -766,47 +807,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_vf_rate_slab', r.id);"
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_veg_fruit__vf_quality_' + it.itemKey, ids[i]); });"
                 ]
               }
             }
           ]
-        },
-        {
-          "name": "Add items: veg_fruit__vf_rate_slab",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{adminToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_vf_rate_slab}}/items/bulk",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "option-sets",
-                "{{set_vf_rate_slab}}",
-                "items",
-                "bulk"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"1kg\",\n    \"label\": {\n      \"en\": \"1 Kg\",\n      \"hi\": \"1 किग्रा\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"10kg\",\n    \"label\": {\n      \"en\": \"10 Kg\",\n      \"hi\": \"10 किग्रा\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"25kg\",\n    \"label\": {\n      \"en\": \"25 Kg\",\n      \"hi\": \"25 किग्रा\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"50kg\",\n    \"label\": {\n      \"en\": \"50 Kg\",\n      \"hi\": \"50 किग्रा\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"100kg\",\n    \"label\": {\n      \"en\": \"100 Kg\",\n      \"hi\": \"100 किग्रा\"\n    },\n    \"displayOrder\": 50\n  }\n]"
-            }
-          }
         }
       ]
     },
@@ -841,7 +852,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Vegetables & Fruits\",\n    \"hi\": \"सब्ज़ियाँ और फल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"type\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"veg_fruit__vf_type\"\n    },\n    {\n      \"fieldKey\": \"vegetableName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Vegetable Name\",\n        \"hi\": \"सब्ज़ी का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"veg_fruit__vegetable_name\",\n      \"allowOther\": true,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"vegetables\"\n      }\n    },\n    {\n      \"fieldKey\": \"vegetableNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"vegetableName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fruit Name\",\n        \"hi\": \"फल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"veg_fruit__fruit_name\",\n      \"allowOther\": true,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"fruit\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fruitName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"variety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Variety\",\n        \"hi\": \"किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"quality\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality\",\n        \"hi\": \"गुणवत्ता\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"veg_fruit__vf_quality\"\n    },\n    {\n      \"fieldKey\": \"isOrganic\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Organic?\",\n        \"hi\": \"क्या जैविक है?\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80\n    },\n    {\n      \"fieldKey\": \"quantity\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"veg_fruit__vf_unit\"\n    },\n    {\n      \"fieldKey\": \"rateSlab\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Rate Slab\",\n        \"hi\": \"दर स्लैब\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"veg_fruit__vf_rate_slab\"\n    },\n    {\n      \"fieldKey\": \"slabPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Slab Price (₹)\",\n        \"hi\": \"स्लैब मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Vegetables & Fruits\",\n    \"hi\": \"सब्ज़ियाँ और फल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"type\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"veg_fruit__vf_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"vegetableName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Vegetable Name\",\n        \"hi\": \"सब्ज़ी का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"veg_fruit__vegetable_name\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"vegetables\"\n      }\n    },\n    {\n      \"fieldKey\": \"vegetableNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"vegetableName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fruit Name\",\n        \"hi\": \"फल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"veg_fruit__fruit_name\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"fruit\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fruitName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"variety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Variety\",\n        \"hi\": \"किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"quality\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality\",\n        \"hi\": \"गुणवत्ता\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"veg_fruit__vf_quality\"\n    },\n    {\n      \"fieldKey\": \"isOrganic\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Organic?\",\n        \"hi\": \"क्या जैविक है?\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80\n    },\n    {\n      \"fieldKey\": \"quantity\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"veg_fruit__vf_unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -851,7 +862,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -885,7 +897,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Vegetables & Fruits\",\n    \"hi\": \"सब्ज़ियाँ और फल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"type\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"veg_fruit__vf_type\"\n    },\n    {\n      \"fieldKey\": \"vegetableName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Vegetable Name\",\n        \"hi\": \"सब्ज़ी का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"veg_fruit__vegetable_name\",\n      \"allowOther\": true,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"vegetables\"\n      }\n    },\n    {\n      \"fieldKey\": \"vegetableNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"vegetableName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fruit Name\",\n        \"hi\": \"फल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"veg_fruit__fruit_name\",\n      \"allowOther\": true,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"fruit\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fruitName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"variety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Variety\",\n        \"hi\": \"किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"quality\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality\",\n        \"hi\": \"गुणवत्ता\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"veg_fruit__vf_quality\"\n    },\n    {\n      \"fieldKey\": \"isOrganic\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Organic?\",\n        \"hi\": \"क्या जैविक है?\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80\n    },\n    {\n      \"fieldKey\": \"quantity\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"veg_fruit__vf_unit\"\n    },\n    {\n      \"fieldKey\": \"rateSlab\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Rate Slab\",\n        \"hi\": \"दर स्लैब\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"veg_fruit__vf_rate_slab\"\n    },\n    {\n      \"fieldKey\": \"slabPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Slab Price (₹)\",\n        \"hi\": \"स्लैब मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Vegetables & Fruits\",\n    \"hi\": \"सब्ज़ियाँ और फल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"type\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Type\",\n        \"hi\": \"प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"veg_fruit__vf_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"vegetableName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Vegetable Name\",\n        \"hi\": \"सब्ज़ी का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"veg_fruit__vegetable_name\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"vegetables\"\n      }\n    },\n    {\n      \"fieldKey\": \"vegetableNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"vegetableName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fruit Name\",\n        \"hi\": \"फल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"optionSetKey\": \"veg_fruit__fruit_name\",\n      \"allowOther\": true,\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"type\",\n        \"operator\": \"equals\",\n        \"value\": \"fruit\"\n      }\n    },\n    {\n      \"fieldKey\": \"fruitNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fruitName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"variety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Variety\",\n        \"hi\": \"किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"quality\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality\",\n        \"hi\": \"गुणवत्ता\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"veg_fruit__vf_quality\"\n    },\n    {\n      \"fieldKey\": \"isOrganic\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Organic?\",\n        \"hi\": \"क्या जैविक है?\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80\n    },\n    {\n      \"fieldKey\": \"quantity\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"unit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"veg_fruit__vf_unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -953,7 +965,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -994,7 +1006,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -1027,7 +1040,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"type\": \"vegetables\",\n    \"vegetableName\": \"tomato\",\n    \"fruitName\": \"apple\",\n    \"variety\": \"Sample variety\",\n    \"quality\": \"A\",\n    \"isOrganic\": true,\n    \"quantity\": 10,\n    \"unit\": \"kg\",\n    \"rateSlab\": \"1kg\",\n    \"slabPrice\": 10\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"type\": \"vegetables\",\n    \"vegetableName\": \"tomato\",\n    \"fruitName\": \"apple\",\n    \"variety\": \"Sample variety\",\n    \"quality\": \"A\",\n    \"isOrganic\": true,\n    \"quantity\": 10,\n    \"unit\": \"kg\"\n  }\n}"
             }
           },
           "event": [
@@ -1037,12 +1050,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -1054,7 +1073,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1063,6 +1082,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

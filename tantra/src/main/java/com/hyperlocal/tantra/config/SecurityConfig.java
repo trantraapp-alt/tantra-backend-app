@@ -41,10 +41,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Admin-only: dropdown maintenance + form-metadata CRUD
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        // Listing submission/reads + image upload require a logged-in user
+                        // Listing submission/reads + image upload + address book require a logged-in user
                         .requestMatchers("/api/v1/uploads/**").authenticated()
+                        .requestMatchers("/api/v1/addresses/**").authenticated()
+                        .requestMatchers("/api/v1/business-profiles/**").authenticated()
+                        .requestMatchers("/api/v1/notifications/**").authenticated()
                         .requestMatchers("/api/v1/listings/**").authenticated()
-                        .requestMatchers("/api/auth/verify-session").authenticated()
+                        .requestMatchers("/api/v1/auth/verify-session").authenticated()
                         // Uploaded images are publicly viewable
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/api/v1/**").permitAll()

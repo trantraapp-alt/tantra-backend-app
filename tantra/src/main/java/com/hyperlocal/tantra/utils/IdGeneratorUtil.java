@@ -43,4 +43,19 @@ public class IdGeneratorUtil {
         // 4. Combine: TN (2) + Digit (1) + Time (5) = 8 Characters
         return "TN" + randomDigit + base36Time;
     }
+
+    /**
+     * Generates a short, opaque, time-sorted 10-char id: a 2-char type prefix + 8 chars
+     * (e.g. "LT9F3KD2P1"). Same scheme/length as {@link #generateShortUniqueId()} but with a
+     * caller-supplied prefix (LT = listing, BP = business profile) — no ownership leak, no counter.
+     */
+    public static String generateId(String prefix) {
+        long elapsedMillis = System.currentTimeMillis() - CUSTOM_EPOCH;
+        String base36Time = Long.toString(elapsedMillis, 36).toUpperCase();
+        while (base36Time.length() < 5) {
+            base36Time = LETTERS.charAt(random.nextInt(LETTERS.length())) + base36Time;
+        }
+        char randomDigit = DIGITS.charAt(random.nextInt(DIGITS.length()));
+        return prefix + randomDigit + base36Time;
+    }
 }

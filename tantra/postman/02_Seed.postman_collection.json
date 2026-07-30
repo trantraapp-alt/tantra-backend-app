@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Seed",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Seed category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Seed category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -36,6 +36,10 @@
     {
       "key": "uploadedImages",
       "value": "[\"https://cdn.tantra.app/seed/a.jpg\",\"https://cdn.tantra.app/seed/b.jpg\"]"
+    },
+    {
+      "key": "set_seed_type",
+      "value": ""
     },
     {
       "key": "set_seed_name",
@@ -102,7 +106,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -140,7 +144,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -180,7 +185,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -243,7 +249,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
@@ -305,7 +312,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='seed';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -318,6 +326,103 @@
     {
       "name": "3. Admin - Dropdowns",
       "item": [
+        {
+          "name": "Create set: seed__seed_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"seed__seed_type\",\n  \"name\": {\n    \"en\": \"Seed Type\",\n    \"hi\": \"बीज प्रकार\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_seed_type', d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: seed__seed_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_seed_type}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_seed_type}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"cereal\",\n    \"label\": {\n      \"en\": \"Cereal Seeds\",\n      \"hi\": \"अनाज के बीज\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"pulse\",\n    \"label\": {\n      \"en\": \"Pulse Seeds\",\n      \"hi\": \"दलहन के बीज\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"oilseed\",\n    \"label\": {\n      \"en\": \"Oilseed Seeds\",\n      \"hi\": \"तिलहन के बीज\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"vegetable\",\n    \"label\": {\n      \"en\": \"Vegetable Seeds\",\n      \"hi\": \"सब्जियों के बीज\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"fruit\",\n    \"label\": {\n      \"en\": \"Fruit Seeds / Saplings\",\n      \"hi\": \"फलों के बीज / पौधे\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"spice\",\n    \"label\": {\n      \"en\": \"Spice Seeds\",\n      \"hi\": \"मसालों के बीज\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"fodder\",\n    \"label\": {\n      \"en\": \"Fodder Seeds\",\n      \"hi\": \"चारा फसलों के बीज\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"flower\",\n    \"label\": {\n      \"en\": \"Flower Seeds\",\n      \"hi\": \"फूलों के बीज\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"medicinal\",\n    \"label\": {\n      \"en\": \"Medicinal & Aromatic Seeds\",\n      \"hi\": \"औषधीय एवं सुगंधित पौधों के बीज\"\n    },\n    \"displayOrder\": 90\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 100\n  }\n]"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_seed__seed_type_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Create set: seed__seed_name",
           "request": {
@@ -356,7 +461,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_seed_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_seed_name', d.id);"
                 ]
               }
             }
@@ -393,9 +499,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"wheat\",\n    \"label\": {\n      \"en\": \"Wheat\",\n      \"hi\": \"गेहूं\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"paddy\",\n    \"label\": {\n      \"en\": \"Paddy\",\n      \"hi\": \"धान\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"maize\",\n    \"label\": {\n      \"en\": \"Maize\",\n      \"hi\": \"मक्का\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"mustard\",\n    \"label\": {\n      \"en\": \"Mustard\",\n      \"hi\": \"सरसों\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Gram\",\n      \"hi\": \"चना\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"soybean\",\n    \"label\": {\n      \"en\": \"Soybean\",\n      \"hi\": \"सोयाबीन\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"cotton\",\n    \"label\": {\n      \"en\": \"Cotton\",\n      \"hi\": \"कपास\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"bajra\",\n    \"label\": {\n      \"en\": \"Bajra\",\n      \"hi\": \"बाजरा\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 90\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"cereal_paddy\",\n    \"label\": {\n      \"en\": \"Paddy Seed\",\n      \"hi\": \"धान का बीज\"\n    },\n    \"displayOrder\": 10,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_wheat\",\n    \"label\": {\n      \"en\": \"Wheat Seed\",\n      \"hi\": \"गेहूं का बीज\"\n    },\n    \"displayOrder\": 20,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_maize\",\n    \"label\": {\n      \"en\": \"Maize Seed\",\n      \"hi\": \"मक्का का बीज\"\n    },\n    \"displayOrder\": 30,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_jowar\",\n    \"label\": {\n      \"en\": \"Jowar Seed\",\n      \"hi\": \"ज्वार का बीज\"\n    },\n    \"displayOrder\": 40,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_bajra\",\n    \"label\": {\n      \"en\": \"Bajra Seed\",\n      \"hi\": \"बाजरा का बीज\"\n    },\n    \"displayOrder\": 50,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_barley\",\n    \"label\": {\n      \"en\": \"Barley Seed\",\n      \"hi\": \"जौ का बीज\"\n    },\n    \"displayOrder\": 60,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_ragi\",\n    \"label\": {\n      \"en\": \"Ragi Seed\",\n      \"hi\": \"रागी का बीज\"\n    },\n    \"displayOrder\": 70,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"cereal_millets\",\n    \"label\": {\n      \"en\": \"Millets Seed\",\n      \"hi\": \"मोटे अनाज के बीज\"\n    },\n    \"displayOrder\": 80,\n    \"parentItemId\": {{item_seed__seed_type_cereal}}\n  },\n  {\n    \"itemKey\": \"pulse_gram\",\n    \"label\": {\n      \"en\": \"Chickpea Seed\",\n      \"hi\": \"चना का बीज\"\n    },\n    \"displayOrder\": 90,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_arhar\",\n    \"label\": {\n      \"en\": \"Pigeon Pea / Tur Seed\",\n      \"hi\": \"अरहर / तुअर का बीज\"\n    },\n    \"displayOrder\": 100,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_moong\",\n    \"label\": {\n      \"en\": \"Green Gram Seed\",\n      \"hi\": \"मूंग का बीज\"\n    },\n    \"displayOrder\": 110,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_urad\",\n    \"label\": {\n      \"en\": \"Black Gram Seed\",\n      \"hi\": \"उड़द का बीज\"\n    },\n    \"displayOrder\": 120,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_masoor\",\n    \"label\": {\n      \"en\": \"Lentil Seed\",\n      \"hi\": \"मसूर का बीज\"\n    },\n    \"displayOrder\": 130,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_peas\",\n    \"label\": {\n      \"en\": \"Field Pea Seed\",\n      \"hi\": \"मटर का बीज\"\n    },\n    \"displayOrder\": 140,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_rajma\",\n    \"label\": {\n      \"en\": \"Kidney Bean Seed\",\n      \"hi\": \"राजमा का बीज\"\n    },\n    \"displayOrder\": 150,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"pulse_lobia\",\n    \"label\": {\n      \"en\": \"Cowpea Seed\",\n      \"hi\": \"लोबिया का बीज\"\n    },\n    \"displayOrder\": 160,\n    \"parentItemId\": {{item_seed__seed_type_pulse}}\n  },\n  {\n    \"itemKey\": \"oilseed_soybean\",\n    \"label\": {\n      \"en\": \"Soybean Seed\",\n      \"hi\": \"सोयाबीन का बीज\"\n    },\n    \"displayOrder\": 170,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_mustard\",\n    \"label\": {\n      \"en\": \"Mustard Seed\",\n      \"hi\": \"सरसों का बीज\"\n    },\n    \"displayOrder\": 180,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_groundnut\",\n    \"label\": {\n      \"en\": \"Groundnut Seed\",\n      \"hi\": \"मूंगफली का बीज\"\n    },\n    \"displayOrder\": 190,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_sesame\",\n    \"label\": {\n      \"en\": \"Sesame Seed\",\n      \"hi\": \"तिल का बीज\"\n    },\n    \"displayOrder\": 200,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_sunflower\",\n    \"label\": {\n      \"en\": \"Sunflower Seed\",\n      \"hi\": \"सूरजमुखी का बीज\"\n    },\n    \"displayOrder\": 210,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_castor\",\n    \"label\": {\n      \"en\": \"Castor Seed\",\n      \"hi\": \"अरंडी का बीज\"\n    },\n    \"displayOrder\": 220,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_linseed\",\n    \"label\": {\n      \"en\": \"Linseed Seed\",\n      \"hi\": \"अलसी का बीज\"\n    },\n    \"displayOrder\": 230,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oilseed_safflower\",\n    \"label\": {\n      \"en\": \"Safflower Seed\",\n      \"hi\": \"कुसुम का बीज\"\n    },\n    \"displayOrder\": 240,\n    \"parentItemId\": {{item_seed__seed_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"vegetable_tomato\",\n    \"label\": {\n      \"en\": \"Tomato Seed\",\n      \"hi\": \"टमाटर का बीज\"\n    },\n    \"displayOrder\": 250,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_onion\",\n    \"label\": {\n      \"en\": \"Onion Seed\",\n      \"hi\": \"प्याज का बीज\"\n    },\n    \"displayOrder\": 260,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_potato\",\n    \"label\": {\n      \"en\": \"Potato Seed\",\n      \"hi\": \"आलू का बीज\"\n    },\n    \"displayOrder\": 270,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_brinjal\",\n    \"label\": {\n      \"en\": \"Brinjal Seed\",\n      \"hi\": \"बैंगन का बीज\"\n    },\n    \"displayOrder\": 280,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_okra\",\n    \"label\": {\n      \"en\": \"Okra Seed\",\n      \"hi\": \"भिंडी का बीज\"\n    },\n    \"displayOrder\": 290,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_chilli\",\n    \"label\": {\n      \"en\": \"Chilli Seed\",\n      \"hi\": \"मिर्च का बीज\"\n    },\n    \"displayOrder\": 300,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_cabbage\",\n    \"label\": {\n      \"en\": \"Cabbage Seed\",\n      \"hi\": \"पत्ता गोभी का बीज\"\n    },\n    \"displayOrder\": 310,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_cauliflower\",\n    \"label\": {\n      \"en\": \"Cauliflower Seed\",\n      \"hi\": \"फूलगोभी का बीज\"\n    },\n    \"displayOrder\": 320,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_bottle_gourd\",\n    \"label\": {\n      \"en\": \"Bottle Gourd Seed\",\n      \"hi\": \"लौकी का बीज\"\n    },\n    \"displayOrder\": 330,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_bitter_gourd\",\n    \"label\": {\n      \"en\": \"Bitter Gourd Seed\",\n      \"hi\": \"करेला का बीज\"\n    },\n    \"displayOrder\": 340,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_ridge_gourd\",\n    \"label\": {\n      \"en\": \"Ridge Gourd Seed\",\n      \"hi\": \"तोरई का बीज\"\n    },\n    \"displayOrder\": 350,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_cucumber\",\n    \"label\": {\n      \"en\": \"Cucumber Seed\",\n      \"hi\": \"खीरा का बीज\"\n    },\n    \"displayOrder\": 360,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_pumpkin\",\n    \"label\": {\n      \"en\": \"Pumpkin Seed\",\n      \"hi\": \"कद्दू का बीज\"\n    },\n    \"displayOrder\": 370,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_pea\",\n    \"label\": {\n      \"en\": \"Pea Seed\",\n      \"hi\": \"मटर का बीज\"\n    },\n    \"displayOrder\": 380,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_spinach\",\n    \"label\": {\n      \"en\": \"Spinach Seed\",\n      \"hi\": \"पालक का बीज\"\n    },\n    \"displayOrder\": 390,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_coriander\",\n    \"label\": {\n      \"en\": \"Coriander Seed\",\n      \"hi\": \"धनिया का बीज\"\n    },\n    \"displayOrder\": 400,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_radish\",\n    \"label\": {\n      \"en\": \"Radish Seed\",\n      \"hi\": \"मूली का बीज\"\n    },\n    \"displayOrder\": 410,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_carrot\",\n    \"label\": {\n      \"en\": \"Carrot Seed\",\n      \"hi\": \"गाजर का बीज\"\n    },\n    \"displayOrder\": 420,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_beetroot\",\n    \"label\": {\n      \"en\": \"Beetroot Seed\",\n      \"hi\": \"चुकंदर का बीज\"\n    },\n    \"displayOrder\": 430,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_bean\",\n    \"label\": {\n      \"en\": \"Bean Seed\",\n      \"hi\": \"सेम का बीज\"\n    },\n    \"displayOrder\": 440,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"vegetable_capsicum\",\n    \"label\": {\n      \"en\": \"Capsicum Seed\",\n      \"hi\": \"शिमला मिर्च का बीज\"\n    },\n    \"displayOrder\": 450,\n    \"parentItemId\": {{item_seed__seed_type_vegetable}}\n  },\n  {\n    \"itemKey\": \"fruit_mango\",\n    \"label\": {\n      \"en\": \"Mango Seed / Sapling\",\n      \"hi\": \"आम का बीज / पौधा\"\n    },\n    \"displayOrder\": 460,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_guava\",\n    \"label\": {\n      \"en\": \"Guava Seed / Sapling\",\n      \"hi\": \"अमरूद का बीज / पौधा\"\n    },\n    \"displayOrder\": 470,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_papaya\",\n    \"label\": {\n      \"en\": \"Papaya Seed\",\n      \"hi\": \"पपीता का बीज\"\n    },\n    \"displayOrder\": 480,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_banana\",\n    \"label\": {\n      \"en\": \"Banana Plant\",\n      \"hi\": \"केले का पौधा\"\n    },\n    \"displayOrder\": 490,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_watermelon\",\n    \"label\": {\n      \"en\": \"Watermelon Seed\",\n      \"hi\": \"तरबूज का बीज\"\n    },\n    \"displayOrder\": 500,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_muskmelon\",\n    \"label\": {\n      \"en\": \"Muskmelon Seed\",\n      \"hi\": \"खरबूजा का बीज\"\n    },\n    \"displayOrder\": 510,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_pomegranate\",\n    \"label\": {\n      \"en\": \"Pomegranate Sapling\",\n      \"hi\": \"अनार का पौधा\"\n    },\n    \"displayOrder\": 520,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_lemon\",\n    \"label\": {\n      \"en\": \"Lemon Sapling\",\n      \"hi\": \"नींबू का पौधा\"\n    },\n    \"displayOrder\": 530,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_orange\",\n    \"label\": {\n      \"en\": \"Orange Sapling\",\n      \"hi\": \"संतरे का पौधा\"\n    },\n    \"displayOrder\": 540,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"fruit_grapes\",\n    \"label\": {\n      \"en\": \"Grapes Sapling\",\n      \"hi\": \"अंगूर का पौधा\"\n    },\n    \"displayOrder\": 550,\n    \"parentItemId\": {{item_seed__seed_type_fruit}}\n  },\n  {\n    \"itemKey\": \"spice_coriander\",\n    \"label\": {\n      \"en\": \"Coriander Seed\",\n      \"hi\": \"धनिया का बीज\"\n    },\n    \"displayOrder\": 560,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_cumin\",\n    \"label\": {\n      \"en\": \"Cumin Seed\",\n      \"hi\": \"जीरा का बीज\"\n    },\n    \"displayOrder\": 570,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_fennel\",\n    \"label\": {\n      \"en\": \"Fennel Seed\",\n      \"hi\": \"सौंफ का बीज\"\n    },\n    \"displayOrder\": 580,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_fenugreek\",\n    \"label\": {\n      \"en\": \"Fenugreek Seed\",\n      \"hi\": \"मेथी का बीज\"\n    },\n    \"displayOrder\": 590,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_carom\",\n    \"label\": {\n      \"en\": \"Carom Seed\",\n      \"hi\": \"अजवाइन का बीज\"\n    },\n    \"displayOrder\": 600,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_chilli\",\n    \"label\": {\n      \"en\": \"Chilli Seed\",\n      \"hi\": \"मिर्च का बीज\"\n    },\n    \"displayOrder\": 610,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_turmeric\",\n    \"label\": {\n      \"en\": \"Turmeric Rhizome Seed\",\n      \"hi\": \"हल्दी का बीज कंद\"\n    },\n    \"displayOrder\": 620,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"spice_ginger\",\n    \"label\": {\n      \"en\": \"Ginger Rhizome Seed\",\n      \"hi\": \"अदरक का बीज कंद\"\n    },\n    \"displayOrder\": 630,\n    \"parentItemId\": {{item_seed__seed_type_spice}}\n  },\n  {\n    \"itemKey\": \"fodder_berseem\",\n    \"label\": {\n      \"en\": \"Berseem Seed\",\n      \"hi\": \"बरसीम का बीज\"\n    },\n    \"displayOrder\": 640,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"fodder_lucerne\",\n    \"label\": {\n      \"en\": \"Lucerne Seed\",\n      \"hi\": \"लूसर्न का बीज\"\n    },\n    \"displayOrder\": 650,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"fodder_napier\",\n    \"label\": {\n      \"en\": \"Napier Grass Root / Slip\",\n      \"hi\": \"नेपियर घास की जड़/स्लिप\"\n    },\n    \"displayOrder\": 660,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"fodder_maize\",\n    \"label\": {\n      \"en\": \"Fodder Maize Seed\",\n      \"hi\": \"चारा मक्का का बीज\"\n    },\n    \"displayOrder\": 670,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"fodder_sorghum\",\n    \"label\": {\n      \"en\": \"Fodder Sorghum Seed\",\n      \"hi\": \"चारा ज्वार का बीज\"\n    },\n    \"displayOrder\": 680,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"fodder_cowpea\",\n    \"label\": {\n      \"en\": \"Cowpea Fodder Seed\",\n      \"hi\": \"चारा लोबिया का बीज\"\n    },\n    \"displayOrder\": 690,\n    \"parentItemId\": {{item_seed__seed_type_fodder}}\n  },\n  {\n    \"itemKey\": \"flower_marigold\",\n    \"label\": {\n      \"en\": \"Marigold Seed\",\n      \"hi\": \"गेंदा का बीज\"\n    },\n    \"displayOrder\": 700,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"flower_rose\",\n    \"label\": {\n      \"en\": \"Rose Plant\",\n      \"hi\": \"गुलाब का पौधा\"\n    },\n    \"displayOrder\": 710,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"flower_sunflower\",\n    \"label\": {\n      \"en\": \"Sunflower Seed\",\n      \"hi\": \"सूरजमुखी का बीज\"\n    },\n    \"displayOrder\": 720,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"flower_jasmine\",\n    \"label\": {\n      \"en\": \"Jasmine Plant\",\n      \"hi\": \"चमेली का पौधा\"\n    },\n    \"displayOrder\": 730,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"flower_gladiolus\",\n    \"label\": {\n      \"en\": \"Gladiolus Bulb\",\n      \"hi\": \"ग्लैडियोलस का बल्ब\"\n    },\n    \"displayOrder\": 740,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"flower_tuberose\",\n    \"label\": {\n      \"en\": \"Tuberose Bulb\",\n      \"hi\": \"रजनीगंधा का बल्ब\"\n    },\n    \"displayOrder\": 750,\n    \"parentItemId\": {{item_seed__seed_type_flower}}\n  },\n  {\n    \"itemKey\": \"medicinal_ashwagandha\",\n    \"label\": {\n      \"en\": \"Ashwagandha Seed\",\n      \"hi\": \"अश्वगंधा का बीज\"\n    },\n    \"displayOrder\": 760,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_tulsi\",\n    \"label\": {\n      \"en\": \"Tulsi Seed\",\n      \"hi\": \"तुलसी का बीज\"\n    },\n    \"displayOrder\": 770,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_aloe_vera\",\n    \"label\": {\n      \"en\": \"Aloe Vera Plant\",\n      \"hi\": \"एलोवेरा का पौधा\"\n    },\n    \"displayOrder\": 780,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_lemongrass\",\n    \"label\": {\n      \"en\": \"Lemongrass Slip\",\n      \"hi\": \"लेमनग्रास की स्लिप\"\n    },\n    \"displayOrder\": 790,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_citronella\",\n    \"label\": {\n      \"en\": \"Citronella Plant\",\n      \"hi\": \"सिट्रोनेला का पौधा\"\n    },\n    \"displayOrder\": 800,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_isabgol\",\n    \"label\": {\n      \"en\": \"Isabgol Seed\",\n      \"hi\": \"इसबगोल का बीज\"\n    },\n    \"displayOrder\": 810,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"medicinal_kalmegh\",\n    \"label\": {\n      \"en\": \"Kalmegh Seed\",\n      \"hi\": \"कालमेघ का बीज\"\n    },\n    \"displayOrder\": 820,\n    \"parentItemId\": {{item_seed__seed_type_medicinal}}\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_seed__seed_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: seed__seed_unit",
@@ -435,7 +558,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_seed_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_seed_unit', d.id);"
                 ]
               }
             }
@@ -474,7 +598,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Gram\",\n      \"hi\": \"ग्राम\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 30\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_seed__seed_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -509,7 +650,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Seed\",\n    \"hi\": \"बीज सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"seedName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Name\",\n        \"hi\": \"बीज का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"seed__seed_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"seedNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"seedName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Seed Description\",\n        \"hi\": \"बीज विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"seedBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Brand\",\n        \"hi\": \"बीज ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Variety\",\n        \"hi\": \"बीज किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Unit\",\n        \"hi\": \"बीज इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerG\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per g\",\n        \"hi\": \"प्रति ग्राम मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg\",\n        \"hi\": \"प्रति किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePer10Kg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per 10 Kg\",\n        \"hi\": \"प्रति 10 किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Seed\",\n    \"hi\": \"बीज सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"seedType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Type\",\n        \"hi\": \"बीज प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"seed__seed_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"seedName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Name\",\n        \"hi\": \"बीज का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"seed__seed_name\",\n      \"parentField\": \"seedType\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"seedType\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Seed Name\",\n        \"hi\": \"कृपया बीज का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"seedType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Seed Description\",\n        \"hi\": \"बीज विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"seedBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Brand\",\n        \"hi\": \"बीज ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Variety\",\n        \"hi\": \"बीज किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"packOf\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Pack Of\",\n        \"hi\": \"पैक में मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1,\n        \"integer\": true\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -519,7 +660,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -553,7 +695,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Seed\",\n    \"hi\": \"बीज सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"seedName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Name\",\n        \"hi\": \"बीज का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"seed__seed_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"seedNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"seedName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Seed Description\",\n        \"hi\": \"बीज विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"seedBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Brand\",\n        \"hi\": \"बीज ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Variety\",\n        \"hi\": \"बीज किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Unit\",\n        \"hi\": \"बीज इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerG\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per g\",\n        \"hi\": \"प्रति ग्राम मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg\",\n        \"hi\": \"प्रति किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePer10Kg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per 10 Kg\",\n        \"hi\": \"प्रति 10 किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Seed\",\n    \"hi\": \"बीज सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"seedType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Type\",\n        \"hi\": \"बीज प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"seed__seed_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"seedName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Seed Name\",\n        \"hi\": \"बीज का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"seed__seed_name\",\n      \"parentField\": \"seedType\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"seedType\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Seed Name\",\n        \"hi\": \"कृपया बीज का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"seedType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"seedDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Seed Description\",\n        \"hi\": \"बीज विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"seedBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Brand\",\n        \"hi\": \"बीज ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"seedVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Seed Variety\",\n        \"hi\": \"बीज किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"seed__seed_unit\"\n    },\n    {\n      \"fieldKey\": \"packOf\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Pack Of\",\n        \"hi\": \"पैक में मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1,\n        \"integer\": true\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -621,7 +763,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -662,7 +804,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -695,7 +838,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"seedName\": \"wheat\",\n    \"seedDescription\": \"Sample description\",\n    \"seedBrand\": \"Sample seedBrand\",\n    \"seedVariety\": \"Sample seedVariety\",\n    \"seedUnit\": \"gram\",\n    \"qty\": 10,\n    \"qtyMeasurement\": \"gram\",\n    \"pricePerG\": 10,\n    \"pricePerKg\": 10,\n    \"pricePer10Kg\": 10\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"seedType\": \"cereal\",\n    \"seedName\": \"cereal_paddy\",\n    \"seedDescription\": \"Sample description\",\n    \"seedBrand\": \"Sample seedBrand\",\n    \"seedVariety\": \"Sample seedVariety\",\n    \"qty\": 10,\n    \"qtyMeasurement\": \"gram\",\n    \"packOf\": 10\n  }\n}"
             }
           },
           "event": [
@@ -705,12 +848,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -722,7 +871,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -731,6 +880,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

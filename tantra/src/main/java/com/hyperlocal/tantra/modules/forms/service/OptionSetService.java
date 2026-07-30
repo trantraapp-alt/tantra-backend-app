@@ -4,7 +4,9 @@ import com.hyperlocal.tantra.modules.forms.entity.OptionItem;
 import com.hyperlocal.tantra.modules.forms.entity.OptionSet;
 import com.hyperlocal.tantra.modules.forms.repository.OptionItemRepository;
 import com.hyperlocal.tantra.modules.forms.repository.OptionSetRepository;
+import com.hyperlocal.tantra.config.CacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class OptionSetService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = {CacheConfig.FORMS, CacheConfig.OPTION_ITEMS}, allEntries = true)
     public OptionSet saveOrUpdateSet(OptionSet set) {
         if (set.getId() != null) {
             OptionSet existing = getSetById(set.getId());
@@ -58,6 +61,7 @@ public class OptionSetService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = {CacheConfig.FORMS, CacheConfig.OPTION_ITEMS}, allEntries = true)
     public OptionItem saveOrUpdateItem(Integer setId, OptionItem item) {
         getSetById(setId);
         item.setOptionSetId(setId);
@@ -77,6 +81,7 @@ public class OptionSetService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = {CacheConfig.FORMS, CacheConfig.OPTION_ITEMS}, allEntries = true)
     public List<OptionItem> bulkAddItems(Integer setId, List<OptionItem> items) {
         getSetById(setId);
         if (items == null || items.isEmpty()) {
@@ -90,6 +95,7 @@ public class OptionSetService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = {CacheConfig.FORMS, CacheConfig.OPTION_ITEMS}, allEntries = true)
     public void deleteItem(Integer itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new IllegalArgumentException("Option item not found with ID: " + itemId);

@@ -18,6 +18,10 @@ public class ModuleCategory {
     @Column(name = "module_id", nullable = false)
     private Integer moduleId;
 
+    /** Self-referencing tree: null = top-level category under the module; else a subcategory. */
+    @Column(name = "parent_id")
+    private Integer parentId;
+
     @Column(name = "category_key", nullable = false, length = 50)
     private String categoryKey;
 
@@ -29,6 +33,14 @@ public class ModuleCategory {
 
     @Column(name = "icon_url", length = 255)
     private String iconUrl;
+
+    /** What tapping this category does: "LISTING" (open the form → post a listing) or "BUSINESS_PROFILE". */
+    @Column(name = "action_type", length = 20)
+    private String actionType = "LISTING";
+
+    /** For BUSINESS_PROFILE categories: the business_profile_type to prefill (e.g. "vet_clinic"). */
+    @Column(name = "link_key", length = 60)
+    private String linkKey;
 
     @Column(name = "display_order")
     private Integer displayOrder = 0;

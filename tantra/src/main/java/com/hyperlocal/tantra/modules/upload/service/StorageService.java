@@ -12,4 +12,7 @@ public interface StorageService {
 
     /** Stores the given files and returns their public URLs, in order. */
     List<String> store(List<MultipartFile> files);
+
+    /** Deletes the stored files at the given URLs (best-effort; missing files are ignored). */
+    void delete(List<String> urls);
 }

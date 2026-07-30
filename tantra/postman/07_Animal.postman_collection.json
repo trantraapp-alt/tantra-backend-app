@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Animal",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Animal category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Animal category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -38,7 +38,7 @@
       "value": "[\"https://cdn.tantra.app/animal/a.jpg\",\"https://cdn.tantra.app/animal/b.jpg\"]"
     },
     {
-      "key": "set_animal_type",
+      "key": "set_animal_category",
       "value": ""
     },
     {
@@ -50,7 +50,15 @@
       "value": ""
     },
     {
-      "key": "set_avail",
+      "key": "set_age_unit",
+      "value": ""
+    },
+    {
+      "key": "set_purpose",
+      "value": ""
+    },
+    {
+      "key": "set_health",
       "value": ""
     }
   ],
@@ -110,7 +118,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -148,7 +156,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -188,7 +197,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -200,7 +210,7 @@
       "name": "2. Masters",
       "item": [
         {
-          "name": "Create Agriculture Module",
+          "name": "Create Animal & Livestock Module",
           "request": {
             "method": "POST",
             "header": [
@@ -223,7 +233,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"moduleKey\": \"agriculture\",\n  \"moduleNameEn\": \"Agriculture\",\n  \"moduleNameHi\": \"कृषि\"\n}"
+              "raw": "{\n  \"moduleKey\": \"animal_livestock\",\n  \"moduleNameEn\": \"Animal & Livestock\",\n  \"moduleNameHi\": \"पशु एवं पशुधन\"\n}"
             }
           }
         },
@@ -251,8 +261,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
-                  "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
+                  "var m = a.find(function(x){return x.moduleKey==='animal_livestock';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
               }
@@ -313,7 +324,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='animal';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -327,7 +339,7 @@
       "name": "3. Admin - Dropdowns",
       "item": [
         {
-          "name": "Create set: animal__animal_type",
+          "name": "Create set: animal__animal_category",
           "request": {
             "method": "POST",
             "header": [
@@ -354,7 +366,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"setKey\": \"animal__animal_type\",\n  \"name\": {\n    \"en\": \"Animal Type\",\n    \"hi\": \"पशु प्रकार\"\n  }\n}"
+              "raw": "{\n  \"setKey\": \"animal__animal_category\",\n  \"name\": {\n    \"en\": \"Animal Category\",\n    \"hi\": \"पशु श्रेणी\"\n  }\n}"
             }
           },
           "event": [
@@ -364,14 +376,15 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_animal_type', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_animal_category', d.id);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Add items: animal__animal_type",
+          "name": "Add items: animal__animal_category",
           "request": {
             "method": "POST",
             "header": [
@@ -385,7 +398,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_animal_type}}/items/bulk",
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_animal_category}}/items/bulk",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -394,16 +407,33 @@
                 "v1",
                 "admin",
                 "option-sets",
-                "{{set_animal_type}}",
+                "{{set_animal_category}}",
                 "items",
                 "bulk"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"cattle\",\n    \"label\": {\n      \"en\": \"Cattle\",\n      \"hi\": \"मवेशी\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"buffalo\",\n    \"label\": {\n      \"en\": \"Buffalo\",\n      \"hi\": \"भैंस\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"goat\",\n    \"label\": {\n      \"en\": \"Goat\",\n      \"hi\": \"बकरी\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"sheep\",\n    \"label\": {\n      \"en\": \"Sheep\",\n      \"hi\": \"भेड़\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"cattle_buffalo\",\n    \"label\": {\n      \"en\": \"Cattle & Buffalo\",\n      \"hi\": \"मवेशी एवं भैंस\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"goat_sheep\",\n    \"label\": {\n      \"en\": \"Goat & Sheep\",\n      \"hi\": \"बकरी एवं भेड़\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"equine\",\n    \"label\": {\n      \"en\": \"Equine (Horse / Donkey)\",\n      \"hi\": \"अश्व (घोड़ा / गधा)\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"other_livestock\",\n    \"label\": {\n      \"en\": \"Other Livestock\",\n      \"hi\": \"अन्य पशुधन\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__animal_category_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: animal__animal_name",
@@ -433,7 +463,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"setKey\": \"animal__animal_name\",\n  \"name\": {\n    \"en\": \"Animal Name\",\n    \"hi\": \"पशु का नाम\"\n  }\n}"
+              "raw": "{\n  \"setKey\": \"animal__animal_name\",\n  \"name\": {\n    \"en\": \"Animal\",\n    \"hi\": \"पशु\"\n  }\n}"
             }
           },
           "event": [
@@ -443,7 +473,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_animal_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_animal_name', d.id);"
                 ]
               }
             }
@@ -480,9 +511,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"cow\",\n    \"label\": {\n      \"en\": \"Cow\",\n      \"hi\": \"गाय\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"ox\",\n    \"label\": {\n      \"en\": \"Ox\",\n      \"hi\": \"बैल\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"goat\",\n    \"label\": {\n      \"en\": \"Goat\",\n      \"hi\": \"बकरी\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"sheep\",\n    \"label\": {\n      \"en\": \"Sheep\",\n      \"hi\": \"भेड़\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"cow\",\n    \"label\": {\n      \"en\": \"Cow\",\n      \"hi\": \"गाय\"\n    },\n    \"displayOrder\": 10,\n    \"parentItemId\": {{item_animal__animal_category_cattle_buffalo}}\n  },\n  {\n    \"itemKey\": \"buffalo\",\n    \"label\": {\n      \"en\": \"Buffalo\",\n      \"hi\": \"भैंस\"\n    },\n    \"displayOrder\": 20,\n    \"parentItemId\": {{item_animal__animal_category_cattle_buffalo}}\n  },\n  {\n    \"itemKey\": \"bull\",\n    \"label\": {\n      \"en\": \"Bull\",\n      \"hi\": \"सांड\"\n    },\n    \"displayOrder\": 30,\n    \"parentItemId\": {{item_animal__animal_category_cattle_buffalo}}\n  },\n  {\n    \"itemKey\": \"ox\",\n    \"label\": {\n      \"en\": \"Ox\",\n      \"hi\": \"बैल\"\n    },\n    \"displayOrder\": 40,\n    \"parentItemId\": {{item_animal__animal_category_cattle_buffalo}}\n  },\n  {\n    \"itemKey\": \"calf\",\n    \"label\": {\n      \"en\": \"Calf\",\n      \"hi\": \"बछड़ा\"\n    },\n    \"displayOrder\": 50,\n    \"parentItemId\": {{item_animal__animal_category_cattle_buffalo}}\n  },\n  {\n    \"itemKey\": \"goat\",\n    \"label\": {\n      \"en\": \"Goat\",\n      \"hi\": \"बकरी\"\n    },\n    \"displayOrder\": 60,\n    \"parentItemId\": {{item_animal__animal_category_goat_sheep}}\n  },\n  {\n    \"itemKey\": \"sheep\",\n    \"label\": {\n      \"en\": \"Sheep\",\n      \"hi\": \"भेड़\"\n    },\n    \"displayOrder\": 70,\n    \"parentItemId\": {{item_animal__animal_category_goat_sheep}}\n  },\n  {\n    \"itemKey\": \"ram\",\n    \"label\": {\n      \"en\": \"Ram\",\n      \"hi\": \"मेढ़ा\"\n    },\n    \"displayOrder\": 80,\n    \"parentItemId\": {{item_animal__animal_category_goat_sheep}}\n  },\n  {\n    \"itemKey\": \"horse\",\n    \"label\": {\n      \"en\": \"Horse\",\n      \"hi\": \"घोड़ा\"\n    },\n    \"displayOrder\": 90,\n    \"parentItemId\": {{item_animal__animal_category_equine}}\n  },\n  {\n    \"itemKey\": \"donkey\",\n    \"label\": {\n      \"en\": \"Donkey\",\n      \"hi\": \"गधा\"\n    },\n    \"displayOrder\": 100,\n    \"parentItemId\": {{item_animal__animal_category_equine}}\n  },\n  {\n    \"itemKey\": \"mule\",\n    \"label\": {\n      \"en\": \"Mule\",\n      \"hi\": \"खच्चर\"\n    },\n    \"displayOrder\": 110,\n    \"parentItemId\": {{item_animal__animal_category_equine}}\n  },\n  {\n    \"itemKey\": \"pony\",\n    \"label\": {\n      \"en\": \"Pony\",\n      \"hi\": \"टट्टू\"\n    },\n    \"displayOrder\": 120,\n    \"parentItemId\": {{item_animal__animal_category_equine}}\n  },\n  {\n    \"itemKey\": \"pig\",\n    \"label\": {\n      \"en\": \"Pig\",\n      \"hi\": \"सूअर\"\n    },\n    \"displayOrder\": 130,\n    \"parentItemId\": {{item_animal__animal_category_other_livestock}}\n  },\n  {\n    \"itemKey\": \"camel\",\n    \"label\": {\n      \"en\": \"Camel\",\n      \"hi\": \"ऊंट\"\n    },\n    \"displayOrder\": 140,\n    \"parentItemId\": {{item_animal__animal_category_other_livestock}}\n  },\n  {\n    \"itemKey\": \"yak\",\n    \"label\": {\n      \"en\": \"Yak\",\n      \"hi\": \"याक\"\n    },\n    \"displayOrder\": 150,\n    \"parentItemId\": {{item_animal__animal_category_other_livestock}}\n  },\n  {\n    \"itemKey\": \"rabbit\",\n    \"label\": {\n      \"en\": \"Rabbit\",\n      \"hi\": \"खरगोश\"\n    },\n    \"displayOrder\": 160,\n    \"parentItemId\": {{item_animal__animal_category_other_livestock}}\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__animal_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: animal__gender",
@@ -522,7 +570,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_gender', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_gender', d.id);"
                 ]
               }
             }
@@ -561,10 +610,27 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"male\",\n    \"label\": {\n      \"en\": \"Male\",\n      \"hi\": \"नर\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"female\",\n    \"label\": {\n      \"en\": \"Female\",\n      \"hi\": \"मादा\"\n    },\n    \"displayOrder\": 20\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__gender_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "Create set: animal__avail",
+          "name": "Create set: animal__age_unit",
           "request": {
             "method": "POST",
             "header": [
@@ -591,7 +657,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"setKey\": \"animal__avail\",\n  \"name\": {\n    \"en\": \"Available For\",\n    \"hi\": \"उपलब्ध है\"\n  }\n}"
+              "raw": "{\n  \"setKey\": \"animal__age_unit\",\n  \"name\": {\n    \"en\": \"Age Unit\",\n    \"hi\": \"आयु इकाई\"\n  }\n}"
             }
           },
           "event": [
@@ -601,14 +667,15 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_avail', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_age_unit', d.id);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Add items: animal__avail",
+          "name": "Add items: animal__age_unit",
           "request": {
             "method": "POST",
             "header": [
@@ -622,7 +689,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_avail}}/items/bulk",
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_age_unit}}/items/bulk",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -631,16 +698,227 @@
                 "v1",
                 "admin",
                 "option-sets",
-                "{{set_avail}}",
+                "{{set_age_unit}}",
                 "items",
                 "bulk"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"rent\",\n    \"label\": {\n      \"en\": \"Rent\",\n      \"hi\": \"किराया\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"sell\",\n    \"label\": {\n      \"en\": \"Sell\",\n      \"hi\": \"बिक्री\"\n    },\n    \"displayOrder\": 20\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"months\",\n    \"label\": {\n      \"en\": \"Months\",\n      \"hi\": \"महीने\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"years\",\n    \"label\": {\n      \"en\": \"Years\",\n      \"hi\": \"वर्ष\"\n    },\n    \"displayOrder\": 20\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__age_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create set: animal__purpose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"animal__purpose\",\n  \"name\": {\n    \"en\": \"Purpose\",\n    \"hi\": \"उद्देश्य\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_purpose', d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: animal__purpose",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_purpose}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_purpose}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"dairy\",\n    \"label\": {\n      \"en\": \"Dairy / Milk\",\n      \"hi\": \"डेयरी / दूध\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"meat\",\n    \"label\": {\n      \"en\": \"Meat\",\n      \"hi\": \"मांस\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"breeding\",\n    \"label\": {\n      \"en\": \"Breeding\",\n      \"hi\": \"प्रजनन\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"draught\",\n    \"label\": {\n      \"en\": \"Draught / Farm Work\",\n      \"hi\": \"जुताई / खेती कार्य\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"pet\",\n    \"label\": {\n      \"en\": \"Pet\",\n      \"hi\": \"पालतू\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__purpose_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create set: animal__health",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"animal__health\",\n  \"name\": {\n    \"en\": \"Health Status\",\n    \"hi\": \"स्वास्थ्य स्थिति\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_health', d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: animal__health",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_health}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_health}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"healthy\",\n    \"label\": {\n      \"en\": \"Healthy\",\n      \"hi\": \"स्वस्थ\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"vaccinated\",\n    \"label\": {\n      \"en\": \"Vaccinated\",\n      \"hi\": \"टीकाकृत\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"disease_free\",\n    \"label\": {\n      \"en\": \"Disease Free\",\n      \"hi\": \"रोग मुक्त\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"pregnant\",\n    \"label\": {\n      \"en\": \"Pregnant\",\n      \"hi\": \"गर्भवती\"\n    },\n    \"displayOrder\": 40\n  }\n]"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_animal__health_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -675,7 +953,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"BOTH\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Animal\",\n    \"hi\": \"पशु सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"animalType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Type\",\n        \"hi\": \"पशु प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"animal__animal_type\"\n    },\n    {\n      \"fieldKey\": \"animalName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Name\",\n        \"hi\": \"पशु का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"animal__animal_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"animalNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"animalName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Animal Description\",\n        \"hi\": \"पशु विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"gender\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Gender\",\n        \"hi\": \"लिंग\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"animal__gender\"\n    },\n    {\n      \"fieldKey\": \"availableFor\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Available For\",\n        \"hi\": \"उपलब्ध है\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"animal__avail\"\n    },\n    {\n      \"fieldKey\": \"rentPerHour\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Rent Per Hour (₹)\",\n        \"hi\": \"प्रति घंटा किराया (₹)\"\n      },\n      \"sectionKey\": \"rent\",\n      \"sectionTitle\": {\n        \"en\": \"Rental\",\n        \"hi\": \"किराया\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"rent\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalBreed\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Animal Breed\",\n        \"hi\": \"पशु नस्ल\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalAge\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Animal Age\",\n        \"hi\": \"पशु आयु\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Animal\",\n    \"hi\": \"पशु सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"animalCategory\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Category\",\n        \"hi\": \"पशु श्रेणी\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"animal__animal_category\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"animalName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal\",\n        \"hi\": \"पशु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"animal__animal_name\",\n      \"parentField\": \"animalCategory\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"animalCategory\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Animal\",\n        \"hi\": \"कृपया पशु का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"animalCategory\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"breed\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed\",\n        \"hi\": \"नस्ल\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"gender\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Gender\",\n        \"hi\": \"लिंग\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"animal__gender\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"animal__age_unit\"\n    },\n    {\n      \"fieldKey\": \"weight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Weight (Kg)\",\n        \"hi\": \"वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"animal__purpose\"\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"animal__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity (no. of animals)\",\n        \"hi\": \"उपलब्ध संख्या (पशुओं की संख्या)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 190,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -685,7 +963,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -719,7 +998,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"BOTH\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Animal\",\n    \"hi\": \"पशु सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"animalType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Type\",\n        \"hi\": \"पशु प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"animal__animal_type\"\n    },\n    {\n      \"fieldKey\": \"animalName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Name\",\n        \"hi\": \"पशु का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"animal__animal_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"animalNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"animalName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Animal Description\",\n        \"hi\": \"पशु विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"gender\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Gender\",\n        \"hi\": \"लिंग\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"animal__gender\"\n    },\n    {\n      \"fieldKey\": \"availableFor\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Available For\",\n        \"hi\": \"उपलब्ध है\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"animal__avail\"\n    },\n    {\n      \"fieldKey\": \"rentPerHour\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Rent Per Hour (₹)\",\n        \"hi\": \"प्रति घंटा किराया (₹)\"\n      },\n      \"sectionKey\": \"rent\",\n      \"sectionTitle\": {\n        \"en\": \"Rental\",\n        \"hi\": \"किराया\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"rent\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalBreed\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Animal Breed\",\n        \"hi\": \"पशु नस्ल\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalAge\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Animal Age\",\n        \"hi\": \"पशु आयु\"\n      },\n      \"sectionKey\": \"seller\",\n      \"sectionTitle\": {\n        \"en\": \"Seller Details\",\n        \"hi\": \"विक्रेता विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity\",\n        \"hi\": \"उपलब्ध मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"availableFor\",\n        \"operator\": \"equals\",\n        \"value\": \"sell\"\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Animal\",\n    \"hi\": \"पशु सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"animalCategory\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal Category\",\n        \"hi\": \"पशु श्रेणी\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"animal__animal_category\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"animalName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Animal\",\n        \"hi\": \"पशु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"animal__animal_name\",\n      \"parentField\": \"animalCategory\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"animalCategory\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Animal\",\n        \"hi\": \"कृपया पशु का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"animalCategory\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"animalDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Description\",\n        \"hi\": \"विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"breed\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Breed\",\n        \"hi\": \"नस्ल\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"gender\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Gender\",\n        \"hi\": \"लिंग\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"animal__gender\"\n    },\n    {\n      \"fieldKey\": \"age\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Age\",\n        \"hi\": \"आयु\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"ageUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Age Unit\",\n        \"hi\": \"आयु इकाई\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"animal__age_unit\"\n    },\n    {\n      \"fieldKey\": \"weight\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Weight (Kg)\",\n        \"hi\": \"वजन (किग्रा)\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"purpose\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Purpose\",\n        \"hi\": \"उद्देश्य\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"animal__purpose\"\n    },\n    {\n      \"fieldKey\": \"healthStatus\",\n      \"type\": \"CHECKBOX_GROUP\",\n      \"label\": {\n        \"en\": \"Health Status\",\n        \"hi\": \"स्वास्थ्य स्थिति\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"optionSetKey\": \"animal__health\",\n      \"multiple\": true\n    },\n    {\n      \"fieldKey\": \"availableQty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Available Quantity (no. of animals)\",\n        \"hi\": \"उपलब्ध संख्या (पशुओं की संख्या)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 190,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -764,7 +1043,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/categories/{{catId}}/form?listingType=BOTH",
+              "raw": "{{baseUrl}}/api/v1/categories/{{catId}}/form?listingType=SELL",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -778,7 +1057,7 @@
               "query": [
                 {
                   "key": "listingType",
-                  "value": "BOTH"
+                  "value": "SELL"
                 }
               ]
             }
@@ -787,7 +1066,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -828,7 +1107,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -861,7 +1141,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"animalType\": \"cattle\",\n    \"animalName\": \"cow\",\n    \"animalDescription\": \"Sample description\",\n    \"gender\": \"male\",\n    \"availableFor\": \"rent\",\n    \"rentPerHour\": 10,\n    \"animalBreed\": \"Sample animalBreed\",\n    \"animalAge\": 10,\n    \"availableQty\": 10\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"animalCategory\": \"cattle_buffalo\",\n    \"animalName\": \"cow\",\n    \"animalDescription\": \"Sample description\",\n    \"breed\": \"Sample breed\",\n    \"gender\": \"male\",\n    \"age\": 10,\n    \"ageUnit\": \"months\",\n    \"weight\": 10,\n    \"purpose\": \"dairy\",\n    \"healthStatus\": [\n      \"healthy\"\n    ],\n    \"availableQty\": 10\n  }\n}"
             }
           },
           "event": [
@@ -871,12 +1151,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -888,7 +1174,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -897,6 +1183,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

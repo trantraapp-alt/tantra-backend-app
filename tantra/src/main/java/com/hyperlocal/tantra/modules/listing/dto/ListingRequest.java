@@ -24,7 +24,17 @@ public class ListingRequest {
     private String unit;
     private Boolean isNegotiable;
 
+    /** Contact number entered on the listing form (default-address number or a newly typed one).
+     *  Saved only on the listing — never written back to any saved address. */
+    private String contactNumber;
+
+    /** Seller's choice: true = show the contact number to buyers directly; false (default) = hide it,
+     *  buyers must send a contact request the seller approves before the number is revealed. */
+    private Boolean showContact;
+
     private Boolean useDefaultAddress;
+    /** A saved address to snapshot into the listing (address book). Takes precedence over `address`. */
+    private String addressId;
     private Address address;
 
     private List<String> images;

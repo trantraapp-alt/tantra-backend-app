@@ -19,11 +19,32 @@ public class MessageConstants {
     public static final String LISTING_CATEGORY_REQUIRED_EN = "Error: Category is required.";
     public static final String LISTING_USER_NOT_FOUND_EN = "Error: Authenticated user not found.";
     public static final String LISTING_NOT_FOUND_EN = "Error: Listing not found.";
+    public static final String LISTING_UPDATE_SUCCESS_EN = "Listing updated successfully!";
+    public static final String LISTING_DELETE_SUCCESS_EN = "Listing deleted successfully!";
+    public static final String LISTING_NOT_OWNER_EN = "Error: You can only modify your own listing.";
     public static final String ADMIN_SAVE_SUCCESS_EN = "Saved successfully!";
     public static final String ADMIN_DELETE_SUCCESS_EN = "Deleted successfully!";
     public static final String UPLOAD_SUCCESS_EN = "Images uploaded successfully!";
     public static final String UPLOAD_EMPTY_EN = "Error: No files provided.";
     public static final String UPLOAD_INVALID_TYPE_EN = "Error: Only JPG, PNG and WEBP images are allowed.";
+    public static final String ADDRESS_CREATE_SUCCESS_EN = "Address saved successfully!";
+    public static final String ADDRESS_UPDATE_SUCCESS_EN = "Address updated successfully!";
+    public static final String ADDRESS_DELETE_SUCCESS_EN = "Address deleted successfully!";
+    public static final String ADDRESS_DEFAULT_SUCCESS_EN = "Default address updated!";
+    public static final String ADDRESS_NOT_FOUND_EN = "Error: Address not found.";
+    public static final String ADDRESS_NOT_OWNER_EN = "Error: You can only modify your own address.";
+    public static final String ADDRESS_LIMIT_REACHED_EN = "Error: You can save at most 10 addresses.";
+    public static final String BUSINESS_PROFILE_CREATE_SUCCESS_EN = "Business profile submitted for verification!";
+    public static final String BUSINESS_PROFILE_UPDATE_SUCCESS_EN = "Business profile updated — pending re-verification.";
+    public static final String BUSINESS_PROFILE_DELETE_SUCCESS_EN = "Business profile deleted successfully!";
+    public static final String BUSINESS_PROFILE_APPROVED_EN = "Business profile approved.";
+    public static final String BUSINESS_PROFILE_REJECTED_EN = "Business profile rejected.";
+    public static final String BUSINESS_PROFILE_BLOCKED_EN = "Business profile blocked.";
+    public static final String BUSINESS_PROFILE_BLOCKED_EDIT_EN = "Error: This profile has been blocked by the admin and cannot be edited.";
+    public static final String BUSINESS_PROFILE_NOT_FOUND_EN = "Error: Business profile not found.";
+    public static final String BUSINESS_PROFILE_NOT_OWNER_EN = "Error: You can only modify your own business profile.";
+    public static final String BUSINESS_PROFILE_INVALID_EN = "Error: Business name and type are required.";
+    public static final String NOTIFICATION_NOT_FOUND_EN = "Error: Notification not found.";
 
     // Hindi Messages
     public static final String SIGNUP_SUCCESS_HI = "पंजीकरण सफल! यूजर आईडी: %s";
@@ -42,11 +63,32 @@ public class MessageConstants {
     public static final String LISTING_CATEGORY_REQUIRED_HI = "त्रुटि: श्रेणी आवश्यक है।";
     public static final String LISTING_USER_NOT_FOUND_HI = "त्रुटि: प्रमाणित उपयोगकर्ता नहीं मिला।";
     public static final String LISTING_NOT_FOUND_HI = "त्रुटि: लिस्टिंग नहीं मिली।";
+    public static final String LISTING_UPDATE_SUCCESS_HI = "लिस्टिंग सफलतापूर्वक अपडेट हो गई!";
+    public static final String LISTING_DELETE_SUCCESS_HI = "लिस्टिंग सफलतापूर्वक हटा दी गई!";
+    public static final String LISTING_NOT_OWNER_HI = "त्रुटि: आप केवल अपनी लिस्टिंग ही बदल सकते हैं।";
     public static final String ADMIN_SAVE_SUCCESS_HI = "सफलतापूर्वक सहेजा गया!";
     public static final String ADMIN_DELETE_SUCCESS_HI = "सफलतापूर्वक हटाया गया!";
     public static final String UPLOAD_SUCCESS_HI = "तस्वीरें सफलतापूर्वक अपलोड हो गईं!";
     public static final String UPLOAD_EMPTY_HI = "त्रुटि: कोई फ़ाइल नहीं दी गई।";
     public static final String UPLOAD_INVALID_TYPE_HI = "त्रुटि: केवल JPG, PNG और WEBP तस्वीरें ही मान्य हैं।";
+    public static final String ADDRESS_CREATE_SUCCESS_HI = "पता सफलतापूर्वक सहेजा गया!";
+    public static final String ADDRESS_UPDATE_SUCCESS_HI = "पता सफलतापूर्वक अपडेट हो गया!";
+    public static final String ADDRESS_DELETE_SUCCESS_HI = "पता सफलतापूर्वक हटा दिया गया!";
+    public static final String ADDRESS_DEFAULT_SUCCESS_HI = "डिफ़ॉल्ट पता अपडेट हो गया!";
+    public static final String ADDRESS_NOT_FOUND_HI = "त्रुटि: पता नहीं मिला।";
+    public static final String ADDRESS_NOT_OWNER_HI = "त्रुटि: आप केवल अपना पता ही बदल सकते हैं।";
+    public static final String ADDRESS_LIMIT_REACHED_HI = "त्रुटि: आप अधिकतम 10 पते सहेज सकते हैं।";
+    public static final String BUSINESS_PROFILE_CREATE_SUCCESS_HI = "व्यवसाय प्रोफ़ाइल सत्यापन के लिए भेज दी गई!";
+    public static final String BUSINESS_PROFILE_UPDATE_SUCCESS_HI = "व्यवसाय प्रोफ़ाइल अपडेट हुई — पुनः सत्यापन लंबित।";
+    public static final String BUSINESS_PROFILE_DELETE_SUCCESS_HI = "व्यवसाय प्रोफ़ाइल सफलतापूर्वक हटाई गई!";
+    public static final String BUSINESS_PROFILE_APPROVED_HI = "व्यवसाय प्रोफ़ाइल स्वीकृत।";
+    public static final String BUSINESS_PROFILE_REJECTED_HI = "व्यवसाय प्रोफ़ाइल अस्वीकृत।";
+    public static final String BUSINESS_PROFILE_BLOCKED_HI = "व्यवसाय प्रोफ़ाइल अवरुद्ध।";
+    public static final String BUSINESS_PROFILE_BLOCKED_EDIT_HI = "त्रुटि: यह प्रोफ़ाइल एडमिन द्वारा अवरुद्ध कर दी गई है और इसे संपादित नहीं किया जा सकता।";
+    public static final String BUSINESS_PROFILE_NOT_FOUND_HI = "त्रुटि: व्यवसाय प्रोफ़ाइल नहीं मिली।";
+    public static final String BUSINESS_PROFILE_NOT_OWNER_HI = "त्रुटि: आप केवल अपनी व्यवसाय प्रोफ़ाइल ही बदल सकते हैं।";
+    public static final String BUSINESS_PROFILE_INVALID_HI = "त्रुटि: व्यवसाय का नाम और प्रकार आवश्यक हैं।";
+    public static final String NOTIFICATION_NOT_FOUND_HI = "त्रुटि: सूचना नहीं मिली।";
 
     /**
      * Resolves localized message string based on the language key preference.

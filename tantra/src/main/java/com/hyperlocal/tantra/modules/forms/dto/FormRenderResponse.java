@@ -39,6 +39,8 @@ public class FormRenderResponse {
         private boolean required;
         private boolean readOnly;
         private Integer fieldLength;
+        private boolean editableOnUpdate;
+        private boolean inlineEditable;
         private LocalizedText placeholder;
         private LocalizedText help;
         private Integer displayOrder;
@@ -46,6 +48,8 @@ public class FormRenderResponse {
         private boolean multiple;
         private boolean common;
         private String optionSetKey;
+        /** For cascading fields — the fieldKey whose selected option filters this field's options. */
+        private String parentField;
         private List<Option> options;
         private Map<String, Object> validation;
         private Map<String, Object> computed;
@@ -54,6 +58,8 @@ public class FormRenderResponse {
 
     @Data
     public static class Option {
+        /** This option item's own id — use it to match a child field's {@code parent}. */
+        private Integer id;
         private String value;
         private LocalizedText label;
         /** id of the parent option item, for cascading dropdowns (null for top-level values). */

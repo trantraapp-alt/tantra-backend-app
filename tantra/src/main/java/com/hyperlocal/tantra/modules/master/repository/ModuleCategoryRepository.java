@@ -9,4 +9,12 @@ import java.util.List;
 public interface ModuleCategoryRepository extends JpaRepository<ModuleCategory, Integer> {
     List<ModuleCategory> findByModuleIdOrderByDisplayOrderAsc(Integer moduleId);
     List<ModuleCategory> findByModuleIdAndIsActiveTrueOrderByDisplayOrderAsc(Integer moduleId); // For Mobile App Grid
+
+    // Tree: top-level categories under a module (parent is null)
+    List<ModuleCategory> findByModuleIdAndParentIdIsNullOrderByDisplayOrderAsc(Integer moduleId);
+    List<ModuleCategory> findByModuleIdAndParentIdIsNullAndIsActiveTrueOrderByDisplayOrderAsc(Integer moduleId);
+
+    // Tree: subcategories of a category
+    List<ModuleCategory> findByParentIdOrderByDisplayOrderAsc(Integer parentId);
+    List<ModuleCategory> findByParentIdAndIsActiveTrueOrderByDisplayOrderAsc(Integer parentId);
 }

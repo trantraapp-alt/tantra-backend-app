@@ -14,4 +14,7 @@ public interface FormDefinitionRepository extends JpaRepository<FormDefinition, 
 
     Optional<FormDefinition> findFirstByCategoryIdAndListingTypeAndIsActiveTrueOrderByVersionDesc(
             Integer categoryId, ListingType listingType);
+
+    Optional<FormDefinition> findFirstByFormTypeAndContextKeyAndIsActiveTrueOrderByVersionDesc(
+            String formType, String contextKey);
 }

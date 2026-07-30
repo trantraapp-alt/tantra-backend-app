@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Fertilizer",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Fertilizer category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Fertilizer category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -36,6 +36,10 @@
     {
       "key": "uploadedImages",
       "value": "[\"https://cdn.tantra.app/fertilizer/a.jpg\",\"https://cdn.tantra.app/fertilizer/b.jpg\"]"
+    },
+    {
+      "key": "set_fertilizer_category",
+      "value": ""
     },
     {
       "key": "set_fertilizer_name",
@@ -106,7 +110,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -144,7 +148,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -184,7 +189,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -247,7 +253,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
@@ -309,7 +316,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='fertilizer';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -322,6 +330,103 @@
     {
       "name": "3. Admin - Dropdowns",
       "item": [
+        {
+          "name": "Create set: fertilizer__fertilizer_category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"fertilizer__fertilizer_category\",\n  \"name\": {\n    \"en\": \"Fertilizer Category\",\n    \"hi\": \"उर्वरक श्रेणी\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fertilizer_category', d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: fertilizer__fertilizer_category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_fertilizer_category}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_fertilizer_category}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"nitrogen\",\n    \"label\": {\n      \"en\": \"Nitrogen Fertilizers\",\n      \"hi\": \"नाइट्रोजन उर्वरक\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"phosphatic\",\n    \"label\": {\n      \"en\": \"Phosphatic Fertilizers\",\n      \"hi\": \"फॉस्फेट उर्वरक\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"potassic\",\n    \"label\": {\n      \"en\": \"Potassic Fertilizers\",\n      \"hi\": \"पोटाश उर्वरक\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"npk\",\n    \"label\": {\n      \"en\": \"Complex NPK Fertilizers\",\n      \"hi\": \"मिश्रित एनपीके उर्वरक\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"micronutrient\",\n    \"label\": {\n      \"en\": \"Micronutrients\",\n      \"hi\": \"सूक्ष्म पोषक तत्व\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"organic\",\n    \"label\": {\n      \"en\": \"Organic Fertilizers\",\n      \"hi\": \"जैविक / प्राकृतिक उर्वरक\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"bio\",\n    \"label\": {\n      \"en\": \"Bio Fertilizers\",\n      \"hi\": \"जैव उर्वरक\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 80\n  }\n]"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fertilizer__fertilizer_category_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Create set: fertilizer__fertilizer_name",
           "request": {
@@ -360,7 +465,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_fertilizer_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fertilizer_name', d.id);"
                 ]
               }
             }
@@ -397,9 +503,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"urea\",\n    \"label\": {\n      \"en\": \"Urea\",\n      \"hi\": \"यूरिया\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"dap\",\n    \"label\": {\n      \"en\": \"DAP\",\n      \"hi\": \"डीएपी\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"mop\",\n    \"label\": {\n      \"en\": \"MOP (Muriate of Potash)\",\n      \"hi\": \"एमओपी\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"npk\",\n    \"label\": {\n      \"en\": \"NPK\",\n      \"hi\": \"एनपीके\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"ssp\",\n    \"label\": {\n      \"en\": \"SSP\",\n      \"hi\": \"एसएसपी\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"compost\",\n    \"label\": {\n      \"en\": \"Compost\",\n      \"hi\": \"कम्पोस्ट\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"vermicompost\",\n    \"label\": {\n      \"en\": \"Vermicompost\",\n      \"hi\": \"वर्मीकम्पोस्ट\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 80\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"urea\",\n    \"label\": {\n      \"en\": \"Urea\",\n      \"hi\": \"यूरिया\"\n    },\n    \"displayOrder\": 10,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_nitrogen}}\n  },\n  {\n    \"itemKey\": \"neem_coated_urea\",\n    \"label\": {\n      \"en\": \"Neem Coated Urea\",\n      \"hi\": \"नीम लेपित यूरिया\"\n    },\n    \"displayOrder\": 20,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_nitrogen}}\n  },\n  {\n    \"itemKey\": \"ammonium_sulphate\",\n    \"label\": {\n      \"en\": \"Ammonium Sulphate\",\n      \"hi\": \"अमोनियम सल्फेट\"\n    },\n    \"displayOrder\": 30,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_nitrogen}}\n  },\n  {\n    \"itemKey\": \"can\",\n    \"label\": {\n      \"en\": \"Calcium Ammonium Nitrate (CAN)\",\n      \"hi\": \"कैल्शियम अमोनियम नाइट्रेट\"\n    },\n    \"displayOrder\": 40,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_nitrogen}}\n  },\n  {\n    \"itemKey\": \"dap\",\n    \"label\": {\n      \"en\": \"DAP – Diammonium Phosphate\",\n      \"hi\": \"डीएपी\"\n    },\n    \"displayOrder\": 50,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_phosphatic}}\n  },\n  {\n    \"itemKey\": \"ssp\",\n    \"label\": {\n      \"en\": \"SSP – Single Super Phosphate\",\n      \"hi\": \"सिंगल सुपर फॉस्फेट\"\n    },\n    \"displayOrder\": 60,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_phosphatic}}\n  },\n  {\n    \"itemKey\": \"tsp\",\n    \"label\": {\n      \"en\": \"TSP – Triple Super Phosphate\",\n      \"hi\": \"ट्रिपल सुपर फॉस्फेट\"\n    },\n    \"displayOrder\": 70,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_phosphatic}}\n  },\n  {\n    \"itemKey\": \"mop\",\n    \"label\": {\n      \"en\": \"MOP – Muriate of Potash\",\n      \"hi\": \"म्यूरेट ऑफ पोटाश\"\n    },\n    \"displayOrder\": 80,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_potassic}}\n  },\n  {\n    \"itemKey\": \"sop\",\n    \"label\": {\n      \"en\": \"SOP – Sulphate of Potash\",\n      \"hi\": \"सल्फेट ऑफ पोटाश\"\n    },\n    \"displayOrder\": 90,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_potassic}}\n  },\n  {\n    \"itemKey\": \"npk_10_26_26\",\n    \"label\": {\n      \"en\": \"NPK 10:26:26\",\n      \"hi\": \"एनपीके 10:26:26\"\n    },\n    \"displayOrder\": 100,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_12_32_16\",\n    \"label\": {\n      \"en\": \"NPK 12:32:16\",\n      \"hi\": \"एनपीके 12:32:16\"\n    },\n    \"displayOrder\": 110,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_14_35_14\",\n    \"label\": {\n      \"en\": \"NPK 14:35:14\",\n      \"hi\": \"एनपीके 14:35:14\"\n    },\n    \"displayOrder\": 120,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_15_15_15\",\n    \"label\": {\n      \"en\": \"NPK 15:15:15\",\n      \"hi\": \"एनपीके 15:15:15\"\n    },\n    \"displayOrder\": 130,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_20_20_0_13\",\n    \"label\": {\n      \"en\": \"NPK 20:20:0:13\",\n      \"hi\": \"एनपीके 20:20:0:13\"\n    },\n    \"displayOrder\": 140,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_24_24_0\",\n    \"label\": {\n      \"en\": \"NPK 24:24:0\",\n      \"hi\": \"एनपीके 24:24:0\"\n    },\n    \"displayOrder\": 150,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_19_19_19\",\n    \"label\": {\n      \"en\": \"NPK 19:19:19 (Water Soluble)\",\n      \"hi\": \"एनपीके 19:19:19 (जल में घुलनशील)\"\n    },\n    \"displayOrder\": 160,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_28_28_0\",\n    \"label\": {\n      \"en\": \"NPK 28:28:0\",\n      \"hi\": \"एनपीके 28:28:0\"\n    },\n    \"displayOrder\": 170,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"npk_17_17_17\",\n    \"label\": {\n      \"en\": \"NPK 17:17:17\",\n      \"hi\": \"एनपीके 17:17:17\"\n    },\n    \"displayOrder\": 180,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_npk}}\n  },\n  {\n    \"itemKey\": \"zinc_sulphate\",\n    \"label\": {\n      \"en\": \"Zinc Sulphate\",\n      \"hi\": \"जिंक सल्फेट\"\n    },\n    \"displayOrder\": 190,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"boron\",\n    \"label\": {\n      \"en\": \"Boron\",\n      \"hi\": \"बोरॉन\"\n    },\n    \"displayOrder\": 200,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"magnesium_sulphate\",\n    \"label\": {\n      \"en\": \"Magnesium Sulphate\",\n      \"hi\": \"मैग्नीशियम सल्फेट\"\n    },\n    \"displayOrder\": 210,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"ferrous_sulphate\",\n    \"label\": {\n      \"en\": \"Ferrous Sulphate\",\n      \"hi\": \"फेरस सल्फेट\"\n    },\n    \"displayOrder\": 220,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"copper_sulphate\",\n    \"label\": {\n      \"en\": \"Copper Sulphate\",\n      \"hi\": \"कॉपर सल्फेट\"\n    },\n    \"displayOrder\": 230,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"manganese_sulphate\",\n    \"label\": {\n      \"en\": \"Manganese Sulphate\",\n      \"hi\": \"मैंगनीज सल्फेट\"\n    },\n    \"displayOrder\": 240,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"chelated_mix\",\n    \"label\": {\n      \"en\": \"Chelated Micronutrient Mix\",\n      \"hi\": \"चेलेटेड सूक्ष्म पोषक मिश्रण\"\n    },\n    \"displayOrder\": 250,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_micronutrient}}\n  },\n  {\n    \"itemKey\": \"vermicompost\",\n    \"label\": {\n      \"en\": \"Vermicompost\",\n      \"hi\": \"वर्मी कम्पोस्ट\"\n    },\n    \"displayOrder\": 260,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"fym\",\n    \"label\": {\n      \"en\": \"Farm Yard Manure (FYM)\",\n      \"hi\": \"गोबर की खाद\"\n    },\n    \"displayOrder\": 270,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"compost\",\n    \"label\": {\n      \"en\": \"Compost\",\n      \"hi\": \"कम्पोस्ट\"\n    },\n    \"displayOrder\": 280,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"poultry_manure\",\n    \"label\": {\n      \"en\": \"Poultry Manure\",\n      \"hi\": \"मुर्गी की खाद\"\n    },\n    \"displayOrder\": 290,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"neem_cake\",\n    \"label\": {\n      \"en\": \"Neem Cake\",\n      \"hi\": \"नीम खली\"\n    },\n    \"displayOrder\": 300,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"bone_meal\",\n    \"label\": {\n      \"en\": \"Bone Meal\",\n      \"hi\": \"हड्डी चूर्ण\"\n    },\n    \"displayOrder\": 310,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"oil_cake\",\n    \"label\": {\n      \"en\": \"Oil Cake\",\n      \"hi\": \"खली\"\n    },\n    \"displayOrder\": 320,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_organic}}\n  },\n  {\n    \"itemKey\": \"rhizobium\",\n    \"label\": {\n      \"en\": \"Rhizobium\",\n      \"hi\": \"राइजोबियम\"\n    },\n    \"displayOrder\": 330,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  },\n  {\n    \"itemKey\": \"azotobacter\",\n    \"label\": {\n      \"en\": \"Azotobacter\",\n      \"hi\": \"एज़ोटोबैक्टर\"\n    },\n    \"displayOrder\": 340,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  },\n  {\n    \"itemKey\": \"azospirillum\",\n    \"label\": {\n      \"en\": \"Azospirillum\",\n      \"hi\": \"एज़ोस्पिरिलम\"\n    },\n    \"displayOrder\": 350,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  },\n  {\n    \"itemKey\": \"psb\",\n    \"label\": {\n      \"en\": \"PSB – Phosphate Solubilizing Bacteria\",\n      \"hi\": \"फॉस्फेट घुलनशील जीवाणु\"\n    },\n    \"displayOrder\": 360,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  },\n  {\n    \"itemKey\": \"kmb\",\n    \"label\": {\n      \"en\": \"Potash Mobilizing Bacteria\",\n      \"hi\": \"पोटाश मोबिलाइजिंग बैक्टीरिया\"\n    },\n    \"displayOrder\": 370,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  },\n  {\n    \"itemKey\": \"mycorrhiza\",\n    \"label\": {\n      \"en\": \"Mycorrhiza\",\n      \"hi\": \"माइकोराइज़ा\"\n    },\n    \"displayOrder\": 380,\n    \"parentItemId\": {{item_fertilizer__fertilizer_category_bio}}\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fertilizer__fertilizer_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fertilizer__fertilizer_type",
@@ -439,7 +562,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_fertilizer_type', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fertilizer_type', d.id);"
                 ]
               }
             }
@@ -478,7 +602,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"powder\",\n    \"label\": {\n      \"en\": \"Powder\",\n      \"hi\": \"पाउडर\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"liquid\",\n    \"label\": {\n      \"en\": \"Liquid\",\n      \"hi\": \"तरल\"\n    },\n    \"displayOrder\": 20\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fertilizer__fertilizer_type_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: fertilizer__fertilizer_unit",
@@ -518,7 +659,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_fertilizer_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_fertilizer_unit', d.id);"
                 ]
               }
             }
@@ -555,9 +697,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Gram\",\n      \"hi\": \"ग्राम\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"ml\",\n    \"label\": {\n      \"en\": \"ml\",\n      \"hi\": \"मिली\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"litre\",\n    \"label\": {\n      \"en\": \"Litre\",\n      \"hi\": \"लीटर\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"ml\",\n    \"label\": {\n      \"en\": \"ml\",\n      \"hi\": \"मिली\"\n    },\n    \"displayOrder\": 10,\n    \"parentItemId\": {{item_fertilizer__fertilizer_type_liquid}}\n  },\n  {\n    \"itemKey\": \"litre\",\n    \"label\": {\n      \"en\": \"Litre\",\n      \"hi\": \"लीटर\"\n    },\n    \"displayOrder\": 20,\n    \"parentItemId\": {{item_fertilizer__fertilizer_type_liquid}}\n  },\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Gram\",\n      \"hi\": \"ग्राम\"\n    },\n    \"displayOrder\": 30,\n    \"parentItemId\": {{item_fertilizer__fertilizer_type_powder}}\n  },\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 40,\n    \"parentItemId\": {{item_fertilizer__fertilizer_type_powder}}\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 50,\n    \"parentItemId\": {{item_fertilizer__fertilizer_type_powder}}\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_fertilizer__fertilizer_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -592,7 +751,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fertilizer\",\n    \"hi\": \"उर्वरक सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fertilizerName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Name\",\n        \"hi\": \"उर्वरक का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fertilizer__fertilizer_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fertilizerNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerType\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Fertilizer Type\",\n        \"hi\": \"उर्वरक प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 30,\n      \"optionSetKey\": \"fertilizer__fertilizer_type\"\n    },\n    {\n      \"fieldKey\": \"fertilizerDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Fertilizer Description\",\n        \"hi\": \"उर्वरक विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Fertilizer Brand\",\n        \"hi\": \"उर्वरक ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qtyLiquid\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity (Litre)\",\n        \"hi\": \"मात्रा (लीटर)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerType\",\n        \"operator\": \"equals\",\n        \"value\": \"liquid\"\n      }\n    },\n    {\n      \"fieldKey\": \"qtyPowder\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity (Kg/Quintal)\",\n        \"hi\": \"मात्रा (किग्रा/क्विंटल)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerType\",\n        \"operator\": \"equals\",\n        \"value\": \"powder\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Unit\",\n        \"hi\": \"उर्वरक इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fertilizer__fertilizer_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerGml\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per g/ml\",\n        \"hi\": \"प्रति ग्राम/मिली मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKgL\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg/l\",\n        \"hi\": \"प्रति किग्रा/लीटर मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePer10Kg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per 10 Kg\",\n        \"hi\": \"प्रति 10 किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fertilizer\",\n    \"hi\": \"उर्वरक सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fertilizerCategory\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Category\",\n        \"hi\": \"उर्वरक श्रेणी\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fertilizer__fertilizer_category\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"fertilizerName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Name\",\n        \"hi\": \"उर्वरक का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"fertilizer__fertilizer_name\",\n      \"parentField\": \"fertilizerCategory\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"fertilizerCategory\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Fertilizer Name\",\n        \"hi\": \"कृपया उर्वरक का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerCategory\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Fertilizer Description\",\n        \"hi\": \"उर्वरक विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerType\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Fertilizer Type\",\n        \"hi\": \"उर्वरक प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"fertilizer__fertilizer_type\"\n    },\n    {\n      \"fieldKey\": \"fertilizerBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Fertilizer Brand\",\n        \"hi\": \"उर्वरक ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fertilizer__fertilizer_unit\",\n      \"parentField\": \"fertilizerType\"\n    },\n    {\n      \"fieldKey\": \"packOf\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Pack Of\",\n        \"hi\": \"पैक में मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1,\n        \"integer\": true\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -602,7 +761,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -636,7 +796,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fertilizer\",\n    \"hi\": \"उर्वरक सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fertilizerName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Name\",\n        \"hi\": \"उर्वरक का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fertilizer__fertilizer_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"fertilizerNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerType\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Fertilizer Type\",\n        \"hi\": \"उर्वरक प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 30,\n      \"optionSetKey\": \"fertilizer__fertilizer_type\"\n    },\n    {\n      \"fieldKey\": \"fertilizerDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Fertilizer Description\",\n        \"hi\": \"उर्वरक विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Fertilizer Brand\",\n        \"hi\": \"उर्वरक ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qtyLiquid\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity (Litre)\",\n        \"hi\": \"मात्रा (लीटर)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerType\",\n        \"operator\": \"equals\",\n        \"value\": \"liquid\"\n      }\n    },\n    {\n      \"fieldKey\": \"qtyPowder\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity (Kg/Quintal)\",\n        \"hi\": \"मात्रा (किग्रा/क्विंटल)\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 70,\n      \"validation\": {\n        \"min\": 0\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerType\",\n        \"operator\": \"equals\",\n        \"value\": \"powder\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Unit\",\n        \"hi\": \"उर्वरक इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fertilizer__fertilizer_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerGml\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per g/ml\",\n        \"hi\": \"प्रति ग्राम/मिली मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKgL\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg/l\",\n        \"hi\": \"प्रति किग्रा/लीटर मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 100,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePer10Kg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per 10 Kg\",\n        \"hi\": \"प्रति 10 किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 180,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Fertilizer\",\n    \"hi\": \"उर्वरक सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"fertilizerCategory\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Category\",\n        \"hi\": \"उर्वरक श्रेणी\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"fertilizer__fertilizer_category\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"fertilizerName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Fertilizer Name\",\n        \"hi\": \"उर्वरक का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"fertilizer__fertilizer_name\",\n      \"parentField\": \"fertilizerCategory\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"fertilizerCategory\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Fertilizer Name\",\n        \"hi\": \"कृपया उर्वरक का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"fertilizerCategory\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Fertilizer Description\",\n        \"hi\": \"उर्वरक विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"fertilizerType\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Fertilizer Type\",\n        \"hi\": \"उर्वरक प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"fertilizer__fertilizer_type\"\n    },\n    {\n      \"fieldKey\": \"fertilizerBrand\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Fertilizer Brand\",\n        \"hi\": \"उर्वरक ब्रांड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 60,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"fertilizer__fertilizer_unit\",\n      \"parentField\": \"fertilizerType\"\n    },\n    {\n      \"fieldKey\": \"packOf\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Pack Of\",\n        \"hi\": \"पैक में मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1,\n        \"integer\": true\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -704,7 +864,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -745,7 +905,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -778,7 +939,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"fertilizerName\": \"urea\",\n    \"fertilizerType\": \"powder\",\n    \"fertilizerDescription\": \"Sample description\",\n    \"fertilizerBrand\": \"Sample fertilizerBrand\",\n    \"qtyLiquid\": 10,\n    \"qtyPowder\": 10,\n    \"fertilizerUnit\": \"gram\",\n    \"pricePerGml\": 10,\n    \"pricePerKgL\": 10,\n    \"pricePer10Kg\": 10\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"fertilizerCategory\": \"nitrogen\",\n    \"fertilizerName\": \"urea\",\n    \"fertilizerDescription\": \"Sample description\",\n    \"fertilizerType\": \"powder\",\n    \"fertilizerBrand\": \"Sample fertilizerBrand\",\n    \"qty\": 10,\n    \"qtyMeasurement\": \"gram\",\n    \"packOf\": 10\n  }\n}"
             }
           },
           "event": [
@@ -788,12 +949,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -805,7 +972,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -814,6 +981,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

@@ -85,4 +85,15 @@ public class R2StorageService implements StorageService {
                         + "dependency in pom.xml, uncomment the S3 client + upload code in R2StorageService, "
                         + "and set the app.storage.r2.* properties.");
     }
+
+    @Override
+    public void delete(List<String> urls) {
+        // ===== R2 delete — enable with the S3 client (see class Javadoc). No-op until enabled. =====
+        // if (urls == null) return;
+        // for (String url : urls) {
+        //     String key = url.replaceFirst("^" + java.util.regex.Pattern.quote(publicBaseUrl) + "/?", "");
+        //     s3.deleteObject(software.amazon.awssdk.services.s3.model.DeleteObjectRequest.builder()
+        //             .bucket(bucket).key(key).build());
+        // }
+    }
 }

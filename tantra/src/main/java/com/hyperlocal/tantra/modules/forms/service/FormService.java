@@ -3,7 +3,9 @@ package com.hyperlocal.tantra.modules.forms.service;
 import com.hyperlocal.tantra.modules.forms.entity.FormDefinition;
 import com.hyperlocal.tantra.modules.forms.repository.FormDefinitionRepository;
 import com.hyperlocal.tantra.modules.master.repository.ModuleCategoryRepository;
+import com.hyperlocal.tantra.config.CacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +31,11 @@ public class FormService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = {CacheConfig.FORMS, CacheConfig.OPTION_ITEMS}, allEntries = true)
     public FormDefinition saveOrUpdate(FormDefinition form) {
-        if (form.getCategoryId() == null || !categoryRepository.existsById(form.getCategoryId())) {
-            throw new IllegalArgumentException("Cannot map form. Category ID does not exist: " + form.getCategoryId());
+        // Listing forms must map to an existing category; non-listing forms (business profile) don't.
+        if (form.getCategoryId() != null && !categoryRepository.existsById(form.getCategoryId())) {
+            throw new IllegalArgumentException("Category ID does not exist: " + form.getCategoryId());
         }
 
         if (form.getId() != null) {

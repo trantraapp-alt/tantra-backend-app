@@ -8,7 +8,9 @@ import com.hyperlocal.tantra.modules.forms.model.ListingType;
 import com.hyperlocal.tantra.modules.forms.repository.FormDefinitionRepository;
 import com.hyperlocal.tantra.modules.forms.repository.OptionItemRepository;
 import com.hyperlocal.tantra.modules.forms.repository.OptionSetRepository;
+import com.hyperlocal.tantra.config.CacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,11 +30,31 @@ public class FormRenderService {
     @Autowired private OptionSetRepository setRepository;
     @Autowired private OptionItemRepository itemRepository;
 
+    @Cacheable(cacheNames = CacheConfig.FORMS, key = "#categoryId + '_' + #listingType")
     public FormRenderResponse renderForCategory(Integer categoryId, ListingType listingType) {
+        // A RENT/SELL request may be served by a single shared BOTH form — fall back to it.
         FormDefinition def = formRepository
                 .findFirstByCategoryIdAndListingTypeAndIsActiveTrueOrderByVersionDesc(categoryId, listingType)
+                .or(() -> listingType != ListingType.BOTH
+                        ? formRepository.findFirstByCategoryIdAndListingTypeAndIsActiveTrueOrderByVersionDesc(
+                                categoryId, ListingType.BOTH)
+                        : java.util.Optional.empty())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "No active form for category " + categoryId + " and listing type " + listingType));
+        return buildResponse(def);
+    }
+
+    /**
+     * Renders a business-profile form: the form for the given profileType, falling back to the
+     * shared "business_profile" form when a type-specific one isn't defined.
+     */
+    @Cacheable(cacheNames = CacheConfig.FORMS, key = "'BP_' + #profileType")
+    public FormRenderResponse renderBusinessProfileForm(String profileType) {
+        FormDefinition def = formRepository
+                .findFirstByFormTypeAndContextKeyAndIsActiveTrueOrderByVersionDesc("BUSINESS_PROFILE", profileType)
+                .or(() -> formRepository.findFirstByFormTypeAndContextKeyAndIsActiveTrueOrderByVersionDesc(
+                        "BUSINESS_PROFILE", "business_profile"))
+                .orElseThrow(() -> new IllegalArgumentException("No active business-profile form configured"));
         return buildResponse(def);
     }
 
@@ -74,6 +96,8 @@ public class FormRenderService {
         rf.setRequired(Boolean.TRUE.equals(field.getRequired()));
         rf.setReadOnly(Boolean.TRUE.equals(field.getReadOnly()));
         rf.setFieldLength(field.getFieldLength());
+        rf.setEditableOnUpdate(!Boolean.FALSE.equals(field.getEditableOnUpdate()));
+        rf.setInlineEditable(Boolean.TRUE.equals(field.getInlineEditable()));
         rf.setPlaceholder(field.getPlaceholder());
         rf.setHelp(field.getHelp());
         rf.setDisplayOrder(field.getDisplayOrder());
@@ -84,6 +108,7 @@ public class FormRenderService {
         rf.setComputed(field.getComputed());
         rf.setVisibleWhen(field.getVisibleWhen());
         rf.setOptionSetKey(field.getOptionSetKey());
+        rf.setParentField(field.getParentField());
 
         if (field.getOptionSetKey() != null && !field.getOptionSetKey().isBlank()) {
             setRepository.findBySetKey(field.getOptionSetKey()).ifPresent(set -> {
@@ -99,6 +124,7 @@ public class FormRenderService {
      * App endpoint for cascading dropdowns: fetch the children of a selected parent option item,
      * or the full set when no parent is given.
      */
+    @Cacheable(cacheNames = CacheConfig.OPTION_ITEMS, key = "#setKey + '_' + #parentItemId")
     public List<FormRenderResponse.Option> getItemsByKey(String setKey, Integer parentItemId) {
         var set = setRepository.findBySetKey(setKey)
                 .orElseThrow(() -> new IllegalArgumentException("Option set not found: " + setKey));
@@ -110,6 +136,7 @@ public class FormRenderService {
 
     private FormRenderResponse.Option toOption(OptionItem item) {
         FormRenderResponse.Option option = new FormRenderResponse.Option();
+        option.setId(item.getId());
         option.setValue(item.getItemKey());
         option.setLabel(item.getLabel());
         option.setParent(item.getParentItemId());

@@ -28,12 +28,21 @@ public class FormDefinition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "category_id", nullable = false)
+    /** For listing forms: the category. Null for non-listing forms (e.g. business profile). */
+    @Column(name = "category_id")
     private Integer categoryId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "listing_type", nullable = false, length = 10)
-    private ListingType listingType = ListingType.SELL;
+    @Column(name = "listing_type", length = 10)
+    private ListingType listingType;
+
+    /** "LISTING" (default) or "BUSINESS_PROFILE" — what this form drives. */
+    @Column(name = "form_type", nullable = false, length = 20)
+    private String formType = "LISTING";
+
+    /** For non-listing forms: the context (e.g. a profileType, or "business_profile" for the shared form). */
+    @Column(name = "context_key", length = 60)
+    private String contextKey;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "title", columnDefinition = "jsonb")

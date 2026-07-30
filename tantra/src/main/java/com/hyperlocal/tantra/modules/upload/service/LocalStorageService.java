@@ -71,6 +71,21 @@ public class LocalStorageService implements StorageService {
         return urls;
     }
 
+    @Override
+    public void delete(List<String> urls) {
+        if (urls == null || urls.isEmpty()) return;
+        Path root = Paths.get(uploadDir).toAbsolutePath().normalize();
+        for (String url : urls) {
+            if (url == null || url.isBlank()) continue;
+            String fileName = url.substring(url.lastIndexOf('/') + 1);
+            try {
+                Files.deleteIfExists(root.resolve(fileName));
+            } catch (IOException ignored) {
+                // best-effort; a missing/locked file shouldn't fail the whole update
+            }
+        }
+    }
+
     private String trimTrailingSlash(String value) {
         return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
     }

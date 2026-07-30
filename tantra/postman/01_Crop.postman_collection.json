@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Tantra - Agri: Crop",
-    "description": "Self-contained: masters + dropdowns + form + render + sample listing for the Crop category. Run top-to-bottom on a clean DB.",
+    "description": "Self-contained: masters + dropdowns + form + render + create + my-listings (edit/patch/delete) for the Crop category. Run top-to-bottom on a clean DB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -36,6 +36,10 @@
     {
       "key": "uploadedImages",
       "value": "[\"https://cdn.tantra.app/crop/a.jpg\",\"https://cdn.tantra.app/crop/b.jpg\"]"
+    },
+    {
+      "key": "set_crop_type",
+      "value": ""
     },
     {
       "key": "set_crop_name",
@@ -114,7 +118,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"SELLER\",\n  \"preferredLanguage\": \"HI\"\n}"
+              "raw": "{\n  \"firstName\": \"Ravi\",\n  \"lastName\": \"Kumar\",\n  \"mobileNumber\": \"9000000002\",\n  \"password\": \"Seller@123\",\n  \"appUsageRole\": \"USER\",\n  \"preferredLanguage\": \"HI\"\n}"
             }
           }
         },
@@ -152,7 +156,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('adminToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('adminToken', d.token);"
                 ]
               }
             }
@@ -192,7 +197,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.token != null) pm.collectionVariables.set('sellerToken', r.token);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.token != null) pm.collectionVariables.set('sellerToken', d.token);"
                 ]
               }
             }
@@ -255,7 +261,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var m = a.find(function(x){return x.moduleKey==='agriculture';});",
                   "if (m) pm.collectionVariables.set('moduleId', m.id);"
                 ]
@@ -317,7 +324,8 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "var a = pm.response.json();",
+                  "var r = pm.response.json();",
+                  "var a = (r && r.data) ? r.data : r;",
                   "var c = a.find(function(x){return x.categoryKey==='crop';});",
                   "if (c) pm.collectionVariables.set('catId', c.id);"
                 ]
@@ -330,6 +338,103 @@
     {
       "name": "3. Admin - Dropdowns",
       "item": [
+        {
+          "name": "Create set: crop__crop_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"setKey\": \"crop__crop_type\",\n  \"name\": {\n    \"en\": \"Crop Type\",\n    \"hi\": \"फसल प्रकार\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var r = pm.response.json();",
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_type', d.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add items: crop__crop_type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/option-sets/{{set_crop_type}}/items/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "option-sets",
+                "{{set_crop_type}}",
+                "items",
+                "bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"itemKey\": \"cereal\",\n    \"label\": {\n      \"en\": \"Cereal\",\n      \"hi\": \"अनाज\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"pulse\",\n    \"label\": {\n      \"en\": \"Pulse\",\n      \"hi\": \"दलहन\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"oilseed\",\n    \"label\": {\n      \"en\": \"Oilseed\",\n      \"hi\": \"तिलहन\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"spice\",\n    \"label\": {\n      \"en\": \"Spice\",\n      \"hi\": \"मसाले\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"medicinal\",\n    \"label\": {\n      \"en\": \"Medicinal\",\n      \"hi\": \"औषधीय फसलें\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 60\n  }\n]"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_type_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Create set: crop__crop_name",
           "request": {
@@ -368,7 +473,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_crop_name', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_name', d.id);"
                 ]
               }
             }
@@ -405,9 +511,26 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "[\n  {\n    \"itemKey\": \"wheat\",\n    \"label\": {\n      \"en\": \"Wheat\",\n      \"hi\": \"गेहूं\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"rice\",\n    \"label\": {\n      \"en\": \"Rice\",\n      \"hi\": \"चावल\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"maize\",\n    \"label\": {\n      \"en\": \"Maize\",\n      \"hi\": \"मक्का\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"sugarcane\",\n    \"label\": {\n      \"en\": \"Sugarcane\",\n      \"hi\": \"गन्ना\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"__other__\",\n    \"label\": {\n      \"en\": \"Other\",\n      \"hi\": \"अन्य\"\n    },\n    \"displayOrder\": 50\n  }\n]"
+              "raw": "[\n  {\n    \"itemKey\": \"paddy\",\n    \"label\": {\n      \"en\": \"Rice\",\n      \"hi\": \"धान\"\n    },\n    \"displayOrder\": 10,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"wheat\",\n    \"label\": {\n      \"en\": \"Wheat\",\n      \"hi\": \"गेहूं\"\n    },\n    \"displayOrder\": 20,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"maize\",\n    \"label\": {\n      \"en\": \"Maize / Corn\",\n      \"hi\": \"मक्का\"\n    },\n    \"displayOrder\": 30,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"jowar\",\n    \"label\": {\n      \"en\": \"Sorghum\",\n      \"hi\": \"ज्वार\"\n    },\n    \"displayOrder\": 40,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"bajra\",\n    \"label\": {\n      \"en\": \"Pearl Millet\",\n      \"hi\": \"बाजरा\"\n    },\n    \"displayOrder\": 50,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"ragi\",\n    \"label\": {\n      \"en\": \"Finger Millet\",\n      \"hi\": \"रागी / मड़ुआ\"\n    },\n    \"displayOrder\": 60,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"barley\",\n    \"label\": {\n      \"en\": \"Barley\",\n      \"hi\": \"जौ\"\n    },\n    \"displayOrder\": 70,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"kodo\",\n    \"label\": {\n      \"en\": \"Kodo Millet\",\n      \"hi\": \"कोदो\"\n    },\n    \"displayOrder\": 80,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"kutki\",\n    \"label\": {\n      \"en\": \"Little Millet\",\n      \"hi\": \"कुटकी / सामा\"\n    },\n    \"displayOrder\": 90,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"kangni\",\n    \"label\": {\n      \"en\": \"Foxtail Millet\",\n      \"hi\": \"कंगनी\"\n    },\n    \"displayOrder\": 100,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"chena\",\n    \"label\": {\n      \"en\": \"Proso Millet\",\n      \"hi\": \"चेना / प्रोसो\"\n    },\n    \"displayOrder\": 110,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"sanwa\",\n    \"label\": {\n      \"en\": \"Barnyard Millet\",\n      \"hi\": \"सांवा\"\n    },\n    \"displayOrder\": 120,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"browntop\",\n    \"label\": {\n      \"en\": \"Browntop Millet\",\n      \"hi\": \"ब्राउनटॉप बाजरा\"\n    },\n    \"displayOrder\": 130,\n    \"parentItemId\": {{item_crop__crop_type_cereal}}\n  },\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Chickpea / Bengal Gram\",\n      \"hi\": \"चना\"\n    },\n    \"displayOrder\": 140,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"arhar\",\n    \"label\": {\n      \"en\": \"Pigeon Pea\",\n      \"hi\": \"अरहर / तुअर\"\n    },\n    \"displayOrder\": 150,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"moong\",\n    \"label\": {\n      \"en\": \"Green Gram\",\n      \"hi\": \"मूंग\"\n    },\n    \"displayOrder\": 160,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"urad\",\n    \"label\": {\n      \"en\": \"Black Gram\",\n      \"hi\": \"उड़द\"\n    },\n    \"displayOrder\": 170,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"masoor\",\n    \"label\": {\n      \"en\": \"Lentil\",\n      \"hi\": \"मसूर\"\n    },\n    \"displayOrder\": 180,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"peas\",\n    \"label\": {\n      \"en\": \"Field Pea\",\n      \"hi\": \"मटर\"\n    },\n    \"displayOrder\": 190,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"rajma\",\n    \"label\": {\n      \"en\": \"Kidney Bean\",\n      \"hi\": \"राजमा\"\n    },\n    \"displayOrder\": 200,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"lobia\",\n    \"label\": {\n      \"en\": \"Cowpea\",\n      \"hi\": \"लोबिया / चवला\"\n    },\n    \"displayOrder\": 210,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"kulthi\",\n    \"label\": {\n      \"en\": \"Horse Gram\",\n      \"hi\": \"कुल्थी\"\n    },\n    \"displayOrder\": 220,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"moth\",\n    \"label\": {\n      \"en\": \"Moth Bean\",\n      \"hi\": \"मोठ\"\n    },\n    \"displayOrder\": 230,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"khesari\",\n    \"label\": {\n      \"en\": \"Grass Pea\",\n      \"hi\": \"खेसारी\"\n    },\n    \"displayOrder\": 240,\n    \"parentItemId\": {{item_crop__crop_type_pulse}}\n  },\n  {\n    \"itemKey\": \"soybean\",\n    \"label\": {\n      \"en\": \"Soybean\",\n      \"hi\": \"सोयाबीन\"\n    },\n    \"displayOrder\": 250,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"mustard\",\n    \"label\": {\n      \"en\": \"Mustard\",\n      \"hi\": \"सरसों\"\n    },\n    \"displayOrder\": 260,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"groundnut\",\n    \"label\": {\n      \"en\": \"Groundnut / Peanut\",\n      \"hi\": \"मूंगफली\"\n    },\n    \"displayOrder\": 270,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"sesame\",\n    \"label\": {\n      \"en\": \"Sesame\",\n      \"hi\": \"तिल\"\n    },\n    \"displayOrder\": 280,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"sunflower\",\n    \"label\": {\n      \"en\": \"Sunflower\",\n      \"hi\": \"सूरजमुखी\"\n    },\n    \"displayOrder\": 290,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"linseed\",\n    \"label\": {\n      \"en\": \"Linseed / Flaxseed\",\n      \"hi\": \"अलसी\"\n    },\n    \"displayOrder\": 300,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"castor\",\n    \"label\": {\n      \"en\": \"Castor\",\n      \"hi\": \"अरंडी\"\n    },\n    \"displayOrder\": 310,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"safflower\",\n    \"label\": {\n      \"en\": \"Safflower\",\n      \"hi\": \"कुसुम\"\n    },\n    \"displayOrder\": 320,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"niger\",\n    \"label\": {\n      \"en\": \"Niger Seed\",\n      \"hi\": \"नाइजर / रामतिल\"\n    },\n    \"displayOrder\": 330,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"taramira\",\n    \"label\": {\n      \"en\": \"Taramira\",\n      \"hi\": \"तारामीरा\"\n    },\n    \"displayOrder\": 340,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"coconut\",\n    \"label\": {\n      \"en\": \"Coconut\",\n      \"hi\": \"नारियल\"\n    },\n    \"displayOrder\": 350,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"oil_palm\",\n    \"label\": {\n      \"en\": \"Oil Palm\",\n      \"hi\": \"ऑयल पाम\"\n    },\n    \"displayOrder\": 360,\n    \"parentItemId\": {{item_crop__crop_type_oilseed}}\n  },\n  {\n    \"itemKey\": \"turmeric\",\n    \"label\": {\n      \"en\": \"Turmeric\",\n      \"hi\": \"हल्दी\"\n    },\n    \"displayOrder\": 370,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"ginger\",\n    \"label\": {\n      \"en\": \"Ginger\",\n      \"hi\": \"अदरक\"\n    },\n    \"displayOrder\": 380,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"garlic\",\n    \"label\": {\n      \"en\": \"Garlic\",\n      \"hi\": \"लहसुन\"\n    },\n    \"displayOrder\": 390,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"onion\",\n    \"label\": {\n      \"en\": \"Onion\",\n      \"hi\": \"प्याज\"\n    },\n    \"displayOrder\": 400,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"coriander\",\n    \"label\": {\n      \"en\": \"Coriander\",\n      \"hi\": \"धनिया\"\n    },\n    \"displayOrder\": 410,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"cumin\",\n    \"label\": {\n      \"en\": \"Cumin\",\n      \"hi\": \"जीरा\"\n    },\n    \"displayOrder\": 420,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"fennel\",\n    \"label\": {\n      \"en\": \"Fennel\",\n      \"hi\": \"सौंफ\"\n    },\n    \"displayOrder\": 430,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"fenugreek\",\n    \"label\": {\n      \"en\": \"Fenugreek\",\n      \"hi\": \"मेथी\"\n    },\n    \"displayOrder\": 440,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"ajwain\",\n    \"label\": {\n      \"en\": \"Carom / Ajwain\",\n      \"hi\": \"अजवाइन\"\n    },\n    \"displayOrder\": 450,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"black_pepper\",\n    \"label\": {\n      \"en\": \"Black Pepper\",\n      \"hi\": \"काली मिर्च\"\n    },\n    \"displayOrder\": 460,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"cardamom\",\n    \"label\": {\n      \"en\": \"Cardamom\",\n      \"hi\": \"इलायची\"\n    },\n    \"displayOrder\": 470,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"black_cardamom\",\n    \"label\": {\n      \"en\": \"Black Cardamom\",\n      \"hi\": \"बड़ी इलायची\"\n    },\n    \"displayOrder\": 480,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"clove\",\n    \"label\": {\n      \"en\": \"Clove\",\n      \"hi\": \"लौंग\"\n    },\n    \"displayOrder\": 490,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"cinnamon\",\n    \"label\": {\n      \"en\": \"Cinnamon\",\n      \"hi\": \"दालचीनी\"\n    },\n    \"displayOrder\": 500,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"bay_leaf\",\n    \"label\": {\n      \"en\": \"Bay Leaf\",\n      \"hi\": \"तेजपत्ता\"\n    },\n    \"displayOrder\": 510,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"nutmeg\",\n    \"label\": {\n      \"en\": \"Nutmeg\",\n      \"hi\": \"जायफल\"\n    },\n    \"displayOrder\": 520,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"mace\",\n    \"label\": {\n      \"en\": \"Mace\",\n      \"hi\": \"जावित्री\"\n    },\n    \"displayOrder\": 530,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"dry_chilli\",\n    \"label\": {\n      \"en\": \"Dry Chilli\",\n      \"hi\": \"लाल मिर्च\"\n    },\n    \"displayOrder\": 540,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"green_chilli\",\n    \"label\": {\n      \"en\": \"Green Chilli\",\n      \"hi\": \"हरी मिर्च\"\n    },\n    \"displayOrder\": 550,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"asafoetida\",\n    \"label\": {\n      \"en\": \"Asafoetida\",\n      \"hi\": \"हींग\"\n    },\n    \"displayOrder\": 560,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"saffron\",\n    \"label\": {\n      \"en\": \"Saffron\",\n      \"hi\": \"केसर\"\n    },\n    \"displayOrder\": 570,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"curry_leaves\",\n    \"label\": {\n      \"en\": \"Curry Leaves\",\n      \"hi\": \"करी पत्ता\"\n    },\n    \"displayOrder\": 580,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"tamarind\",\n    \"label\": {\n      \"en\": \"Tamarind\",\n      \"hi\": \"इमली\"\n    },\n    \"displayOrder\": 590,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"vanilla\",\n    \"label\": {\n      \"en\": \"Vanilla\",\n      \"hi\": \"वनीला\"\n    },\n    \"displayOrder\": 600,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"kokum\",\n    \"label\": {\n      \"en\": \"Kokum\",\n      \"hi\": \"कोकम\"\n    },\n    \"displayOrder\": 610,\n    \"parentItemId\": {{item_crop__crop_type_spice}}\n  },\n  {\n    \"itemKey\": \"ashwagandha\",\n    \"label\": {\n      \"en\": \"Ashwagandha\",\n      \"hi\": \"अश्वगंधा\"\n    },\n    \"displayOrder\": 620,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"tulsi\",\n    \"label\": {\n      \"en\": \"Holy Basil\",\n      \"hi\": \"तुलसी\"\n    },\n    \"displayOrder\": 630,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"aloe_vera\",\n    \"label\": {\n      \"en\": \"Aloe Vera\",\n      \"hi\": \"एलोवेरा\"\n    },\n    \"displayOrder\": 640,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"sarpagandha\",\n    \"label\": {\n      \"en\": \"Sarpagandha\",\n      \"hi\": \"सर्पगंधा\"\n    },\n    \"displayOrder\": 650,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"safed_musli\",\n    \"label\": {\n      \"en\": \"Safed Musli\",\n      \"hi\": \"सफेद मूसली\"\n    },\n    \"displayOrder\": 660,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"kalmegh\",\n    \"label\": {\n      \"en\": \"Kalmegh\",\n      \"hi\": \"कालमेघ\"\n    },\n    \"displayOrder\": 670,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"giloy\",\n    \"label\": {\n      \"en\": \"Giloy\",\n      \"hi\": \"गिलोय\"\n    },\n    \"displayOrder\": 680,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"shatavari\",\n    \"label\": {\n      \"en\": \"Shatavari\",\n      \"hi\": \"शतावरी\"\n    },\n    \"displayOrder\": 690,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"brahmi\",\n    \"label\": {\n      \"en\": \"Brahmi\",\n      \"hi\": \"ब्राह्मी\"\n    },\n    \"displayOrder\": 700,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"amla\",\n    \"label\": {\n      \"en\": \"Amla\",\n      \"hi\": \"आंवला\"\n    },\n    \"displayOrder\": 710,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"neem\",\n    \"label\": {\n      \"en\": \"Neem\",\n      \"hi\": \"नीम\"\n    },\n    \"displayOrder\": 720,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"licorice\",\n    \"label\": {\n      \"en\": \"Licorice\",\n      \"hi\": \"मुलेठी\"\n    },\n    \"displayOrder\": 730,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"isabgol\",\n    \"label\": {\n      \"en\": \"Isabgol / Psyllium\",\n      \"hi\": \"इसबगोल\"\n    },\n    \"displayOrder\": 740,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"bhringraj\",\n    \"label\": {\n      \"en\": \"Bhringraj\",\n      \"hi\": \"भृंगराज\"\n    },\n    \"displayOrder\": 750,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"punarnava\",\n    \"label\": {\n      \"en\": \"Punarnava\",\n      \"hi\": \"पुनर्नवा\"\n    },\n    \"displayOrder\": 760,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"vidarikand\",\n    \"label\": {\n      \"en\": \"Vidarikand\",\n      \"hi\": \"विदारीकंद\"\n    },\n    \"displayOrder\": 770,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"chirayata\",\n    \"label\": {\n      \"en\": \"Chirayata\",\n      \"hi\": \"चिरायता\"\n    },\n    \"displayOrder\": 780,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  },\n  {\n    \"itemKey\": \"gokhru\",\n    \"label\": {\n      \"en\": \"Gokhru\",\n      \"hi\": \"गोक्शुर\"\n    },\n    \"displayOrder\": 790,\n    \"parentItemId\": {{item_crop__crop_type_medicinal}}\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_name_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: crop__crop_quality",
@@ -447,7 +570,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_crop_quality', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_quality', d.id);"
                 ]
               }
             }
@@ -486,7 +610,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"A\",\n    \"label\": {\n      \"en\": \"A\",\n      \"hi\": \"ए\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"B\",\n    \"label\": {\n      \"en\": \"B\",\n      \"hi\": \"बी\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"C\",\n    \"label\": {\n      \"en\": \"C\",\n      \"hi\": \"सी\"\n    },\n    \"displayOrder\": 30\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_quality_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: crop__crop_year",
@@ -526,7 +667,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_crop_year', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_year', d.id);"
                 ]
               }
             }
@@ -565,7 +707,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"2026\",\n    \"label\": {\n      \"en\": \"2026\",\n      \"hi\": \"2026\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"2025\",\n    \"label\": {\n      \"en\": \"2025\",\n      \"hi\": \"2025\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"2024\",\n    \"label\": {\n      \"en\": \"2024\",\n      \"hi\": \"2024\"\n    },\n    \"displayOrder\": 30\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_year_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: crop__crop_month",
@@ -605,7 +764,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_crop_month', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_month', d.id);"
                 ]
               }
             }
@@ -644,7 +804,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"01\",\n    \"label\": {\n      \"en\": \"January\",\n      \"hi\": \"जनवरी\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"02\",\n    \"label\": {\n      \"en\": \"February\",\n      \"hi\": \"फरवरी\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"03\",\n    \"label\": {\n      \"en\": \"March\",\n      \"hi\": \"मार्च\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"04\",\n    \"label\": {\n      \"en\": \"April\",\n      \"hi\": \"अप्रैल\"\n    },\n    \"displayOrder\": 40\n  },\n  {\n    \"itemKey\": \"05\",\n    \"label\": {\n      \"en\": \"May\",\n      \"hi\": \"मई\"\n    },\n    \"displayOrder\": 50\n  },\n  {\n    \"itemKey\": \"06\",\n    \"label\": {\n      \"en\": \"June\",\n      \"hi\": \"जून\"\n    },\n    \"displayOrder\": 60\n  },\n  {\n    \"itemKey\": \"07\",\n    \"label\": {\n      \"en\": \"July\",\n      \"hi\": \"जुलाई\"\n    },\n    \"displayOrder\": 70\n  },\n  {\n    \"itemKey\": \"08\",\n    \"label\": {\n      \"en\": \"August\",\n      \"hi\": \"अगस्त\"\n    },\n    \"displayOrder\": 80\n  },\n  {\n    \"itemKey\": \"09\",\n    \"label\": {\n      \"en\": \"September\",\n      \"hi\": \"सितंबर\"\n    },\n    \"displayOrder\": 90\n  },\n  {\n    \"itemKey\": \"10\",\n    \"label\": {\n      \"en\": \"October\",\n      \"hi\": \"अक्टूबर\"\n    },\n    \"displayOrder\": 100\n  },\n  {\n    \"itemKey\": \"11\",\n    \"label\": {\n      \"en\": \"November\",\n      \"hi\": \"नवंबर\"\n    },\n    \"displayOrder\": 110\n  },\n  {\n    \"itemKey\": \"12\",\n    \"label\": {\n      \"en\": \"December\",\n      \"hi\": \"दिसंबर\"\n    },\n    \"displayOrder\": 120\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_month_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Create set: crop__crop_unit",
@@ -684,7 +861,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('set_crop_unit', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('set_crop_unit', d.id);"
                 ]
               }
             }
@@ -723,7 +901,24 @@
               "mode": "raw",
               "raw": "[\n  {\n    \"itemKey\": \"gram\",\n    \"label\": {\n      \"en\": \"Gram\",\n      \"hi\": \"ग्राम\"\n    },\n    \"displayOrder\": 10\n  },\n  {\n    \"itemKey\": \"kg\",\n    \"label\": {\n      \"en\": \"Kg\",\n      \"hi\": \"किग्रा\"\n    },\n    \"displayOrder\": 20\n  },\n  {\n    \"itemKey\": \"quintal\",\n    \"label\": {\n      \"en\": \"Quintal\",\n      \"hi\": \"क्विंटल\"\n    },\n    \"displayOrder\": 30\n  },\n  {\n    \"itemKey\": \"ton\",\n    \"label\": {\n      \"en\": \"Ton\",\n      \"hi\": \"टन\"\n    },\n    \"displayOrder\": 40\n  }\n]"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var res = pm.response.json();",
+                  "var body = (res && res.data) ? res.data : res;",
+                  "var payload = (body && body.data) ? body.data : body;",
+                  "var ids = (payload && payload.ids) ? payload.ids : [];",
+                  "var sent = [];",
+                  "try { sent = JSON.parse(pm.request.body.raw); } catch (e) {}",
+                  "if (Array.isArray(sent)) sent.forEach(function(it, i){ if (it && it.itemKey != null && ids[i] != null) pm.collectionVariables.set('item_crop__crop_unit_' + it.itemKey, ids[i]); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -758,7 +953,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Crop\",\n    \"hi\": \"फसल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"cropName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Name\",\n        \"hi\": \"फसल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"crop__crop_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"cropNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"cropName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Crop Variety\",\n        \"hi\": \"फसल किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"cropDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Crop Description\",\n        \"hi\": \"फसल विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"qualityGrade\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality Grade\",\n        \"hi\": \"गुणवत्ता ग्रेड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"crop__crop_quality\"\n    },\n    {\n      \"fieldKey\": \"harvestYear\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Year\",\n        \"hi\": \"फसल कटाई वर्ष\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"crop__crop_year\"\n    },\n    {\n      \"fieldKey\": \"harvestMonth\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Month\",\n        \"hi\": \"फसल कटाई माह\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"crop__crop_month\"\n    },\n    {\n      \"fieldKey\": \"cropUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Unit\",\n        \"hi\": \"फसल इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerQuintal\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Quintal\",\n        \"hi\": \"प्रति क्विंटल मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg\",\n        \"hi\": \"प्रति किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 1,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Crop\",\n    \"hi\": \"फसल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"cropType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Type\",\n        \"hi\": \"फसल प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"crop__crop_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"cropName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Name\",\n        \"hi\": \"फसल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"crop__crop_name\",\n      \"parentField\": \"cropType\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"cropType\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Crop Name\",\n        \"hi\": \"कृपया फसल का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"cropType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Crop Description\",\n        \"hi\": \"फसल विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"cropVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Crop Variety\",\n        \"hi\": \"फसल किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qualityGrade\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality Grade\",\n        \"hi\": \"गुणवत्ता ग्रेड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"crop__crop_quality\"\n    },\n    {\n      \"fieldKey\": \"harvestYear\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Year\",\n        \"hi\": \"फसल कटाई वर्ष\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"crop__crop_year\"\n    },\n    {\n      \"fieldKey\": \"harvestMonth\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Month\",\n        \"hi\": \"फसल कटाई माह\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"crop__crop_month\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           },
           "event": [
@@ -768,7 +963,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.id != null) pm.collectionVariables.set('formId', r.id);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.id != null) pm.collectionVariables.set('formId', d.id);"
                 ]
               }
             }
@@ -802,7 +998,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Crop\",\n    \"hi\": \"फसल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"cropName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Name\",\n        \"hi\": \"फसल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"crop__crop_name\",\n      \"allowOther\": true\n    },\n    {\n      \"fieldKey\": \"cropNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify\",\n        \"hi\": \"कृपया निर्दिष्ट करें\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 20,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"cropName\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Crop Variety\",\n        \"hi\": \"फसल किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"cropDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Crop Description\",\n        \"hi\": \"फसल विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"qualityGrade\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality Grade\",\n        \"hi\": \"गुणवत्ता ग्रेड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 50,\n      \"optionSetKey\": \"crop__crop_quality\"\n    },\n    {\n      \"fieldKey\": \"harvestYear\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Year\",\n        \"hi\": \"फसल कटाई वर्ष\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"crop__crop_year\"\n    },\n    {\n      \"fieldKey\": \"harvestMonth\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Month\",\n        \"hi\": \"फसल कटाई माह\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"crop__crop_month\"\n    },\n    {\n      \"fieldKey\": \"cropUnit\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Unit\",\n        \"hi\": \"फसल इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": false,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"pricePerQuintal\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Quintal\",\n        \"hi\": \"प्रति क्विंटल मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 110,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"pricePerKg\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Price per Kg\",\n        \"hi\": \"प्रति किग्रा मूल्य\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 120,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 140,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 150,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 160,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 170,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"useDefaultAddress\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Use Default Address\",\n        \"hi\": \"डिफ़ॉल्ट पते का उपयोग करें\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": false,\n      \"displayOrder\": 180,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"address\",\n      \"type\": \"ADDRESS\",\n      \"label\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"sectionKey\": \"address\",\n      \"sectionTitle\": {\n        \"en\": \"Address\",\n        \"hi\": \"पता\"\n      },\n      \"required\": true,\n      \"displayOrder\": 190,\n      \"common\": true,\n      \"visibleWhen\": {\n        \"field\": \"useDefaultAddress\",\n        \"operator\": \"equals\",\n        \"value\": false\n      }\n    }\n  ]\n}"
+              "raw": "{\n  \"id\": \"{{formId}}\",\n  \"categoryId\": \"{{catId}}\",\n  \"listingType\": \"SELL\",\n  \"version\": 2,\n  \"isActive\": true,\n  \"title\": {\n    \"en\": \"List Crop\",\n    \"hi\": \"फसल सूचीबद्ध करें\"\n  },\n  \"fields\": [\n    {\n      \"fieldKey\": \"cropType\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Type\",\n        \"hi\": \"फसल प्रकार\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 10,\n      \"optionSetKey\": \"crop__crop_type\",\n      \"editableOnUpdate\": false\n    },\n    {\n      \"fieldKey\": \"cropName\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Crop Name\",\n        \"hi\": \"फसल का नाम\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 20,\n      \"optionSetKey\": \"crop__crop_name\",\n      \"parentField\": \"cropType\",\n      \"editableOnUpdate\": false,\n      \"visibleWhen\": {\n        \"field\": \"cropType\",\n        \"operator\": \"notEquals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropNameOther\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Please Specify Crop Name\",\n        \"hi\": \"कृपया फसल का नाम बताएं\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 30,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      },\n      \"visibleWhen\": {\n        \"field\": \"cropType\",\n        \"operator\": \"equals\",\n        \"value\": \"__other__\"\n      }\n    },\n    {\n      \"fieldKey\": \"cropDescription\",\n      \"type\": \"TEXTAREA\",\n      \"label\": {\n        \"en\": \"Crop Description\",\n        \"hi\": \"फसल विवरण\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 40,\n      \"fieldLength\": 1000,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"maxLength\": 1000\n      }\n    },\n    {\n      \"fieldKey\": \"cropVariety\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Crop Variety\",\n        \"hi\": \"फसल किस्म\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 50,\n      \"fieldLength\": 80,\n      \"validation\": {\n        \"maxLength\": 80\n      }\n    },\n    {\n      \"fieldKey\": \"qualityGrade\",\n      \"type\": \"RADIO\",\n      \"label\": {\n        \"en\": \"Quality Grade\",\n        \"hi\": \"गुणवत्ता ग्रेड\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 60,\n      \"optionSetKey\": \"crop__crop_quality\"\n    },\n    {\n      \"fieldKey\": \"harvestYear\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Year\",\n        \"hi\": \"फसल कटाई वर्ष\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 70,\n      \"optionSetKey\": \"crop__crop_year\"\n    },\n    {\n      \"fieldKey\": \"harvestMonth\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Harvest Month\",\n        \"hi\": \"फसल कटाई माह\"\n      },\n      \"sectionKey\": \"details\",\n      \"sectionTitle\": {\n        \"en\": \"Details\",\n        \"hi\": \"विवरण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 80,\n      \"optionSetKey\": \"crop__crop_month\"\n    },\n    {\n      \"fieldKey\": \"qty\",\n      \"type\": \"NUMBER\",\n      \"label\": {\n        \"en\": \"Quantity\",\n        \"hi\": \"मात्रा\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 90,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 1\n      }\n    },\n    {\n      \"fieldKey\": \"qtyMeasurement\",\n      \"type\": \"DROPDOWN\",\n      \"label\": {\n        \"en\": \"Unit\",\n        \"hi\": \"इकाई\"\n      },\n      \"sectionKey\": \"quantity\",\n      \"sectionTitle\": {\n        \"en\": \"Quantity & Unit\",\n        \"hi\": \"मात्रा और इकाई\"\n      },\n      \"required\": true,\n      \"displayOrder\": 100,\n      \"optionSetKey\": \"crop__crop_unit\"\n    },\n    {\n      \"fieldKey\": \"actualPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Actual Price (₹)\",\n        \"hi\": \"वास्तविक मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 110,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"offeredPrice\",\n      \"type\": \"DECIMAL\",\n      \"label\": {\n        \"en\": \"Offered Price (₹)\",\n        \"hi\": \"प्रस्तावित मूल्य (₹)\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": true,\n      \"displayOrder\": 120,\n      \"common\": true,\n      \"inlineEditable\": true,\n      \"validation\": {\n        \"min\": 0\n      }\n    },\n    {\n      \"fieldKey\": \"discountPct\",\n      \"type\": \"AUTO_CALC\",\n      \"label\": {\n        \"en\": \"Discount %\",\n        \"hi\": \"छूट %\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 130,\n      \"common\": true,\n      \"readOnly\": true,\n      \"computed\": {\n        \"formula\": \"(actualPrice - offeredPrice) / actualPrice * 100\",\n        \"readOnly\": true\n      }\n    },\n    {\n      \"fieldKey\": \"isNegotiable\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Is Negotiable?\",\n        \"hi\": \"क्या मोल-भाव योग्य है?\"\n      },\n      \"sectionKey\": \"pricing\",\n      \"sectionTitle\": {\n        \"en\": \"Pricing\",\n        \"hi\": \"मूल्य निर्धारण\"\n      },\n      \"required\": false,\n      \"displayOrder\": 140,\n      \"common\": true\n    },\n    {\n      \"fieldKey\": \"images\",\n      \"type\": \"IMAGE\",\n      \"label\": {\n        \"en\": \"Upload Images\",\n        \"hi\": \"तस्वीरें अपलोड करें\"\n      },\n      \"sectionKey\": \"media\",\n      \"sectionTitle\": {\n        \"en\": \"Photos\",\n        \"hi\": \"तस्वीरें\"\n      },\n      \"required\": true,\n      \"displayOrder\": 150,\n      \"multiple\": true,\n      \"common\": true,\n      \"validation\": {\n        \"min\": 1,\n        \"max\": 10,\n        \"acceptedTypes\": [\n          \"jpg\",\n          \"png\",\n          \"webp\"\n        ],\n        \"sources\": [\n          \"camera\",\n          \"gallery\"\n        ],\n        \"capture\": true\n      }\n    },\n    {\n      \"fieldKey\": \"contactNumber\",\n      \"type\": \"TEXT\",\n      \"label\": {\n        \"en\": \"Contact Number\",\n        \"hi\": \"संपर्क नंबर\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": true,\n      \"displayOrder\": 160,\n      \"common\": true,\n      \"fieldLength\": 10,\n      \"validation\": {\n        \"regex\": \"^[6-9][0-9]{9}$\",\n        \"maxLength\": 10\n      }\n    },\n    {\n      \"fieldKey\": \"showContact\",\n      \"type\": \"BOOLEAN\",\n      \"label\": {\n        \"en\": \"Show my contact number & address to buyers\",\n        \"hi\": \"मेरा संपर्क नंबर और पता खरीदारों को दिखाएं\"\n      },\n      \"sectionKey\": \"contact\",\n      \"sectionTitle\": {\n        \"en\": \"Contact\",\n        \"hi\": \"संपर्क\"\n      },\n      \"required\": false,\n      \"displayOrder\": 170,\n      \"help\": {\n        \"en\": \"If off, your number and full address stay hidden — buyers must send a contact request that you approve before they are revealed.\",\n        \"hi\": \"यदि बंद है, तो आपका नंबर और पूरा पता छिपा रहेगा — खरीदार संपर्क अनुरोध भेजेंगे और आपकी स्वीकृति के बाद ही ये दिखेंगे।\"\n      },\n      \"common\": true\n    }\n  ]\n}"
             }
           }
         },
@@ -870,7 +1066,7 @@
       ]
     },
     {
-      "name": "6. App - Listing",
+      "name": "6. App - Create Listing",
       "item": [
         {
           "name": "Upload Images (select files in Body)",
@@ -911,7 +1107,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.urls && r.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(r.urls));"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.urls && d.urls.length) pm.collectionVariables.set('uploadedImages', JSON.stringify(d.urls));"
                 ]
               }
             }
@@ -944,7 +1141,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"cropName\": \"wheat\",\n    \"cropVariety\": \"Sample cropVariety\",\n    \"cropDescription\": \"Sample description\",\n    \"qualityGrade\": \"A\",\n    \"harvestYear\": \"2026\",\n    \"harvestMonth\": \"01\",\n    \"cropUnit\": \"gram\",\n    \"qty\": 10,\n    \"qtyMeasurement\": \"gram\",\n    \"pricePerQuintal\": 10,\n    \"pricePerKg\": 10\n  }\n}"
+              "raw": "{\n  \"categoryId\": \"{{catId}}\",\n  \"moduleId\": \"{{moduleId}}\",\n  \"listingType\": \"SELL\",\n  \"actualPrice\": 300,\n  \"offeredPrice\": 280,\n  \"quantity\": 10,\n  \"unit\": \"kg\",\n  \"isNegotiable\": true,\n  \"contactNumber\": \"9000000002\",\n  \"showContact\": true,\n  \"useDefaultAddress\": false,\n  \"images\": {{uploadedImages}},\n  \"address\": {\n    \"fullAddress\": \"Village Rampur\",\n    \"country\": \"IN\",\n    \"state\": \"MP\",\n    \"district\": \"Bhopal\",\n    \"city\": \"Bhopal\",\n    \"village\": \"Rampur\",\n    \"pinCode\": \"462001\",\n    \"latitude\": 23.25,\n    \"longitude\": 77.41,\n    \"mobileNumber\": \"9000000002\",\n    \"altMobileNumber\": \"9000000003\"\n  },\n  \"attributes\": {\n    \"cropType\": \"cereal\",\n    \"cropName\": \"paddy\",\n    \"cropDescription\": \"Sample description\",\n    \"cropVariety\": \"Sample cropVariety\",\n    \"qualityGrade\": \"A\",\n    \"harvestYear\": \"2026\",\n    \"harvestMonth\": \"01\",\n    \"qty\": 10,\n    \"qtyMeasurement\": \"gram\"\n  }\n}"
             }
           },
           "event": [
@@ -954,12 +1151,18 @@
                 "type": "text/javascript",
                 "exec": [
                   "var r = pm.response.json();",
-                  "if (r && r.listingId != null) pm.collectionVariables.set('listingId', r.listingId);"
+                  "var d = (r && r.data) ? r.data : r;",
+                  "if (d && d.listingId != null) pm.collectionVariables.set('listingId', d.listingId);"
                 ]
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "7. App - My Listings",
+      "item": [
         {
           "name": "Get My Listings",
           "request": {
@@ -971,7 +1174,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/listings/mine",
+              "raw": "{{baseUrl}}/api/v1/listings/mine?listingType=SELL&page=0&size=20",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -980,6 +1183,167 @@
                 "v1",
                 "listings",
                 "mine"
+              ],
+              "query": [
+                {
+                  "key": "listingType",
+                  "value": "SELL"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listings by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/{{catId}}?page=0&size=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "category",
+                "{{catId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Listing by Id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Inline Edit (price / qty)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 260,\n  \"quantity\": 30\n}"
+            }
+          }
+        },
+        {
+          "name": "Full Edit (form)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"offeredPrice\": 250,\n  \"quantity\": 40,\n  \"isNegotiable\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Listing (soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{sellerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/{{listingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "listings",
+                "{{listingId}}"
               ]
             }
           }

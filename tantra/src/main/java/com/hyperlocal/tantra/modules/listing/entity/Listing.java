@@ -29,7 +29,7 @@ public class Listing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Public, human-facing id (e.g. "TN7ABC12"), generated via IdGeneratorUtil. */
+    /** Public, opaque, 10-char type-prefixed id — LT + 8 (e.g. "LT9F3KD2P1"). */
     @Column(name = "listing_id", unique = true, nullable = false, length = 20)
     private String listingId;
 
@@ -45,6 +45,13 @@ public class Listing {
     @Enumerated(EnumType.STRING)
     @Column(name = "listing_type", nullable = false, length = 10)
     private ListingType listingType = ListingType.SELL;
+
+    /** The form definition + version this listing was created against (for deterministic edits). */
+    @Column(name = "form_id")
+    private Integer formId;
+
+    @Column(name = "form_version")
+    private Integer formVersion;
 
     @Column(name = "actual_price", precision = 12, scale = 2)
     private BigDecimal actualPrice;
@@ -64,12 +71,32 @@ public class Listing {
     @Column(name = "is_negotiable")
     private Boolean isNegotiable = false;
 
+    /** The account's mobile (auto-filled from the owner). */
     @Column(name = "user_mobile_number", length = 15)
     private String userMobileNumber;
+
+    /** Contact number the seller chose for THIS listing on the post-listing confirmation (the default
+     *  address's number or a newly typed one). Belongs to the listing only — not saved on any address. */
+    @Column(name = "contact_number", length = 15)
+    private String contactNumber;
+
+    /** true = show the contact number to buyers directly; false (default) = hide it until the buyer's
+     *  contact request is approved. Read by buyer-browse to decide reveal vs. masked + request. */
+    @Column(name = "show_contact", nullable = false)
+    private Boolean showContact = false;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "images", columnDefinition = "jsonb")
     private List<String> images = new ArrayList<>();
+
+    /**
+     * Reference to the saved address (UserAddress.addressId) this listing was created from — so the
+     * frontend can identify / highlight the source address. Null when a raw inline address was sent.
+     * The {@code address} below is an independent SNAPSHOT that stays fixed even if the saved address
+     * is later edited or deleted.
+     */
+    @Column(name = "address_id", length = 20)
+    private String addressId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "address", columnDefinition = "jsonb")

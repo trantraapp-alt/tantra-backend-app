@@ -56,6 +56,31 @@ public class MasterManagementService {
                 : categoryRepository.findByModuleIdOrderByDisplayOrderAsc(moduleId);
     }
 
+    /**
+     * Tree read. {@code parentId == null} → top-level categories under the module;
+     * else the subcategories of that parent category.
+     */
+    public List<ModuleCategory> getCategories(Integer moduleId, Integer parentId, boolean onlyActive) {
+        if (!moduleRepository.existsById(moduleId)) {
+            throw new IllegalArgumentException("Parent Module ID does not exist");
+        }
+        if (parentId == null) {
+            return onlyActive
+                    ? categoryRepository.findByModuleIdAndParentIdIsNullAndIsActiveTrueOrderByDisplayOrderAsc(moduleId)
+                    : categoryRepository.findByModuleIdAndParentIdIsNullOrderByDisplayOrderAsc(moduleId);
+        }
+        return getSubcategories(parentId, onlyActive);
+    }
+
+    public List<ModuleCategory> getSubcategories(Integer parentId, boolean onlyActive) {
+        if (!categoryRepository.existsById(parentId)) {
+            throw new IllegalArgumentException("Parent category does not exist: " + parentId);
+        }
+        return onlyActive
+                ? categoryRepository.findByParentIdAndIsActiveTrueOrderByDisplayOrderAsc(parentId)
+                : categoryRepository.findByParentIdOrderByDisplayOrderAsc(parentId);
+    }
+
     public ModuleCategory getCategoryById(Integer id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: " + id));
@@ -66,12 +91,23 @@ public class MasterManagementService {
         if (!moduleRepository.existsById(category.getModuleId())) {
             throw new IllegalArgumentException("Cannot map category. Parent Module ID does not exist.");
         }
+        // If it's a subcategory, the parent must exist and belong to the same module.
+        if (category.getParentId() != null) {
+            ModuleCategory parent = categoryRepository.findById(category.getParentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found: " + category.getParentId()));
+            if (!parent.getModuleId().equals(category.getModuleId())) {
+                throw new IllegalArgumentException("Parent category belongs to a different module.");
+            }
+        }
 
         if (category.getId() != null) {
             ModuleCategory existing = getCategoryById(category.getId());
             existing.setCategoryNameEn(category.getCategoryNameEn());
             existing.setCategoryNameHi(category.getCategoryNameHi());
+            existing.setParentId(category.getParentId());
             existing.setIconUrl(category.getIconUrl());
+            existing.setActionType(category.getActionType());
+            existing.setLinkKey(category.getLinkKey());
             existing.setDisplayOrder(category.getDisplayOrder());
             existing.setIsActive(category.getIsActive());
             return categoryRepository.save(existing);

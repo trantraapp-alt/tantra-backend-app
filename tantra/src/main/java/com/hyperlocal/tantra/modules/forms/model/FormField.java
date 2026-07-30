@@ -31,6 +31,12 @@ public class FormField {
     /** Max character length for text/textarea inputs (also mirrored in validation.maxLength). */
     private Integer fieldLength;
 
+    /** false = locked when editing a listing (core/identity field); true = editable. Default true. */
+    private Boolean editableOnUpdate = true;
+
+    /** true = editable directly in the My-Listings grid without opening the full form. Default false. */
+    private Boolean inlineEditable = false;
+
     private Integer displayOrder = 0;
 
     private LocalizedText placeholder;
@@ -38,6 +44,13 @@ public class FormField {
 
     /** For DROPDOWN/RADIO/MULTISELECT/CHECKBOX_GROUP — the reusable option set to pull values from. */
     private String optionSetKey;
+
+    /**
+     * For cascading dropdowns — the {@code fieldKey} of the field whose selected value filters this
+     * field's options (e.g. cropName has {@code parentField="cropType"}). The frontend shows only the
+     * options whose {@code parent} equals the id of the parent field's selected option.
+     */
+    private String parentField;
 
     /** When true, the frontend shows a "Please Specify" text box if the user picks the "Other" value. */
     private Boolean allowOther = false;
