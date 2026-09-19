@@ -19,5 +19,7 @@ public class ListingPatchRequest {
     private String unit;
     private Boolean isNegotiable;
     private ListingStatus status;
+    /** Toggle delivery option inline — only applied when the listing is SELL type. */
+    private Boolean deliveryAvailable;
     private Map<String, Object> attributes;
 }

@@ -1,0 +1,560 @@
+{
+  "info": {
+    "_postman_id": "tantra-home-search-subscription",
+    "name": "13_Home_Search_Subscription",
+    "description": "Home Feed, Global Search, Nearby, Browse, Contact Reveal, Business Directory, Subscription Plans (duration-based, multilingual dual-mode). Subscriptions apply to both buyers and sellers via the unified UserSubscription flow.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",    "value": "http://localhost:8080" },
+    { "key": "token",      "value": "Bearer <your-jwt-token>" },
+    { "key": "adminToken", "value": "Bearer <your-admin-jwt-token>" }
+  ],
+  "item": [
+
+    {
+      "name": "🏠 Home Feed",
+      "item": [
+        {
+          "name": "GET Home Feed (All India)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/home?lang=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","home"],
+              "query": [
+                { "key": "lang", "value": "en" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Home Feed (District Filter — Hindi)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/home?district=Pune&lang=hi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","home"],
+              "query": [
+                { "key": "district", "value": "Pune" },
+                { "key": "lang",     "value": "hi" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🔍 Search",
+      "item": [
+        {
+          "name": "Search — English Query",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/search?q=wheat&lang=en&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","search"],
+              "query": [
+                { "key": "q",    "value": "wheat" },
+                { "key": "lang", "value": "en" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search — Hindi Query",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/search?q=गेहूँ&lang=hi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","search"],
+              "query": [
+                { "key": "q",    "value": "गेहूँ" },
+                { "key": "lang", "value": "hi" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search — All Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/search?q=wheat&moduleId=1&categoryId=2&listingType=SELL&minPrice=100&maxPrice=5000&district=Pune&lat=18.5204&lng=73.8567&radius=25&sellerType=ALL&postedWithin=MONTH&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","search"],
+              "query": [
+                { "key": "q",           "value": "wheat" },
+                { "key": "moduleId",    "value": "1" },
+                { "key": "categoryId",  "value": "2" },
+                { "key": "listingType", "value": "SELL" },
+                { "key": "minPrice",    "value": "100" },
+                { "key": "maxPrice",    "value": "5000" },
+                { "key": "district",    "value": "Pune" },
+                { "key": "lat",         "value": "18.5204" },
+                { "key": "lng",         "value": "73.8567" },
+                { "key": "radius",      "value": "25" },
+                { "key": "sellerType",  "value": "ALL" },
+                { "key": "postedWithin","value": "MONTH" },
+                { "key": "page",        "value": "0" },
+                { "key": "size",        "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search — Subscribed Users Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/search?q=seed&sellerType=SUBSCRIBED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","search"],
+              "query": [
+                { "key": "q",          "value": "seed" },
+                { "key": "sellerType", "value": "SUBSCRIBED" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📍 Nearby Listings",
+      "item": [
+        {
+          "name": "GET Nearby (25 km radius)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/nearby?lat=18.5204&lng=73.8567&radius=25&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","nearby"],
+              "query": [
+                { "key": "lat",    "value": "18.5204" },
+                { "key": "lng",    "value": "73.8567" },
+                { "key": "radius", "value": "25" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Nearby — Module + Price Filter",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/nearby?lat=18.5204&lng=73.8567&radius=50&moduleId=1&listingType=SELL&minPrice=100&maxPrice=5000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","nearby"],
+              "query": [
+                { "key": "lat",         "value": "18.5204" },
+                { "key": "lng",         "value": "73.8567" },
+                { "key": "radius",      "value": "50" },
+                { "key": "moduleId",    "value": "1" },
+                { "key": "listingType", "value": "SELL" },
+                { "key": "minPrice",    "value": "100" },
+                { "key": "maxPrice",    "value": "5000" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📋 Browse with Filters",
+      "item": [
+        {
+          "name": "GET Category Browse — All Filters",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/category/1?listingType=SELL&minPrice=100&maxPrice=5000&district=Pune&lat=18.5204&lng=73.8567&radius=25&sellerType=ALL&postedWithin=MONTH&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","category","1"],
+              "query": [
+                { "key": "listingType", "value": "SELL" },
+                { "key": "minPrice",    "value": "100" },
+                { "key": "maxPrice",    "value": "5000" },
+                { "key": "district",    "value": "Pune" },
+                { "key": "lat",         "value": "18.5204" },
+                { "key": "lng",         "value": "73.8567" },
+                { "key": "radius",      "value": "25" },
+                { "key": "sellerType",  "value": "ALL" },
+                { "key": "postedWithin","value": "MONTH" },
+                { "key": "page",        "value": "0" },
+                { "key": "size",        "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Listing Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/LT3A9BKD",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","LT3A9BKD"]
+            }
+          }
+        },
+        {
+          "name": "GET Similar Listings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/LT3A9BKD/similar?limit=6",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","LT3A9BKD","similar"],
+              "query": [{ "key": "limit", "value": "6" }]
+            }
+          }
+        },
+        {
+          "name": "GET Listings by User (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/by-seller/TN3A1B2C?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","by-seller","TN3A1B2C"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "📞 Contact Reveal (OLX-style)",
+      "item": [
+        {
+          "name": "POST Reveal Contact (Authenticated — buyer or any user)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/listings/LT3A9BKD/contact",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","listings","LT3A9BKD","contact"]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "🏢 Business Profile Directory",
+      "item": [
+        {
+          "name": "GET Directory — All",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/business-profiles/directory?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","business-profiles","directory"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Directory — By Type + District",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/business-profiles/directory?profileType=seed_dealer&district=Pune&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","business-profiles","directory"],
+              "query": [
+                { "key": "profileType", "value": "seed_dealer" },
+                { "key": "district",    "value": "Pune" },
+                { "key": "page",        "value": "0" },
+                { "key": "size",        "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Directory — Nearby 25km",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/business-profiles/directory?lat=18.5204&lng=73.8567&radius=25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","business-profiles","directory"],
+              "query": [
+                { "key": "lat",    "value": "18.5204" },
+                { "key": "lng",    "value": "73.8567" },
+                { "key": "radius", "value": "25" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "⭐ Subscription Plans (Buyer & Seller — Unified)",
+      "item": [
+
+        {
+          "name": "GET All Plans — English (dual-mode)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/plans?lang=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","plans"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          }
+        },
+
+        {
+          "name": "GET All Plans — Hindi (dual-mode)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/plans?lang=hi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","plans"],
+              "query": [{ "key": "lang", "value": "hi" }]
+            }
+          }
+        },
+
+        {
+          "name": "GET My Subscription — English",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/mine?lang=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","mine"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          }
+        },
+
+        {
+          "name": "GET My Subscription — Hindi",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/mine?lang=hi",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","mine"],
+              "query": [{ "key": "lang", "value": "hi" }]
+            }
+          }
+        },
+
+        {
+          "name": "GET My Subscription History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/mine/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","mine","history"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "🔑 Admin — Subscriptions (Grant / Revoke / List)",
+      "item": [
+
+        {
+          "name": "POST Grant Subscription — BRONZE_MONTHLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"TN3A1B2C\",\n  \"planKey\": \"BRONZE_MONTHLY\",\n  \"durationDays\": 30,\n  \"paymentRef\": \"PAY_MANUAL_001\",\n  \"paymentGateway\": \"MANUAL\",\n  \"autoRenew\": false,\n  \"notes\": \"Complimentary bronze monthly plan — admin grant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions/grant",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions","grant"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Grant Subscription — SILVER_MONTHLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"TN3A1B2C\",\n  \"planKey\": \"SILVER_MONTHLY\",\n  \"durationDays\": 30,\n  \"paymentRef\": \"PAY_MANUAL_002\",\n  \"paymentGateway\": \"MANUAL\",\n  \"autoRenew\": false,\n  \"notes\": \"Complimentary silver monthly — admin grant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions/grant",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions","grant"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Grant Subscription — GOLD_QUARTERLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"TN3A1B2C\",\n  \"planKey\": \"GOLD_QUARTERLY\",\n  \"durationDays\": 90,\n  \"paymentRef\": \"PAY_MANUAL_003\",\n  \"paymentGateway\": \"MANUAL\",\n  \"autoRenew\": false,\n  \"notes\": \"Complimentary gold quarterly — admin grant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions/grant",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions","grant"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Grant Subscription — DIAMOND_YEARLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"TN3A1B2C\",\n  \"planKey\": \"DIAMOND_YEARLY\",\n  \"durationDays\": 365,\n  \"paymentRef\": \"PAY_MANUAL_004\",\n  \"paymentGateway\": \"MANUAL\",\n  \"autoRenew\": false,\n  \"notes\": \"Complimentary diamond yearly — admin grant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions/grant",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions","grant"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Revoke Subscription (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions/SB3A9BKD/revoke?reason=Policy%20violation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions","SB3A9BKD","revoke"],
+              "query": [{ "key": "reason", "value": "Policy violation" }]
+            }
+          }
+        },
+
+        {
+          "name": "GET All Subscriptions — Active (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions?status=ACTIVE&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions"],
+              "query": [
+                { "key": "status", "value": "ACTIVE" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            }
+          }
+        },
+
+        {
+          "name": "GET All Subscriptions — All Statuses (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+
+        {
+          "name": "GET All Subscriptions — Expired (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscriptions?status=EXPIRED&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscriptions"],
+              "query": [
+                { "key": "status", "value": "EXPIRED" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

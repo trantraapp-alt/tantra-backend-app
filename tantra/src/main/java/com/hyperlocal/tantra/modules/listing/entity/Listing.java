@@ -5,6 +5,7 @@ import com.hyperlocal.tantra.modules.listing.model.Address;
 import com.hyperlocal.tantra.modules.listing.model.ListingStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -15,13 +16,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Indexes added: geo (lat/lng), category+geo, module+geo, full-text search vector
+
 /**
  * A product a user has listed to sell/rent. Common, queryable data lives in typed columns while
  * category-specific answers live in the {@code attributes} jsonb — so one table serves every
  * category of every module.
  */
 @Entity
-@Table(name = "listings")
+@Table(name = "listings", indexes = {
+        @Index(name = "idx_listings_geo",          columnList = "latitude, longitude"),
+        @Index(name = "idx_listings_category_geo", columnList = "category_id, latitude, longitude"),
+        @Index(name = "idx_listings_module_geo",   columnList = "module_id, latitude, longitude"),
+        @Index(name = "idx_listings_active",       columnList = "is_active, is_deleted, created_at"),
+        @Index(name = "idx_listings_price",        columnList = "offered_price"),
+        @Index(name = "idx_listings_user",         columnList = "user_id")
+})
 @Data
 public class Listing {
 
@@ -85,6 +95,15 @@ public class Listing {
     @Column(name = "show_contact", nullable = false)
     private Boolean showContact = false;
 
+    /**
+     * true = seller is willing to deliver the item to the buyer's location.
+     * Only meaningful for SELL listings; always false on RENT listings.
+     * Shown as a "Delivery Available" badge on browse cards and listing detail.
+     */
+    @ColumnDefault("false")
+    @Column(name = "delivery_available", nullable = false)
+    private Boolean deliveryAvailable = false;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "images", columnDefinition = "jsonb")
     private List<String> images = new ArrayList<>();
@@ -123,11 +142,40 @@ public class Listing {
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
+    @ColumnDefault("0")
+    @Column(name = "contact_reveal_count", nullable = false)
+    private Long contactRevealCount = 0L;
+
+    /** Extracted from address snapshot for efficient geo queries — updated on every address change. */
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    /** Pre-computed full-text search vector (tsvector). Written only via native SQL in ListingRepository. */
+    @Column(name = "search_vector", columnDefinition = "tsvector", insertable = false, updatable = false)
+    private String searchVector;
+
     @Column(name = "created_by", length = 20)
     private String createdBy;
 
     @Column(name = "updated_by", length = 20)
     private String updatedBy;
+
+    /**
+     * true = this listing appears in the Flash Deals section.
+     * Admin or the seller (on supported plans) can flag it.
+     */
+    @Column(name = "flash_deal", nullable = false, columnDefinition = "boolean default false")
+    private Boolean flashDeal = false;
+
+    /**
+     * When the discounted price / flash deal expires.
+     * null = no expiry. After this time, discountPct is ignored on the card.
+     */
+    @Column(name = "discount_expires_at")
+    private LocalDateTime discountExpiresAt;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

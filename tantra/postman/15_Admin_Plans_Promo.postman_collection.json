@@ -1,0 +1,626 @@
+{
+  "info": {
+    "_postman_id": "tantra-admin-plans-promo",
+    "name": "15_Admin_Plans_Promo",
+    "description": "Admin CRUD for subscription plan tiers and promotional/feature cards shown on the home feed. Includes one-click seed requests for all 16 Bronze/Silver/Gold/Diamond plans.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",    "value": "http://localhost:8080" },
+    { "key": "adminToken", "value": "Bearer <your-admin-jwt-token>" },
+    { "key": "token",      "value": "Bearer <your-jwt-token>" },
+    { "key": "planId",     "value": "" },
+    { "key": "promoId",    "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "🌟 Seed — 16 Plans (Bronze / Silver / Gold / Diamond)",
+      "description": "Run each request once to seed all 16 plans. Requires ROLE_ADMIN token. Will return 400 if the plan_key already exists.",
+      "item": [
+
+        {
+          "name": "BRONZE_MONTHLY — ₹49 / 1 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"BRONZE_MONTHLY\",\n  \"name\": { \"en\": \"Bronze Monthly\", \"hi\": \"ब्रॉन्ज़ मासिक\" },\n  \"price\": 49.00,\n  \"durationMonths\": 1,\n  \"maxListings\": 5,\n  \"maxContactViews\": 10,\n  \"maxModificationsPerListing\": 1,\n  \"priorityVisibilityDays\": 7,\n  \"features\": {\n    \"en\": [\"5 Active Listings\", \"10 Contact Views / month\", \"Edit each listing 1 time\", \"7-day priority visibility\"],\n    \"hi\": [\"5 सक्रिय लिस्टिंग\", \"10 संपर्क दृश्य / माह\", \"प्रत्येक लिस्टिंग 1 बार संपादन\", \"7 दिन प्राथमिकता दृश्यता\"]\n  },\n  \"sortWeight\": 11,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#CD7F32\",\n  \"badgeLabel\": { \"en\": \"Bronze Seller\", \"hi\": \"ब्रॉन्ज़ विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "BRONZE_QUARTERLY — ₹129 / 3 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"BRONZE_QUARTERLY\",\n  \"name\": { \"en\": \"Bronze Quarterly\", \"hi\": \"ब्रॉन्ज़ त्रैमासिक\" },\n  \"price\": 129.00,\n  \"durationMonths\": 3,\n  \"maxListings\": 5,\n  \"maxContactViews\": 30,\n  \"maxModificationsPerListing\": 1,\n  \"priorityVisibilityDays\": 7,\n  \"features\": {\n    \"en\": [\"5 Active Listings\", \"30 Contact Views / quarter\", \"Edit each listing 1 time\", \"7-day priority visibility\", \"Save ₹18 vs monthly\"],\n    \"hi\": [\"5 सक्रिय लिस्टिंग\", \"30 संपर्क दृश्य / तिमाही\", \"प्रत्येक लिस्टिंग 1 बार संपादन\", \"7 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹18 बचत\"]\n  },\n  \"sortWeight\": 12,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#CD7F32\",\n  \"badgeLabel\": { \"en\": \"Bronze Seller\", \"hi\": \"ब्रॉन्ज़ विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "BRONZE_HALF_YEARLY — ₹239 / 6 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"BRONZE_HALF_YEARLY\",\n  \"name\": { \"en\": \"Bronze Half-Yearly\", \"hi\": \"ब्रॉन्ज़ छमाही\" },\n  \"price\": 239.00,\n  \"durationMonths\": 6,\n  \"maxListings\": 5,\n  \"maxContactViews\": 60,\n  \"maxModificationsPerListing\": 1,\n  \"priorityVisibilityDays\": 7,\n  \"features\": {\n    \"en\": [\"5 Active Listings\", \"60 Contact Views / 6 months\", \"Edit each listing 1 time\", \"7-day priority visibility\", \"Save ₹55 vs monthly\"],\n    \"hi\": [\"5 सक्रिय लिस्टिंग\", \"60 संपर्क दृश्य / 6 माह\", \"प्रत्येक लिस्टिंग 1 बार संपादन\", \"7 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹55 बचत\"]\n  },\n  \"sortWeight\": 13,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#CD7F32\",\n  \"badgeLabel\": { \"en\": \"Bronze Seller\", \"hi\": \"ब्रॉन्ज़ विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "BRONZE_YEARLY — ₹449 / 12 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"BRONZE_YEARLY\",\n  \"name\": { \"en\": \"Bronze Yearly\", \"hi\": \"ब्रॉन्ज़ वार्षिक\" },\n  \"price\": 449.00,\n  \"durationMonths\": 12,\n  \"maxListings\": 5,\n  \"maxContactViews\": 120,\n  \"maxModificationsPerListing\": 1,\n  \"priorityVisibilityDays\": 7,\n  \"features\": {\n    \"en\": [\"5 Active Listings\", \"120 Contact Views / year\", \"Edit each listing 1 time\", \"7-day priority visibility\", \"Save ₹139 vs monthly\"],\n    \"hi\": [\"5 सक्रिय लिस्टिंग\", \"120 संपर्क दृश्य / वर्ष\", \"प्रत्येक लिस्टिंग 1 बार संपादन\", \"7 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹139 बचत\"]\n  },\n  \"sortWeight\": 14,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#CD7F32\",\n  \"badgeLabel\": { \"en\": \"Bronze Seller\", \"hi\": \"ब्रॉन्ज़ विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "SILVER_MONTHLY — ₹99 / 1 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"SILVER_MONTHLY\",\n  \"name\": { \"en\": \"Silver Monthly\", \"hi\": \"सिल्वर मासिक\" },\n  \"price\": 99.00,\n  \"durationMonths\": 1,\n  \"maxListings\": 15,\n  \"maxContactViews\": 15,\n  \"maxModificationsPerListing\": 2,\n  \"priorityVisibilityDays\": 15,\n  \"features\": {\n    \"en\": [\"15 Active Listings\", \"15 Contact Views / month\", \"Edit each listing 2 times\", \"15-day priority visibility\"],\n    \"hi\": [\"15 सक्रिय लिस्टिंग\", \"15 संपर्क दृश्य / माह\", \"प्रत्येक लिस्टिंग 2 बार संपादन\", \"15 दिन प्राथमिकता दृश्यता\"]\n  },\n  \"sortWeight\": 21,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#C0C0C0\",\n  \"badgeLabel\": { \"en\": \"Silver Seller\", \"hi\": \"सिल्वर विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "SILVER_QUARTERLY — ₹269 / 3 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"SILVER_QUARTERLY\",\n  \"name\": { \"en\": \"Silver Quarterly\", \"hi\": \"सिल्वर त्रैमासिक\" },\n  \"price\": 269.00,\n  \"durationMonths\": 3,\n  \"maxListings\": 15,\n  \"maxContactViews\": 45,\n  \"maxModificationsPerListing\": 2,\n  \"priorityVisibilityDays\": 15,\n  \"features\": {\n    \"en\": [\"15 Active Listings\", \"45 Contact Views / quarter\", \"Edit each listing 2 times\", \"15-day priority visibility\", \"Save ₹28 vs monthly\"],\n    \"hi\": [\"15 सक्रिय लिस्टिंग\", \"45 संपर्क दृश्य / तिमाही\", \"प्रत्येक लिस्टिंग 2 बार संपादन\", \"15 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹28 बचत\"]\n  },\n  \"sortWeight\": 22,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#C0C0C0\",\n  \"badgeLabel\": { \"en\": \"Silver Seller\", \"hi\": \"सिल्वर विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "SILVER_HALF_YEARLY — ₹519 / 6 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"SILVER_HALF_YEARLY\",\n  \"name\": { \"en\": \"Silver Half-Yearly\", \"hi\": \"सिल्वर छमाही\" },\n  \"price\": 519.00,\n  \"durationMonths\": 6,\n  \"maxListings\": 15,\n  \"maxContactViews\": 90,\n  \"maxModificationsPerListing\": 2,\n  \"priorityVisibilityDays\": 15,\n  \"features\": {\n    \"en\": [\"15 Active Listings\", \"90 Contact Views / 6 months\", \"Edit each listing 2 times\", \"15-day priority visibility\", \"Save ₹75 vs monthly\"],\n    \"hi\": [\"15 सक्रिय लिस्टिंग\", \"90 संपर्क दृश्य / 6 माह\", \"प्रत्येक लिस्टिंग 2 बार संपादन\", \"15 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹75 बचत\"]\n  },\n  \"sortWeight\": 23,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#C0C0C0\",\n  \"badgeLabel\": { \"en\": \"Silver Seller\", \"hi\": \"सिल्वर विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "SILVER_YEARLY — ₹979 / 12 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"SILVER_YEARLY\",\n  \"name\": { \"en\": \"Silver Yearly\", \"hi\": \"सिल्वर वार्षिक\" },\n  \"price\": 979.00,\n  \"durationMonths\": 12,\n  \"maxListings\": 15,\n  \"maxContactViews\": 180,\n  \"maxModificationsPerListing\": 2,\n  \"priorityVisibilityDays\": 15,\n  \"features\": {\n    \"en\": [\"15 Active Listings\", \"180 Contact Views / year\", \"Edit each listing 2 times\", \"15-day priority visibility\", \"Save ₹209 vs monthly\"],\n    \"hi\": [\"15 सक्रिय लिस्टिंग\", \"180 संपर्क दृश्य / वर्ष\", \"प्रत्येक लिस्टिंग 2 बार संपादन\", \"15 दिन प्राथमिकता दृश्यता\", \"मासिक से ₹209 बचत\"]\n  },\n  \"sortWeight\": 24,\n  \"listingHighlight\": false,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 0,\n  \"highlightColor\": \"#C0C0C0\",\n  \"badgeLabel\": { \"en\": \"Silver Seller\", \"hi\": \"सिल्वर विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "GOLD_MONTHLY — ₹199 / 1 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_MONTHLY\",\n  \"name\": { \"en\": \"Gold Monthly\", \"hi\": \"गोल्ड मासिक\" },\n  \"price\": 199.00,\n  \"durationMonths\": 1,\n  \"maxListings\": 30,\n  \"maxContactViews\": 30,\n  \"maxModificationsPerListing\": 5,\n  \"priorityVisibilityDays\": 30,\n  \"features\": {\n    \"en\": [\"30 Active Listings\", \"30 Contact Views / month\", \"Edit each listing 5 times\", \"30-day priority visibility\", \"Gold badge on listings\", \"1 home feed slot\"],\n    \"hi\": [\"30 सक्रिय लिस्टिंग\", \"30 संपर्क दृश्य / माह\", \"प्रत्येक लिस्टिंग 5 बार संपादन\", \"30 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर गोल्ड बैज\", \"1 होम फ़ीड स्लॉट\"]\n  },\n  \"sortWeight\": 31,\n  \"listingHighlight\": true,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 1,\n  \"highlightColor\": \"#FFD700\",\n  \"badgeLabel\": { \"en\": \"Gold Seller\", \"hi\": \"गोल्ड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "GOLD_QUARTERLY — ₹549 / 3 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_QUARTERLY\",\n  \"name\": { \"en\": \"Gold Quarterly\", \"hi\": \"गोल्ड त्रैमासिक\" },\n  \"price\": 549.00,\n  \"durationMonths\": 3,\n  \"maxListings\": 30,\n  \"maxContactViews\": 90,\n  \"maxModificationsPerListing\": 5,\n  \"priorityVisibilityDays\": 30,\n  \"features\": {\n    \"en\": [\"30 Active Listings\", \"90 Contact Views / quarter\", \"Edit each listing 5 times\", \"30-day priority visibility\", \"Gold badge on listings\", \"1 home feed slot\", \"Save ₹48 vs monthly\"],\n    \"hi\": [\"30 सक्रिय लिस्टिंग\", \"90 संपर्क दृश्य / तिमाही\", \"प्रत्येक लिस्टिंग 5 बार संपादन\", \"30 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर गोल्ड बैज\", \"1 होम फ़ीड स्लॉट\", \"मासिक से ₹48 बचत\"]\n  },\n  \"sortWeight\": 32,\n  \"listingHighlight\": true,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 1,\n  \"highlightColor\": \"#FFD700\",\n  \"badgeLabel\": { \"en\": \"Gold Seller\", \"hi\": \"गोल्ड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "GOLD_HALF_YEARLY — ₹1049 / 6 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_HALF_YEARLY\",\n  \"name\": { \"en\": \"Gold Half-Yearly\", \"hi\": \"गोल्ड छमाही\" },\n  \"price\": 1049.00,\n  \"durationMonths\": 6,\n  \"maxListings\": 30,\n  \"maxContactViews\": 180,\n  \"maxModificationsPerListing\": 5,\n  \"priorityVisibilityDays\": 30,\n  \"features\": {\n    \"en\": [\"30 Active Listings\", \"180 Contact Views / 6 months\", \"Edit each listing 5 times\", \"30-day priority visibility\", \"Gold badge on listings\", \"1 home feed slot\", \"Save ₹145 vs monthly\"],\n    \"hi\": [\"30 सक्रिय लिस्टिंग\", \"180 संपर्क दृश्य / 6 माह\", \"प्रत्येक लिस्टिंग 5 बार संपादन\", \"30 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर गोल्ड बैज\", \"1 होम फ़ीड स्लॉट\", \"मासिक से ₹145 बचत\"]\n  },\n  \"sortWeight\": 33,\n  \"listingHighlight\": true,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 1,\n  \"highlightColor\": \"#FFD700\",\n  \"badgeLabel\": { \"en\": \"Gold Seller\", \"hi\": \"गोल्ड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "GOLD_YEARLY — ₹1999 / 12 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_YEARLY\",\n  \"name\": { \"en\": \"Gold Yearly\", \"hi\": \"गोल्ड वार्षिक\" },\n  \"price\": 1999.00,\n  \"durationMonths\": 12,\n  \"maxListings\": 30,\n  \"maxContactViews\": 360,\n  \"maxModificationsPerListing\": 5,\n  \"priorityVisibilityDays\": 30,\n  \"features\": {\n    \"en\": [\"30 Active Listings\", \"360 Contact Views / year\", \"Edit each listing 5 times\", \"30-day priority visibility\", \"Gold badge on listings\", \"1 home feed slot\", \"Save ₹389 vs monthly\"],\n    \"hi\": [\"30 सक्रिय लिस्टिंग\", \"360 संपर्क दृश्य / वर्ष\", \"प्रत्येक लिस्टिंग 5 बार संपादन\", \"30 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर गोल्ड बैज\", \"1 होम फ़ीड स्लॉट\", \"मासिक से ₹389 बचत\"]\n  },\n  \"sortWeight\": 34,\n  \"listingHighlight\": true,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 1,\n  \"highlightColor\": \"#FFD700\",\n  \"badgeLabel\": { \"en\": \"Gold Seller\", \"hi\": \"गोल्ड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "DIAMOND_MONTHLY — ₹399 / 1 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"DIAMOND_MONTHLY\",\n  \"name\": { \"en\": \"Diamond Monthly\", \"hi\": \"डायमंड मासिक\" },\n  \"price\": 399.00,\n  \"durationMonths\": 1,\n  \"maxListings\": -1,\n  \"maxContactViews\": 100,\n  \"maxModificationsPerListing\": -1,\n  \"priorityVisibilityDays\": 60,\n  \"features\": {\n    \"en\": [\"Unlimited Active Listings\", \"100 Contact Views / month\", \"Unlimited listing edits\", \"60-day priority visibility\", \"Diamond badge on listings\", \"Business profile highlight\", \"3 home feed slots\"],\n    \"hi\": [\"असीमित सक्रिय लिस्टिंग\", \"100 संपर्क दृश्य / माह\", \"असीमित लिस्टिंग संपादन\", \"60 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर डायमंड बैज\", \"बिज़नेस प्रोफ़ाइल हाइलाइट\", \"3 होम फ़ीड स्लॉट\"]\n  },\n  \"sortWeight\": 41,\n  \"listingHighlight\": true,\n  \"profileHighlight\": true,\n  \"homeFeedSlots\": 3,\n  \"highlightColor\": \"#00BFFF\",\n  \"badgeLabel\": { \"en\": \"Diamond Seller\", \"hi\": \"डायमंड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "DIAMOND_QUARTERLY — ₹1099 / 3 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"DIAMOND_QUARTERLY\",\n  \"name\": { \"en\": \"Diamond Quarterly\", \"hi\": \"डायमंड त्रैमासिक\" },\n  \"price\": 1099.00,\n  \"durationMonths\": 3,\n  \"maxListings\": -1,\n  \"maxContactViews\": 300,\n  \"maxModificationsPerListing\": -1,\n  \"priorityVisibilityDays\": 60,\n  \"features\": {\n    \"en\": [\"Unlimited Active Listings\", \"300 Contact Views / quarter\", \"Unlimited listing edits\", \"60-day priority visibility\", \"Diamond badge on listings\", \"Business profile highlight\", \"3 home feed slots\", \"Save ₹98 vs monthly\"],\n    \"hi\": [\"असीमित सक्रिय लिस्टिंग\", \"300 संपर्क दृश्य / तिमाही\", \"असीमित लिस्टिंग संपादन\", \"60 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर डायमंड बैज\", \"बिज़नेस प्रोफ़ाइल हाइलाइट\", \"3 होम फ़ीड स्लॉट\", \"मासिक से ₹98 बचत\"]\n  },\n  \"sortWeight\": 42,\n  \"listingHighlight\": true,\n  \"profileHighlight\": true,\n  \"homeFeedSlots\": 3,\n  \"highlightColor\": \"#00BFFF\",\n  \"badgeLabel\": { \"en\": \"Diamond Seller\", \"hi\": \"डायमंड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "DIAMOND_HALF_YEARLY — ₹2099 / 6 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"DIAMOND_HALF_YEARLY\",\n  \"name\": { \"en\": \"Diamond Half-Yearly\", \"hi\": \"डायमंड छमाही\" },\n  \"price\": 2099.00,\n  \"durationMonths\": 6,\n  \"maxListings\": -1,\n  \"maxContactViews\": 600,\n  \"maxModificationsPerListing\": -1,\n  \"priorityVisibilityDays\": 60,\n  \"features\": {\n    \"en\": [\"Unlimited Active Listings\", \"600 Contact Views / 6 months\", \"Unlimited listing edits\", \"60-day priority visibility\", \"Diamond badge on listings\", \"Business profile highlight\", \"3 home feed slots\", \"Save ₹295 vs monthly\"],\n    \"hi\": [\"असीमित सक्रिय लिस्टिंग\", \"600 संपर्क दृश्य / 6 माह\", \"असीमित लिस्टिंग संपादन\", \"60 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर डायमंड बैज\", \"बिज़नेस प्रोफ़ाइल हाइलाइट\", \"3 होम फ़ीड स्लॉट\", \"मासिक से ₹295 बचत\"]\n  },\n  \"sortWeight\": 43,\n  \"listingHighlight\": true,\n  \"profileHighlight\": true,\n  \"homeFeedSlots\": 3,\n  \"highlightColor\": \"#00BFFF\",\n  \"badgeLabel\": { \"en\": \"Diamond Seller\", \"hi\": \"डायमंड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "DIAMOND_YEARLY — ₹3999 / 12 mo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"DIAMOND_YEARLY\",\n  \"name\": { \"en\": \"Diamond Yearly\", \"hi\": \"डायमंड वार्षिक\" },\n  \"price\": 3999.00,\n  \"durationMonths\": 12,\n  \"maxListings\": -1,\n  \"maxContactViews\": 1200,\n  \"maxModificationsPerListing\": -1,\n  \"priorityVisibilityDays\": 60,\n  \"features\": {\n    \"en\": [\"Unlimited Active Listings\", \"1200 Contact Views / year\", \"Unlimited listing edits\", \"60-day priority visibility\", \"Diamond badge on listings\", \"Business profile highlight\", \"3 home feed slots\", \"Save ₹789 vs monthly\"],\n    \"hi\": [\"असीमित सक्रिय लिस्टिंग\", \"1200 संपर्क दृश्य / वर्ष\", \"असीमित लिस्टिंग संपादन\", \"60 दिन प्राथमिकता दृश्यता\", \"लिस्टिंग पर डायमंड बैज\", \"बिज़नेस प्रोफ़ाइल हाइलाइट\", \"3 होम फ़ीड स्लॉट\", \"मासिक से ₹789 बचत\"]\n  },\n  \"sortWeight\": 44,\n  \"listingHighlight\": true,\n  \"profileHighlight\": true,\n  \"homeFeedSlots\": 3,\n  \"highlightColor\": \"#00BFFF\",\n  \"badgeLabel\": { \"en\": \"Diamond Seller\", \"hi\": \"डायमंड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "⭐ Admin — Subscription Plans (CRUD)",
+      "item": [
+
+        {
+          "name": "GET All Plans (Admin — includes inactive)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "GET Plan by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans","{{planId}}"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Create Plan (template — all fields)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('planId', res.data.id);",
+                  "  console.log('planId saved:', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_MONTHLY\",\n  \"name\": { \"en\": \"Gold Monthly\", \"hi\": \"गोल्ड मासिक\" },\n  \"price\": 199.00,\n  \"durationMonths\": 1,\n  \"maxListings\": 30,\n  \"maxContactViews\": 30,\n  \"maxModificationsPerListing\": 5,\n  \"priorityVisibilityDays\": 30,\n  \"features\": {\n    \"en\": [\"30 Active Listings\", \"30 Contact Views / month\", \"Edit 5 times\", \"30-day priority\", \"Gold badge\"],\n    \"hi\": [\"30 लिस्टिंग\", \"30 संपर्क\", \"5 बार संपादन\", \"30 दिन प्राथमिकता\", \"गोल्ड बैज\"]\n  },\n  \"sortWeight\": 31,\n  \"listingHighlight\": true,\n  \"profileHighlight\": false,\n  \"homeFeedSlots\": 1,\n  \"highlightColor\": \"#FFD700\",\n  \"badgeLabel\": { \"en\": \"Gold Seller\", \"hi\": \"गोल्ड विक्रेता\" },\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans"]
+            }
+          }
+        },
+
+        {
+          "name": "PUT Update Plan (price / limits / badge)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 99.00,\n  \"maxContactViews\": 20,\n  \"maxModificationsPerListing\": 3,\n  \"priorityVisibilityDays\": 15,\n  \"features\": {\n    \"en\": [\"Updated feature list\"],\n    \"hi\": [\"अपडेटेड फीचर सूची\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans","{{planId}}"]
+            }
+          }
+        },
+
+        {
+          "name": "PATCH Toggle Plan Active/Inactive",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans/{{planId}}/toggle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans","{{planId}}","toggle"]
+            }
+          }
+        },
+
+        {
+          "name": "DELETE Plan (soft-delete / deactivate)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/subscription-plans/{{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","subscription-plans","{{planId}}"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "🎯 Admin — Promo / Feature Cards",
+      "item": [
+
+        {
+          "name": "GET All Promo Cards (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards"]
+            }
+          }
+        },
+
+        {
+          "name": "GET Promo Card by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards/{{promoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards","{{promoId}}"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Create Promo Card — Nationwide Banner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('promoId', res.data.id);",
+                  "  console.log('promoId saved:', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\":    { \"en\": \"Kharif Season Sale\", \"hi\": \"खरीफ सीज़न सेल\" },\n  \"subtitle\": { \"en\": \"Best prices on seeds & fertilizers\", \"hi\": \"बीज और उर्वरकों पर सर्वोत्तम कीमतें\" },\n  \"imageUrl\":     null,\n  \"bgColor\":      \"#E8F5E9\",\n  \"textColor\":    \"#1B5E20\",\n  \"ctaLabel\":     { \"en\": \"Browse Now\", \"hi\": \"अभी देखें\" },\n  \"ctaType\":      \"MODULE\",\n  \"ctaValue\":     \"1\",\n  \"displayOrder\": 1,\n  \"targetDistrict\": null,\n  \"isActive\":     true,\n  \"validFrom\":    null,\n  \"validTo\":      null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Create Promo Card — District-Targeted",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\":    { \"en\": \"Pune Farmer Connect\", \"hi\": \"पुणे किसान कनेक्ट\" },\n  \"subtitle\": { \"en\": \"Local agri events near you\", \"hi\": \"आपके पास स्थानीय कृषि कार्यक्रम\" },\n  \"imageUrl\":       null,\n  \"bgColor\":        \"#FFF8E1\",\n  \"textColor\":      \"#E65100\",\n  \"ctaLabel\":       { \"en\": \"Learn More\", \"hi\": \"अधिक जानें\" },\n  \"ctaType\":        \"EXTERNAL\",\n  \"ctaValue\":       \"https://tantra.app/events/pune\",\n  \"displayOrder\":   2,\n  \"targetDistrict\": \"Pune\",\n  \"isActive\":       true,\n  \"validFrom\":      \"2026-07-01T00:00:00\",\n  \"validTo\":        \"2026-09-30T23:59:59\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards"]
+            }
+          }
+        },
+
+        {
+          "name": "PUT Update Promo Card",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "{{adminToken}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\":    { \"en\": \"Updated Banner Title\", \"hi\": \"अपडेटेड बैनर शीर्षक\" },\n  \"bgColor\":  \"#E3F2FD\",\n  \"displayOrder\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards/{{promoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards","{{promoId}}"]
+            }
+          }
+        },
+
+        {
+          "name": "PATCH Toggle Promo Card Active/Inactive",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards/{{promoId}}/toggle",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards","{{promoId}}","toggle"]
+            }
+          }
+        },
+
+        {
+          "name": "DELETE Promo Card",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/promo-cards/{{promoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","admin","promo-cards","{{promoId}}"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "🌐 Public — Promo Cards",
+      "item": [
+
+        {
+          "name": "GET Active Promo Cards — All India",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/promo-cards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","promo-cards"]
+            }
+          }
+        },
+
+        {
+          "name": "GET Active Promo Cards — District Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/promo-cards?district=Pune",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","promo-cards"],
+              "query": [{ "key": "district", "value": "Pune" }]
+            }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

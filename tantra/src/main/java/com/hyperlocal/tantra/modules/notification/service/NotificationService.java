@@ -18,8 +18,12 @@ public class NotificationService {
 
     @Autowired private NotificationRepository notificationRepository;
     @Autowired private UserRepository userRepository;
+    @Autowired private PushNotificationService pushService;
 
-    /** Create an in-app notification for a user (by their userId). */
+    /**
+     * Save an in-app notification AND fire an FCM push to all the user's devices.
+     * Use this for all system-generated events (subscription, payment, contact reveal, etc.).
+     */
     public void push(String userId, String type, LocalizedText title, LocalizedText body,
                      String refType, String refId) {
         Notification notification = new Notification();
@@ -30,6 +34,12 @@ public class NotificationService {
         notification.setRefType(refType);
         notification.setRefId(refId);
         notificationRepository.save(notification);
+
+        // Fire FCM push (no-op in local mode; active when app.fcm.enabled=true)
+        pushService.sendToUser(userId,
+                title != null ? title.getOrDefault("en", "") : "",
+                body  != null ? body.getOrDefault("en", "")  : "",
+                refType, refId);
     }
 
     // ---- reads (controller, by the caller's mobile) ----

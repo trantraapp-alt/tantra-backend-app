@@ -11,16 +11,26 @@ import com.hyperlocal.tantra.modules.business.entity.BusinessProfile;
 import com.hyperlocal.tantra.modules.business.model.VerificationStatus;
 import com.hyperlocal.tantra.modules.business.repository.BusinessProfileRepository;
 import com.hyperlocal.tantra.modules.forms.model.LocalizedText;
+import com.hyperlocal.tantra.modules.home.dto.HomeResponse;
+import com.hyperlocal.tantra.modules.listing.model.Address;
 import com.hyperlocal.tantra.modules.notification.service.NotificationService;
+import com.hyperlocal.tantra.modules.subscription.service.SubscriptionService;
+import com.hyperlocal.tantra.utils.GeoUtil;
 import com.hyperlocal.tantra.utils.IdGeneratorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Business profile lifecycle: owner CRUD (create/update reset it to PENDING for re-verification),
@@ -30,10 +40,20 @@ import java.util.List;
 @Service
 public class BusinessProfileService {
 
+    private static final Logger log = LoggerFactory.getLogger(BusinessProfileService.class);
+
     @Autowired private BusinessProfileRepository profileRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private AuditService auditService;
     @Autowired private NotificationService notificationService;
+    @Autowired private SubscriptionService subscriptionService;
+
+    /**
+     * Profiles pending longer than this many days are counted as "overdue" in the stats dashboard.
+     * Configurable via {@code app.stats.overdue-threshold-days} (default 5).
+     */
+    @Value("${app.stats.overdue-threshold-days:5}")
+    private int overdueThresholdDays;
 
     // ---------------- owner CRUD ----------------
 
@@ -118,32 +138,99 @@ public class BusinessProfileService {
                 .stream().filter(p -> Boolean.TRUE.equals(p.getIsVisible())).toList();
     }
 
+    /** Admin-only: fetch any profile by profileId regardless of visibility (for detail/review screen). */
+    public BusinessProfile getProfileForAdmin(String profileId) {
+        return requireProfile(profileId);
+    }
+
     // ---------------- admin verification ----------------
 
     /**
-     * Approval Tracker — status counts for the admin dashboard (global + this admin's own tally). Each count
-     * is a tile the dashboard links to the matching {@code ?status=} list.
+     * Enhanced admin stats dashboard — 3 DB round-trips replace 8 individual count queries.
+     *
+     * <ul>
+     *   <li>Round-trip 1: single-pass aggregation for all status counts + time-to-approval metrics.</li>
+     *   <li>Round-trip 2: single-pass aggregation for this admin's own review tally.</li>
+     *   <li>Round-trip 3: category breakdown grouped by profile_type.</li>
+     * </ul>
+     *
+     * Success rate and category percentages are calculated in-memory (no extra query needed).
      */
     public com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats getStats(String adminMobile) {
-        User admin = currentUser(adminMobile);
-        var stats = new com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats();
-        stats.setTotal(profileRepository.countByIsDeletedFalse());
-        stats.setPending(profileRepository.countByVerificationStatusAndIsDeletedFalse(VerificationStatus.PENDING));
-        stats.setApproved(profileRepository.countByVerificationStatusAndIsDeletedFalse(VerificationStatus.APPROVED));
-        stats.setRejected(profileRepository.countByVerificationStatusAndIsDeletedFalse(VerificationStatus.REJECTED));
-        stats.setBlocked(profileRepository.countByVerificationStatusAndIsDeletedFalse(VerificationStatus.BLOCKED));
+        long startMs = System.currentTimeMillis();
+        log.info("[STATS] Fetching business profile stats for admin={} overdueThreshold={}d",
+                adminMobile, overdueThresholdDays);
 
-        var mine = new com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.ReviewedByMe();
-        mine.setApproved(profileRepository.countByVerifiedByAndVerificationStatusAndIsDeletedFalse(admin.getUserId(), VerificationStatus.APPROVED));
-        mine.setRejected(profileRepository.countByVerifiedByAndVerificationStatusAndIsDeletedFalse(admin.getUserId(), VerificationStatus.REJECTED));
-        mine.setBlocked(profileRepository.countByVerifiedByAndVerificationStatusAndIsDeletedFalse(admin.getUserId(), VerificationStatus.BLOCKED));
+        User admin = currentUser(adminMobile);
+
+        // ── Round-trip 1: all counts + time-to-approval in one scan ──────────
+        BusinessProfileRepository.ProfileSummaryProjection summary =
+                profileRepository.fetchSummaryStats(overdueThresholdDays);
+
+        // ── Round-trip 2: this admin's own review tally ───────────────────────
+        BusinessProfileRepository.AdminReviewProjection myReviews =
+                profileRepository.fetchAdminReviewStats(admin.getUserId());
+
+        // ── Round-trip 3: category distribution ──────────────────────────────
+        List<BusinessProfileRepository.CategoryCountProjection> categoryRows =
+                profileRepository.fetchCategoryBreakdown();
+
+        // ── Build DTO ─────────────────────────────────────────────────────────
+        com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats stats =
+                new com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats();
+
+        stats.setTotal(summary.getTotal());
+        stats.setPending(summary.getPending());
+        stats.setApproved(summary.getApproved());
+        stats.setRejected(summary.getRejected());
+        stats.setBlocked(summary.getBlocked());
+        stats.setAvgApprovalDays(summary.getAvgapprovaldays());
+        stats.setMaxPendingDays(summary.getMaxpendingdays());
+        stats.setOverdueCount(summary.getOverduecount());
+
+        // Success rate: approved / decided × 100 (excludes PENDING — not yet decided)
+        long decided = summary.getApproved() + summary.getRejected() + summary.getBlocked();
+        double successRate = decided > 0 ? (summary.getApproved() * 100.0 / decided) : 0.0;
+        stats.setSuccessRate(Math.round(successRate * 10.0) / 10.0);   // 1 decimal place
+
+        // Category breakdown with percentage share
+        long total = summary.getTotal();
+        List<com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.CategoryStat> breakdown =
+                new ArrayList<>();
+        for (BusinessProfileRepository.CategoryCountProjection row : categoryRows) {
+            com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.CategoryStat cat =
+                    new com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.CategoryStat();
+            cat.setProfileType(row.getProfiletype());
+            cat.setCount(row.getCount());
+            double pct = total > 0 ? (row.getCount() * 1000.0 / total) / 10.0 : 0.0;
+            cat.setPercentage(Math.round(pct * 10.0) / 10.0);
+            breakdown.add(cat);
+        }
+        stats.setCategoryBreakdown(breakdown);
+
+        // Admin's own tally
+        com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.ReviewedByMe mine =
+                new com.hyperlocal.tantra.modules.business.dto.BusinessProfileStats.ReviewedByMe();
+        mine.setApproved(myReviews.getApproved() != null ? myReviews.getApproved() : 0L);
+        mine.setRejected(myReviews.getRejected() != null ? myReviews.getRejected() : 0L);
+        mine.setBlocked(myReviews.getBlocked() != null ? myReviews.getBlocked() : 0L);
         stats.setReviewedByMe(mine);
+
+        log.info("[STATS] Done in {}ms — total={} pending={} overdue={} avgDays={} successRate={}% categories={}",
+                System.currentTimeMillis() - startMs,
+                stats.getTotal(), stats.getPending(), stats.getOverdueCount(),
+                stats.getAvgApprovalDays(), stats.getSuccessRate(),
+                breakdown.size());
+
         return stats;
     }
 
-    /** Pending verification queue (default PENDING). Approved/rejected profiles drop out of here. */
-    public Page<BusinessProfile> getQueue(VerificationStatus status, Pageable pageable) {
+    /** Verification queue with optional profileType filter (for category drill-down from stats dashboard). */
+    public Page<BusinessProfile> getQueue(VerificationStatus status, String profileType, Pageable pageable) {
         VerificationStatus effective = status != null ? status : VerificationStatus.PENDING;
+        if (profileType != null && !profileType.isBlank()) {
+            return profileRepository.findByVerificationStatusAndProfileTypeAndIsDeletedFalse(effective, profileType.trim(), pageable);
+        }
         return profileRepository.findByVerificationStatusAndIsDeletedFalse(effective, pageable);
     }
 
@@ -235,14 +322,70 @@ public class BusinessProfileService {
         return respond(profile, MessageConstants.BUSINESS_PROFILE_BLOCKED_EN, MessageConstants.BUSINESS_PROFILE_BLOCKED_HI);
     }
 
+    // ─── Directory ────────────────────────────────────────────────────────────
+
+    /**
+     * Public business profile directory — approved + active profiles with filters.
+     * Premium sellers appear first via subscription sort weight. Geo filter with Haversine second pass.
+     */
+    public Page<HomeResponse.BusinessProfileCard> getDirectory(
+            String profileType, String district, Double lat, Double lng, Integer radiusKm, Pageable pageable) {
+
+        Double latMin = null, latMax = null, lngMin = null, lngMax = null;
+        if (lat != null && lng != null && radiusKm != null) {
+            latMin = lat - GeoUtil.latOffset(radiusKm); latMax = lat + GeoUtil.latOffset(radiusKm);
+            lngMin = lng - GeoUtil.lngOffset(radiusKm, lat); lngMax = lng + GeoUtil.lngOffset(radiusKm, lat);
+        }
+
+        Page<BusinessProfile> raw = profileRepository.findDirectory(
+                profileType, district, latMin, latMax, lngMin, lngMax, pageable);
+
+        final Double userLat = lat, userLng = lng;
+        List<HomeResponse.BusinessProfileCard> cards = raw.getContent().stream()
+                .filter(p -> {
+                    if (radiusKm != null && userLat != null && p.getLatitude() != null) {
+                        return GeoUtil.distanceKm(userLat, userLng, p.getLatitude(), p.getLongitude()) <= radiusKm;
+                    }
+                    return true;
+                })
+                .map(p -> toDirectoryCard(p, userLat, userLng))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(cards, pageable, raw.getTotalElements());
+    }
+
+    private HomeResponse.BusinessProfileCard toDirectoryCard(BusinessProfile p, Double userLat, Double userLng) {
+        HomeResponse.BusinessProfileCard card = new HomeResponse.BusinessProfileCard();
+        card.setProfileId(p.getProfileId());
+        card.setUserId(p.getUserId());
+        card.setBusinessName(p.getBusinessName());
+        card.setProfileType(p.getProfileType());
+        card.setVerificationStatus(p.getVerificationStatus() != null ? p.getVerificationStatus().name() : null);
+        card.setAddress(p.getAddress());
+        subscriptionService.getActivePlan(p.getUserId()).ifPresentOrElse(plan -> {
+            card.setIsHighlighted(plan.getProfileHighlight());
+            card.setHighlightColor(plan.getHighlightColor());
+            card.setBadge(plan.getBadgeLabel());
+            card.setPlanKey(plan.getPlanKey());
+        }, () -> card.setIsHighlighted(false));
+        return card;
+    }
+
     // ---------------- helpers ----------------
 
     private void apply(BusinessProfile profile, BusinessProfileRequest req) {
         profile.setProfileType(req.getProfileType());
         profile.setBusinessName(req.getBusinessName());
-        profile.setAddress(req.getAddress());
+        if (req.getAddress() != null) {
+            profile.setAddress(req.getAddress());
+            // Extract lat/lng to top-level indexed columns
+            Address addr = req.getAddress();
+            profile.setLatitude(addr.getLatitude());
+            profile.setLongitude(addr.getLongitude());
+        }
         if (req.getIsVisible() != null) profile.setIsVisible(req.getIsVisible());
         if (req.getAttributes() != null) profile.setAttributes(req.getAttributes());
+        log.debug("[BUSINESS_PROFILE] Applied update — profileId={}", profile.getProfileId());
     }
 
     private User currentUser(String mobileNumber) {
@@ -286,10 +429,10 @@ public class BusinessProfileService {
 
     /** The reason behind the profile's current status — blocked reason / rejected reason (else null). */
     private String reasonFor(BusinessProfile profile) {
-        return switch (profile.getVerificationStatus()) {
-            case BLOCKED -> profile.getBlockReason();
-            case REJECTED -> profile.getRejectReason();
-            default -> null;
-        };
+        switch (profile.getVerificationStatus()) {
+            case BLOCKED:  return profile.getBlockReason();
+            case REJECTED: return profile.getRejectReason();
+            default:       return null;
+        }
     }
 }

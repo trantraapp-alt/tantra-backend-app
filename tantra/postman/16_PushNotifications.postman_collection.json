@@ -1,0 +1,132 @@
+{
+  "info": {
+    "_postman_id": "tantra-push-notifications",
+    "name": "16_PushNotifications",
+    "description": "Device token registration for FCM push notifications. Register on app launch, remove on logout. In-app notification history.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token",   "value": "Bearer <your-jwt-token>" }
+  ],
+  "item": [
+
+    {
+      "name": "📲 Device Token",
+      "item": [
+
+        {
+          "name": "POST Register Device Token (call on app launch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"eXaMpLeFcMtOkEn_AbCdEfGhIjKlMnOpQrStUvWxYz123456789\",\n  \"platform\": \"ANDROID\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/device-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications","device-token"]
+            }
+          }
+        },
+
+        {
+          "name": "POST Register Device Token — iOS",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"eXaMpLeFcMtOkEn_iOsDeviceTokenHere\",\n  \"platform\": \"IOS\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/device-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications","device-token"]
+            }
+          }
+        },
+
+        {
+          "name": "DELETE Remove Device Token (call on logout)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmToken\": \"eXaMpLeFcMtOkEn_AbCdEfGhIjKlMnOpQrStUvWxYz123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/device-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications","device-token"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "🔔 In-App Notifications",
+      "item": [
+
+        {
+          "name": "GET My Notifications (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+
+        {
+          "name": "GET Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/unread-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications","unread-count"]
+            }
+          }
+        },
+
+        {
+          "name": "PATCH Mark Notification as Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/1/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","notifications","1","read"]
+            }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

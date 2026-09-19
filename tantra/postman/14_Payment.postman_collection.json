@@ -1,0 +1,214 @@
+{
+  "info": {
+    "_postman_id": "tantra-payment",
+    "name": "14_Payment",
+    "description": "Self-serve payment flow (local mock + Razorpay). Initiate → Verify → Subscription granted. Works for both buyers and sellers (unified UserSubscription). Admin payment history.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",    "value": "http://localhost:8080" },
+    { "key": "token",      "value": "Bearer <your-jwt-token>" },
+    { "key": "adminToken", "value": "Bearer <your-admin-jwt-token>" },
+    { "key": "paymentId",  "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "💳 Self-Serve Payment (Local Mock)",
+      "item": [
+
+        {
+          "name": "1. GET Plans — English (pick one to buy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/subscriptions/plans?lang=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","subscriptions","plans"],
+              "query": [{ "key": "lang", "value": "en" }]
+            }
+          }
+        },
+
+        {
+          "name": "2. POST Initiate Payment — BRONZE_MONTHLY (₹49)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.paymentId) {",
+                  "  pm.collectionVariables.set('paymentId', res.data.paymentId);",
+                  "  console.log('paymentId saved:', res.data.paymentId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"BRONZE_MONTHLY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","initiate"]
+            }
+          }
+        },
+
+        {
+          "name": "3. POST Verify Payment (mock — no real gateway needed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentId\": \"{{paymentId}}\",\n  \"razorpayOrderId\": \"\",\n  \"razorpayPaymentId\": \"\",\n  \"razorpaySignature\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","verify"]
+            }
+          }
+        },
+
+        {
+          "name": "4. POST Initiate Payment — SILVER_MONTHLY (₹99)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"SILVER_MONTHLY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","initiate"]
+            }
+          }
+        },
+
+        {
+          "name": "5. POST Initiate Payment — GOLD_QUARTERLY (₹549)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"GOLD_QUARTERLY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","initiate"]
+            }
+          }
+        },
+
+        {
+          "name": "6. POST Initiate Payment — DIAMOND_YEARLY (₹3999)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "{{token}}" },
+              { "key": "Content-Type",  "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"DIAMOND_YEARLY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/initiate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","initiate"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "📋 Payment History",
+      "item": [
+
+        {
+          "name": "GET My Payment History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","mine"]
+            }
+          }
+        }
+
+      ]
+    },
+
+    {
+      "name": "🔑 Admin — Payments",
+      "item": [
+
+        {
+          "name": "GET All Payments (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/admin?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","admin"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+
+        {
+          "name": "GET All Payments — Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "{{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/admin?status=CAPTURED&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","v1","payments","admin"],
+              "query": [
+                { "key": "status", "value": "CAPTURED" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            }
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

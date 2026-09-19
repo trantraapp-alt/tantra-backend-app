@@ -32,12 +32,13 @@ public class AdminBusinessProfileController {
         return ResponseEntity.ok(service.getStats(auth.getName()));
     }
 
-    /** Verification queue (default PENDING), paginated. Approved/rejected profiles leave this queue. */
+    /** Verification queue (default PENDING), paginated. Optional profileType filter for category drill-down. */
     @GetMapping
     public ResponseEntity<PageResponse<BusinessProfile>> queue(
             @RequestParam(required = false) VerificationStatus status,
+            @RequestParam(required = false) String profileType,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(PageResponse.of(service.getQueue(status, pageable)));
+        return ResponseEntity.ok(PageResponse.of(service.getQueue(status, profileType, pageable)));
     }
 
     /**
@@ -68,5 +69,11 @@ public class AdminBusinessProfileController {
             @PathVariable String profileId, @RequestBody(required = false) Map<String, String> body, Authentication auth) {
         String reason = body != null ? body.get("reason") : null;
         return ResponseEntity.ok(service.block(profileId, reason, auth.getName()));
+    }
+
+    /** Fetch a single profile by profileId — for the admin detail / review screen. */
+    @GetMapping("/{profileId}")
+    public ResponseEntity<BusinessProfile> getProfile(@PathVariable String profileId) {
+        return ResponseEntity.ok(service.getProfileForAdmin(profileId));
     }
 }

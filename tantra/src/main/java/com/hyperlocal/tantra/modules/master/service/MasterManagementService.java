@@ -86,6 +86,25 @@ public class MasterManagementService {
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with ID: " + id));
     }
 
+    /** All subcategories (parentId IS NOT NULL) across all modules — flat list for dropdowns/search filters. */
+    public List<ModuleCategory> getAllSubcategories(boolean onlyActive) {
+        return onlyActive
+                ? categoryRepository.findByParentIdIsNotNullAndIsActiveTrueOrderByModuleIdAscDisplayOrderAsc()
+                : categoryRepository.findByParentIdIsNotNullOrderByModuleIdAscDisplayOrderAsc();
+    }
+
+    /** Every category (parent + sub) across all modules — flat list. Optional moduleId filter. */
+    public List<ModuleCategory> getAllCategories(Integer moduleId, boolean onlyActive) {
+        if (moduleId != null) {
+            return onlyActive
+                    ? categoryRepository.findByModuleIdAndIsActiveTrueOrderByDisplayOrderAsc(moduleId)
+                    : categoryRepository.findByModuleIdOrderByDisplayOrderAsc(moduleId);
+        }
+        return onlyActive
+                ? categoryRepository.findByIsActiveTrueOrderByModuleIdAscDisplayOrderAsc()
+                : categoryRepository.findAllByOrderByModuleIdAscDisplayOrderAsc();
+    }
+
     @Transactional
     public ModuleCategory saveOrUpdateCategory(ModuleCategory category) {
         if (!moduleRepository.existsById(category.getModuleId())) {

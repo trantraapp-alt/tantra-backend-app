@@ -1,5 +1,7 @@
 package com.hyperlocal.tantra.security;
 
+import com.hyperlocal.tantra.modules.auth.entity.User;
+import com.hyperlocal.tantra.modules.auth.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -19,11 +21,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
-    // Spring constructor injection
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil,
+                                   CustomUserDetailsService userDetailsService,
+                                   UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -52,14 +57,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // If token is parsed successfully and user isn't authenticated yet
         if (mobileNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            // Block check — return 403 immediately if account is suspended
+            java.util.Optional<com.hyperlocal.tantra.modules.auth.entity.User> userOpt =
+                    userRepository.findByMobileNumber(mobileNumber);
+            if (userOpt.isPresent() && Boolean.TRUE.equals(userOpt.get().getIsBlocked())) {
+                SecurityContextHolder.clearContext();
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().write(
+                        "{\"authenticated\": false, \"message\": \"Account suspended. Contact support.\"}");
+                return;
+            }
+
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(mobileNumber);
 
             if (jwtUtil.validateToken(jwtToken, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Authorize user inside Spring Security Context
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

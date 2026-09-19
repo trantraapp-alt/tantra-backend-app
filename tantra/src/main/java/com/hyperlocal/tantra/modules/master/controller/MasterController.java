@@ -34,6 +34,28 @@ public class MasterController {
 
     // --- CATEGORY ENDPOINTS ---
 
+    /**
+     * All categories flat list — parent + sub across all modules.
+     * Optional: ?moduleId=1 to scope to one module, ?onlyActive=true to exclude inactive.
+     * Use this for dropdowns, search filters, deal group config, etc.
+     */
+    @GetMapping("/categories")
+    public ResponseEntity<List<ModuleCategory>> getAllCategories(
+            @RequestParam(required = false) Integer moduleId,
+            @RequestParam(defaultValue = "false") boolean onlyActive) {
+        return ResponseEntity.ok(masterService.getAllCategories(moduleId, onlyActive));
+    }
+
+    /**
+     * All subcategories only (parentId IS NOT NULL) across all modules — flat list.
+     * Use when you need leaf-level categories for listing forms or filters.
+     */
+    @GetMapping("/categories/subcategories")
+    public ResponseEntity<List<ModuleCategory>> getAllSubcategories(
+            @RequestParam(defaultValue = "false") boolean onlyActive) {
+        return ResponseEntity.ok(masterService.getAllSubcategories(onlyActive));
+    }
+
     /** Top-level categories under a module (parentId omitted), or subcategories of a parent (parentId set). */
     @GetMapping("/modules/{moduleId}/categories")
     public ResponseEntity<List<ModuleCategory>> getCategoriesByModule(
@@ -43,7 +65,7 @@ public class MasterController {
         return ResponseEntity.ok(masterService.getCategories(moduleId, parentId, onlyActive));
     }
 
-    /** Subcategories of a category (tree children). */
+    /** Subcategories of a specific parent category (tree children). */
     @GetMapping("/categories/{parentId}/subcategories")
     public ResponseEntity<List<ModuleCategory>> getSubcategories(
             @PathVariable Integer parentId,

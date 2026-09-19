@@ -19,8 +19,10 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "business_profiles", indexes = {
-        @Index(name = "idx_bp_user", columnList = "user_id"),
-        @Index(name = "idx_bp_status", columnList = "verification_status")
+        @Index(name = "idx_bp_user",      columnList = "user_id"),
+        @Index(name = "idx_bp_status",    columnList = "verification_status"),
+        @Index(name = "idx_bp_geo",       columnList = "latitude, longitude"),
+        @Index(name = "idx_bp_directory", columnList = "verification_status, is_active, is_deleted")
 })
 @Data
 public class BusinessProfile {
@@ -91,6 +93,13 @@ public class BusinessProfile {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    /** Extracted from address for efficient geo queries. */
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

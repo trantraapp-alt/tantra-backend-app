@@ -17,6 +17,7 @@ public class MessageConstants {
     public static final String AUTH_ERROR_TOKEN_EN = "Error: Invalid or expired session token!";
     public static final String LISTING_CREATE_SUCCESS_EN = "Listing created successfully!";
     public static final String LISTING_CATEGORY_REQUIRED_EN = "Error: Category is required.";
+    public static final String CATEGORY_NOT_FOUND_EN = "Error: Category not found.";
     public static final String LISTING_USER_NOT_FOUND_EN = "Error: Authenticated user not found.";
     public static final String LISTING_NOT_FOUND_EN = "Error: Listing not found.";
     public static final String LISTING_UPDATE_SUCCESS_EN = "Listing updated successfully!";
@@ -46,6 +47,29 @@ public class MessageConstants {
     public static final String BUSINESS_PROFILE_INVALID_EN = "Error: Business name and type are required.";
     public static final String NOTIFICATION_NOT_FOUND_EN = "Error: Notification not found.";
 
+    // Subscription
+    public static final String SUBSCRIPTION_GRANTED_EN         = "Subscription activated successfully!";
+    public static final String SUBSCRIPTION_REVOKED_EN         = "Subscription revoked.";
+    public static final String SUBSCRIPTION_NOT_FOUND_EN       = "Error: Subscription not found.";
+    public static final String SUBSCRIPTION_PLAN_NOT_FOUND_EN  = "Error: Subscription plan not found.";
+    public static final String SUBSCRIPTION_ALREADY_ACTIVE_EN  = "Error: An active subscription already exists for this user.";
+    public static final String SUBSCRIPTION_DURATION_EN        = "Error: Duration must be greater than 0 days.";
+
+    // Wishlist
+    public static final String WISHLIST_ADDED_EN               = "Listing added to wishlist!";
+    public static final String WISHLIST_REMOVED_EN             = "Listing removed from wishlist.";
+    public static final String WISHLIST_ALREADY_EN             = "This listing is already in your wishlist.";
+    public static final String WISHLIST_NOT_FOUND_EN           = "Error: This listing is not in your wishlist.";
+
+    // Contact Reveal
+    public static final String CONTACT_REVEAL_SUCCESS_EN       = "Contact number revealed.";
+    public static final String CONTACT_HIDDEN_EN               = "Error: Contact is hidden for this listing.";
+    public static final String CONTACT_LISTING_INACTIVE_EN     = "Error: This listing is no longer available.";
+
+    // Flash Deal
+    public static final String FLASH_DEAL_PREMIUM_REQUIRED_EN =
+            "Flash Deals are a premium feature. Upgrade your subscription to use this.";
+
     // Hindi Messages
     public static final String SIGNUP_SUCCESS_HI = "पंजीकरण सफल! यूजर आईडी: %s";
     public static final String SIGNUP_ERROR_MOBILE_HI = "त्रुटि: यह मोबाइल नंबर पहले से पंजीकृत है!";
@@ -61,6 +85,7 @@ public class MessageConstants {
     public static final String AUTH_ERROR_TOKEN_HI = "त्रुटि: अवैध या समाप्त हो चुका सत्र (Session) टोकन!";
     public static final String LISTING_CREATE_SUCCESS_HI = "लिस्टिंग सफलतापूर्वक बनाई गई!";
     public static final String LISTING_CATEGORY_REQUIRED_HI = "त्रुटि: श्रेणी आवश्यक है।";
+    public static final String CATEGORY_NOT_FOUND_HI = "त्रुटि: श्रेणी नहीं मिली।";
     public static final String LISTING_USER_NOT_FOUND_HI = "त्रुटि: प्रमाणित उपयोगकर्ता नहीं मिला।";
     public static final String LISTING_NOT_FOUND_HI = "त्रुटि: लिस्टिंग नहीं मिली।";
     public static final String LISTING_UPDATE_SUCCESS_HI = "लिस्टिंग सफलतापूर्वक अपडेट हो गई!";
@@ -89,6 +114,29 @@ public class MessageConstants {
     public static final String BUSINESS_PROFILE_NOT_OWNER_HI = "त्रुटि: आप केवल अपनी व्यवसाय प्रोफ़ाइल ही बदल सकते हैं।";
     public static final String BUSINESS_PROFILE_INVALID_HI = "त्रुटि: व्यवसाय का नाम और प्रकार आवश्यक हैं।";
     public static final String NOTIFICATION_NOT_FOUND_HI = "त्रुटि: सूचना नहीं मिली।";
+
+    // Subscription (Hindi)
+    public static final String SUBSCRIPTION_GRANTED_HI         = "सब्सक्रिप्शन सफलतापूर्वक सक्रिय हो गई!";
+    public static final String SUBSCRIPTION_REVOKED_HI         = "सब्सक्रिप्शन रद्द कर दी गई।";
+    public static final String SUBSCRIPTION_NOT_FOUND_HI       = "त्रुटि: सब्सक्रिप्शन नहीं मिली।";
+    public static final String SUBSCRIPTION_PLAN_NOT_FOUND_HI  = "त्रुटि: सब्सक्रिप्शन प्लान नहीं मिला।";
+    public static final String SUBSCRIPTION_ALREADY_ACTIVE_HI  = "त्रुटि: इस उपयोगकर्ता के लिए पहले से सक्रिय सब्सक्रिप्शन मौजूद है।";
+    public static final String SUBSCRIPTION_DURATION_HI        = "त्रुटि: अवधि 0 दिन से अधिक होनी चाहिए।";
+
+    // Wishlist (Hindi)
+    public static final String WISHLIST_ADDED_HI               = "लिस्टिंग विशलिस्ट में जोड़ी गई!";
+    public static final String WISHLIST_REMOVED_HI             = "लिस्टिंग विशलिस्ट से हटा दी गई।";
+    public static final String WISHLIST_ALREADY_HI             = "यह लिस्टिंग पहले से आपकी विशलिस्ट में है।";
+    public static final String WISHLIST_NOT_FOUND_HI           = "त्रुटि: यह लिस्टिंग आपकी विशलिस्ट में नहीं है।";
+
+    // Contact Reveal (Hindi)
+    // Flash Deal (Hindi)
+    public static final String FLASH_DEAL_PREMIUM_REQUIRED_HI =
+            "Flash Deal एक प्रीमियम सुविधा है। इसे उपयोग करने के लिए अपनी सब्सक्रिप्शन अपग्रेड करें।";
+
+    public static final String CONTACT_REVEAL_SUCCESS_HI       = "संपर्क नंबर दिखाया गया।";
+    public static final String CONTACT_HIDDEN_HI               = "त्रुटि: इस लिस्टिंग का संपर्क छुपा हुआ है।";
+    public static final String CONTACT_LISTING_INACTIVE_HI     = "त्रुटि: यह लिस्टिंग अब उपलब्ध नहीं है।";
 
     /**
      * Resolves localized message string based on the language key preference.

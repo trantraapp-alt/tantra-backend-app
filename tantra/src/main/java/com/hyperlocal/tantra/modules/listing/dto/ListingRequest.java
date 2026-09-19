@@ -16,6 +16,7 @@ import java.util.Map;
 public class ListingRequest {
     private Integer categoryId;
     private Integer moduleId;
+    private String listingTitle;
     private ListingType listingType = ListingType.SELL;
 
     private BigDecimal actualPrice;
@@ -32,6 +33,13 @@ public class ListingRequest {
      *  buyers must send a contact request the seller approves before the number is revealed. */
     private Boolean showContact;
 
+    /**
+     * Shown on the Create Listing form only when listingType = SELL.
+     * true = seller offers delivery to buyer's location.
+     * Ignored (treated as false) when listingType = RENT.
+     */
+    private Boolean deliveryAvailable;
+
     private Boolean useDefaultAddress;
     /** A saved address to snapshot into the listing (address book). Takes precedence over `address`. */
     private String addressId;
@@ -39,4 +47,20 @@ public class ListingRequest {
 
     private List<String> images;
     private Map<String, Object> attributes;
+
+    // ─── Flash Deal fields ────────────────────────────────────────────────────
+
+    /**
+     * Set true to mark this listing as a Flash Deal (requires premium subscription
+     * with flashDealAllowed = true on the plan). The countdown timer is driven by
+     * discountExpiresAt — if null, the flash deal has no expiry.
+     */
+    private Boolean flashDeal;
+
+    /**
+     * ISO timestamp when the Flash Deal discount expires.
+     * After this time the card reverts to normal display.
+     * Null = no expiry (flash deal stays until manually turned off).
+     */
+    private java.time.LocalDateTime discountExpiresAt;
 }

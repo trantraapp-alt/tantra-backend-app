@@ -28,6 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<maven.compiler.release>17</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,6 +58,40 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>
 			<version>2.31.6</version>
+		</dependency>
+		-->
+
+		<!--
+		  Firebase Admin SDK — PRODUCTION PUSH NOTIFICATIONS (FCM)
+		  =========================================================
+		  Steps to enable:
+		    1. Uncomment this dependency block.
+		    2. Set app.fcm.enabled=true in application.properties.
+		    3. Place your Firebase service-account JSON at src/main/resources/firebase-service-account.json.
+		    4. Uncomment the // FCM blocks in PushNotificationService.java.
+
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
+		</dependency>
+		-->
+
+		<!--
+		  Razorpay Java SDK — PRODUCTION PAYMENT INTEGRATION
+		  ===================================================
+		  Steps to enable:
+		    1. Uncomment this dependency block.
+		    2. Set app.payment.test-mode=false in application.properties.
+		    3. Set RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET env vars.
+		    4. Uncomment the // RAZORPAY blocks in PaymentService.java.
+		    5. For local Razorpay sandbox testing, expose localhost via ngrok and register
+		       the ngrok URL as a webhook in the Razorpay test dashboard.
+
+		<dependency>
+			<groupId>com.razorpay</groupId>
+			<artifactId>razorpay-java</artifactId>
+			<version>1.4.5</version>
 		</dependency>
 		-->
 
@@ -123,6 +160,7 @@
 							<goal>compile</goal>
 						</goals>
 						<configuration>
+							<release>17</release>
 							<annotationProcessorPaths>
 								<path>
 									<groupId>org.projectlombok</groupId>

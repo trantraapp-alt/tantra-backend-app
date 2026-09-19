@@ -30,8 +30,8 @@ public class ResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
-        if (body instanceof ApiResponse<?> api) {
-            stamp(api);
+        if (body instanceof ApiResponse) {
+            stamp((ApiResponse<?>) body);
             return body;
         }
         // Strings (String converter) and binary payloads are left as-is.

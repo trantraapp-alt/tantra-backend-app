@@ -48,6 +48,14 @@ public class ModuleCategory {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    /** Quality assurance text shown on listing detail page — English. Set by admin per category. */
+    @Column(name = "quality_desc_en", columnDefinition = "TEXT")
+    private String qualityDescEn;
+
+    /** Quality assurance text shown on listing detail page — Hindi. Set by admin per category. */
+    @Column(name = "quality_desc_hi", columnDefinition = "TEXT")
+    private String qualityDescHi;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

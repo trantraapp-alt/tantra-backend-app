@@ -10,6 +10,7 @@ import com.hyperlocal.tantra.utils.IdGeneratorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class AuthService {
     /**
      * 2. SIGN IN (Authenticates credentials and generates long-term JWT token)
      */
+    @Transactional
     public Map<String, Object> loginUser(SignInRequestDTO dto, String lang) {
         boolean isHindi = "HI".equalsIgnoreCase(lang);
         Map<String, Object> response = new HashMap<>();
@@ -69,12 +71,22 @@ public class AuthService {
         }
 
         User user = userOpt.get();
+
+        if (Boolean.TRUE.equals(user.getIsBlocked())) {
+            response.put("error", isHindi
+                    ? "त्रुटि: आपका खाता निलंबित है। सहायता से संपर्क करें।"
+                    : "Error: Account suspended. Contact support.");
+            return response;
+        }
+
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             response.put("error", isHindi ? "त्रुटि: गलत पासवर्ड!" : "Error: Invalid password!");
             return response;
         }
 
         String token = jwtUtil.generateToken(user.getMobileNumber(), user.getAppUsageRole());
+
+        userRepository.updateLastLoginAt(user.getMobileNumber(), java.time.LocalDateTime.now());
 
         response.put("message", isHindi ? "लॉगिन सफल!" : "Login successful!");
         response.put("token", token);

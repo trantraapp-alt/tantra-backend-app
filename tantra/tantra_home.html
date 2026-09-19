@@ -1,0 +1,1461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tantra — किसानों का अपना बाजार</title>
+<style>
+:root{
+  --leaf:#1E5631;--leaf-mid:#2A7244;--leaf-pale:#E8F5EC;
+  --gold:#D4920A;--gold-b:#F0C040;--gold-lt:#FFF3CC;
+  --green-p:#4CAF50;--amber-e:#E65100;--red:#C62828;
+  --soil:#1A2410;--chalk:#F7F4EF;--paper:#fff;--fog:#D8E8DA;
+  --bg:var(--chalk);--surface:var(--paper);--border:var(--fog);
+  --text:var(--soil);--t2:#445C48;--t3:#7A9A7E;--hdr:#1E5631;
+  --bnav-h:60px;--hdr-h:82px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0C1710;--surface:#162219;--border:#233228;--text:#DFF0E2;
+  --t2:#9BBFA0;--t3:#5A8060;--leaf-pale:#162219;--fog:#223028;
+  --gold-lt:#2A1E00;--chalk:#0C1710;--hdr:#0A1A0C;
+}}
+:root[data-theme="dark"]{--bg:#0C1710;--surface:#162219;--border:#233228;--text:#DFF0E2;--t2:#9BBFA0;--t3:#5A8060;--leaf-pale:#162219;--fog:#223028;--gold-lt:#2A1E00;--chalk:#0C1710;--hdr:#0A1A0C;}
+:root[data-theme="light"]{--bg:#F7F4EF;--surface:#fff;--border:#D8E8DA;--text:#1A2410;--t2:#445C48;--t3:#7A9A7E;--leaf-pale:#E8F5EC;--fog:#D8E8DA;--gold-lt:#FFF3CC;--chalk:#F7F4EF;--hdr:#1E5631;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--bnav-h) + env(safe-area-inset-bottom,0px))}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}a{color:inherit;text-decoration:none}img{display:block;max-width:100%}
+.w{max-width:1200px;margin-inline:auto;padding-inline:1rem}
+
+/* ── HEADER ── */
+.mhdr{position:sticky;top:0;z-index:100;background:var(--hdr);box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.hdr-top{display:flex;align-items:center;gap:.55rem;padding:.55rem .875rem;max-width:1200px;margin-inline:auto}
+.logo{font-family:Georgia,serif;font-size:1.375rem;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:-.5px}
+.logo em{color:var(--gold-b);font-style:normal}
+.srch-w{flex:1;position:relative;min-width:0}
+.srch-w svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);pointer-events:none;color:#999}
+.srch-inp{width:100%;height:2.125rem;padding:0 .75rem 0 2.1rem;border:none;border-radius:6px;font-size:.875rem;background:#fff;color:#1A2410;outline:none}
+.srch-inp:focus{box-shadow:0 0 0 3px rgba(212,146,10,.4)}
+.srch-inp::placeholder{color:#aac}
+.btn-filter{display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.24);padding:4px 9px;border-radius:5px;font-size:.675rem;font-weight:700;flex-shrink:0;transition:background .2s}
+.btn-filter:hover{background:rgba(255,255,255,.23)}
+.fc-badge{font-size:.5rem;background:var(--gold-b);color:#000;border-radius:9999px;padding:1px 4px;font-weight:900}
+.hdr-acts{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+.btn-lang{background:rgba(255,255,255,.11);color:#fff;border:1px solid rgba(255,255,255,.2);padding:3px 9px;border-radius:9999px;font-size:.625rem;font-weight:800;transition:background .2s}
+.btn-lang:hover,.btn-lang.hi{background:var(--gold);border-color:var(--gold);color:#000}
+.btn-in{border:1.5px solid rgba(255,255,255,.32);color:#fff;padding:4px 11px;border-radius:5px;font-size:.725rem;transition:background .2s}
+.btn-in:hover{background:rgba(255,255,255,.1)}
+.btn-sell{background:var(--gold-b);color:#1A0000;font-weight:800;padding:4px 13px;border-radius:5px;font-size:.725rem}
+.loc-bar{background:rgba(0,0,0,.2);padding:.22rem .875rem}
+.loc-i{max-width:1200px;margin-inline:auto;display:flex;align-items:center;gap:.4rem;font-size:.625rem;color:rgba(255,255,255,.8)}
+.lpill,.rpill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:9999px;cursor:pointer;border:1px solid rgba(255,255,255,.17);font-size:.625rem;transition:background .2s}
+.lpill{background:rgba(255,255,255,.08)}.lpill:hover{background:rgba(255,255,255,.16)}
+.rpill{background:rgba(212,146,10,.17);border-color:rgba(212,146,10,.33);color:var(--gold-b);font-weight:700}.rpill:hover{background:rgba(212,146,10,.27)}
+.loc-st{margin-left:auto;opacity:.45;font-size:.575rem}
+
+/* ── ACTIVE FILTER CHIPS ── */
+.afc-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.3rem .875rem;display:none}
+.afc-bar.show{display:block}
+.afc-inner{max-width:1200px;margin-inline:auto;display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
+.afc{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;background:var(--gold-lt);border:1px solid var(--gold);color:#7A4400;border-radius:9999px;font-size:.6rem;font-weight:700;cursor:pointer;transition:all .2s}
+.afc:hover{background:var(--gold);color:#000}
+.afc-clear{font-size:.6rem;color:var(--leaf);font-weight:700;cursor:pointer;margin-left:.2rem;text-decoration:underline;border:none;background:none}
+
+/* ── MODULE TABS ── */
+.mtabs-sec{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:var(--hdr-h);z-index:90}
+.mtabs{display:flex;overflow-x:auto;scrollbar-width:none;padding:.35rem .875rem;max-width:1200px;margin-inline:auto;gap:.12rem}
+.mtabs::-webkit-scrollbar{display:none}
+.mt{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 11px;border-radius:7px;cursor:pointer;white-space:nowrap;flex-shrink:0;font-size:.55rem;font-weight:800;color:var(--t2);transition:all .2s;text-transform:uppercase;letter-spacing:.04em;border:1.5px solid transparent}
+.mt .ic{font-size:1.1rem}
+.mt:hover{background:var(--leaf-pale);color:var(--leaf)}
+.mt.on{color:var(--leaf);background:var(--leaf-pale);border-color:var(--leaf)}
+
+/* ── CAROUSEL ── */
+.car-sec{position:relative;overflow:hidden;background:#0A1810}
+.c-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.c-slide{flex:0 0 100%;min-height:180px;max-height:270px;position:relative;overflow:hidden;display:flex;align-items:center;padding:1.25rem 1.5rem}
+@media(max-width:480px){.c-slide{min-height:155px;padding:1rem 1.125rem}}
+.c-bg{position:absolute;inset:0}
+.c-txt{position:relative;z-index:1;max-width:55%}
+@media(max-width:440px){.c-txt{max-width:70%}}
+.c-txt h2{font-family:Georgia,serif;font-size:clamp(.9rem,2.5vw,1.6rem);font-weight:700;line-height:1.2;text-wrap:balance;margin-bottom:.25rem}
+.c-txt p{font-size:clamp(.625rem,1.4vw,.85rem);margin-bottom:.65rem;opacity:.9;max-width:30ch}
+.c-btn{display:inline-flex;align-items:center;padding:5px 14px;border-radius:5px;font-weight:800;font-size:.725rem;cursor:pointer;border:none;transition:transform .18s;text-transform:uppercase;letter-spacing:.04em}
+.c-btn:hover{transform:translateY(-1px)}
+.c-dots{position:absolute;bottom:.5rem;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:2}
+.dot{width:6px;height:6px;border-radius:9999px;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;border:none}
+.dot.on{width:18px;background:var(--gold-b)}
+.c-arr{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.3);color:#fff;display:flex;align-items:center;justify-content:center;border:none;font-size:.8rem}
+.c-arr:hover{background:rgba(0,0,0,.55)}
+.c-arr.p{left:.6rem}.c-arr.n{right:.6rem}
+
+/* ── SECTION TITLES ── */
+.hmain{padding:1rem 0 1.5rem}
+.sec{margin-bottom:1.5rem}
+.sechd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.sttl{font-family:Georgia,serif;font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:.3rem}
+.sttl::after{content:'';display:block;width:1.75rem;height:3px;background:var(--gold);border-radius:2px;margin-left:.2rem}
+.see{font-size:.675rem;color:var(--leaf);font-weight:700;display:flex;align-items:center;gap:2px;transition:gap .18s;white-space:nowrap}
+.see:hover{gap:5px}
+
+/* ── LISTING CARD ── */
+.rail{display:flex;gap:.7rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.3rem}
+.rail::-webkit-scrollbar{display:none}
+.lc{flex:0 0 168px;background:var(--surface);border-radius:10px;border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;position:relative}
+.lc:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(20,60,25,.14)}
+.lc.gb{border-color:var(--gold-b);box-shadow:0 0 0 1px rgba(232,180,32,.28),0 2px 8px rgba(232,180,32,.12)}
+.lc.greenb{border-color:var(--green-p);box-shadow:0 0 0 1px rgba(76,175,80,.2)}
+.lc.amb{border-color:var(--amber-e);box-shadow:0 0 0 1px rgba(230,81,0,.2)}
+.ci{position:relative;height:120px;background:var(--fog);overflow:hidden}
+.ciph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:linear-gradient(135deg,var(--leaf-pale),var(--fog))}
+.disc-b{position:absolute;top:6px;left:6px;background:var(--red);color:#fff;font-size:.5rem;font-weight:900;padding:2px 5px;border-radius:3px}
+.plan-b{position:absolute;top:6px;right:6px;font-size:.5rem;font-weight:900;padding:2px 5px;border-radius:3px}
+.plan-b.g{background:var(--gold-b);color:#000}.plan-b.gr{background:var(--green-p);color:#fff}.plan-b.a{background:var(--amber-e);color:#fff}
+.hrt{position:absolute;bottom:5px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.88);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;border:none;transition:transform .2s,background .2s;z-index:2}
+.hrt:hover{transform:scale(1.15);background:#fff}
+.hrt.on{color:#E53935}
+.cb{padding:.45rem .6rem}
+.pr{display:flex;align-items:baseline;gap:3px;flex-wrap:wrap}
+.prm{font-size:.9rem;font-weight:800;color:var(--leaf);font-variant-numeric:tabular-nums}
+.pru{font-size:.575rem;color:var(--t3)}
+.pro{font-size:.575rem;color:var(--t3);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.cn{font-size:.675rem;font-weight:600;color:var(--text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm{font-size:.575rem;color:var(--t3);margin-top:2px;display:flex;gap:3px;flex-wrap:wrap}
+.ctags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.ct{font-size:.5rem;padding:1px 5px;border-radius:9999px;font-weight:700}
+.ct.s{background:var(--leaf-pale);color:var(--leaf)}.ct.r{background:var(--gold-lt);color:#7A4400}.ct.n{background:var(--gold-lt);color:#7A4400}
+.cacts{display:flex;gap:.25rem;padding:0 .6rem .6rem;margin-top:2px}
+.btc-sm{flex:1;padding:5px;border-radius:4px;background:var(--leaf);color:#fff;font-size:.575rem;font-weight:700;text-align:center}
+.btc-sm:hover{opacity:.82}
+.btch-sm{padding:5px 7px;border-radius:4px;background:var(--leaf-pale);color:var(--leaf);font-size:.575rem;font-weight:700}
+.btch-sm:hover{background:var(--fog)}
+
+/* ── CATEGORY CHIPS ── */
+.cchips{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;margin-bottom:.7rem}
+.cchips::-webkit-scrollbar{display:none}
+.chip{display:flex;align-items:center;gap:3px;padding:4px 11px;border-radius:9999px;background:var(--surface);border:1.5px solid var(--border);font-size:.675rem;font-weight:600;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
+.chip:hover,.chip.on{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.msec{background:var(--surface);border-radius:10px;padding:.875rem;margin-bottom:.875rem;border:1px solid var(--border)}
+.msechd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem}
+
+/* ── BUSINESS GRID ── */
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem}
+@media(min-width:600px){.bgrid{grid-template-columns:repeat(6,1fr)}}
+.bcd{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:.7rem .55rem;text-align:center;cursor:pointer;transition:all .2s}
+.bcd:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(20,60,25,.1)}
+.bcd.gb{border-color:var(--gold-b)}.bcd.amb{border-color:var(--amber-e)}
+.bav{width:44px;height:44px;border-radius:50%;margin:0 auto .4rem;background:var(--leaf-pale);display:flex;align-items:center;justify-content:center;font-size:1.2rem;position:relative;border:2px solid var(--border)}
+.bdt{position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-radius:50%;border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:6px}
+.bdt.g{background:var(--gold-b)}.bdt.gr{background:var(--green-p)}.bdt.a{background:var(--amber-e)}
+.bnm{font-size:.675rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blc{font-size:.575rem;color:var(--t3);margin-top:1px}
+.bpl{font-size:.5rem;font-weight:900;margin-top:4px;padding:2px 6px;border-radius:9999px;display:inline-block}
+.bpl.g{background:var(--gold-b);color:#000}.bpl.gr{background:var(--green-p);color:#fff}
+.bpl.a{background:var(--amber-e);color:#fff}.bpl.b{background:var(--fog);color:var(--t2)}
+
+/* ── RECENT GRID ── */
+.rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
+@media(min-width:480px){.rgrid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:768px){.rgrid{grid-template-columns:repeat(4,1fr)}}
+.rgrid .lc{flex:none;width:100%}
+
+/* ── FOOTER ── */
+.ft{background:var(--leaf);color:rgba(255,255,255,.7);padding:1.5rem .875rem 1rem}
+.ftg{max-width:1200px;margin-inline:auto;display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(min-width:600px){.ftg{grid-template-columns:1.5fr 1fr 1fr 1fr;gap:1.75rem}}
+.ftlogo{font-family:Georgia,serif;font-size:1.2rem;font-weight:700;color:#fff}
+.ftlogo em{color:var(--gold-b);font-style:normal}
+.fttag{font-size:.7rem;opacity:.6;line-height:1.6;margin-top:.2rem;max-width:22ch}
+.ftcol h4{font-size:.6rem;font-weight:900;color:#fff;margin-bottom:.5rem;letter-spacing:.08em;text-transform:uppercase}
+.ftlinks{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.ftlinks a{font-size:.7rem;color:rgba(255,255,255,.5);transition:color .2s}
+.ftlinks a:hover{color:var(--gold-b)}
+.ftbot{max-width:1200px;margin:.75rem auto 0;border-top:1px solid rgba(255,255,255,.1);padding-top:.625rem;font-size:.575rem;text-align:center;color:rgba(255,255,255,.3)}
+
+/* ── OVERLAY SCREENS ── */
+.sco{position:fixed;inset:0;background:var(--bg);z-index:130;overflow-y:auto;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding-bottom:calc(var(--bnav-h) + env(safe-area-inset-bottom,0px))}
+.sco.active{transform:translateX(0)}
+.sco-hdr{position:sticky;top:0;z-index:5;background:var(--hdr);color:#fff;display:flex;align-items:center;gap:.65rem;padding:.55rem .875rem;box-shadow:0 2px 8px rgba(0,0,0,.25);min-height:52px}
+.sco-back{color:#fff;font-size:1.2rem;width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:50%;transition:background .2s;border:none;background:none}
+.sco-back:hover{background:rgba(255,255,255,.12)}
+.sco-title{flex:1;font-family:Georgia,serif;font-size:.9375rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sco-acts{display:flex;align-items:center;gap:.4rem}
+.sco-ib{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.11);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:background .2s}
+.sco-ib:hover{background:rgba(255,255,255,.22)}
+.sco-ib.on{color:#FF6B6B}
+
+/* ── DETAIL SCREEN ── */
+.det-hero{height:240px;background:linear-gradient(135deg,var(--leaf-pale),var(--fog));display:flex;align-items:center;justify-content:center;font-size:4.5rem;position:relative;flex-shrink:0}
+@media(max-width:400px){.det-hero{height:200px;font-size:3.75rem}}
+.det-plan-b{position:absolute;top:10px;right:10px;font-size:.6rem;font-weight:900;padding:3px 8px;border-radius:4px}
+.det-plan-b.g{background:var(--gold-b);color:#000}.det-plan-b.gr{background:var(--green-p);color:#fff}.det-plan-b.a{background:var(--amber-e);color:#fff}
+.det-disc-b{position:absolute;top:10px;left:10px;background:var(--red);color:#fff;font-size:.6rem;font-weight:900;padding:3px 8px;border-radius:4px}
+.det-body{padding:.875rem 1rem}
+.det-pr{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap;margin-bottom:.2rem}
+.det-prm{font-size:1.5rem;font-weight:900;color:var(--leaf);font-variant-numeric:tabular-nums}
+.det-pru{font-size:.8125rem;color:var(--t3)}
+.det-pro{font-size:.8125rem;color:var(--t3);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.det-disc{background:var(--red);color:#fff;font-size:.6rem;font-weight:900;padding:3px 7px;border-radius:4px;align-self:center}
+.det-name{font-family:Georgia,serif;font-size:1.0625rem;font-weight:700;color:var(--text);margin-bottom:.45rem}
+.det-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.55rem}
+.det-tag{font-size:.6rem;padding:2px 8px;border-radius:9999px;font-weight:700}
+.det-tag.s{background:var(--leaf-pale);color:var(--leaf)}.det-tag.r{background:var(--gold-lt);color:#7A4400}
+.det-tag.n{background:var(--gold-lt);color:#7A4400}.det-tag.prem{background:var(--gold-b);color:#000}
+.det-tag.std{background:var(--green-p);color:#fff}.det-tag.ent{background:var(--amber-e);color:#fff}
+.det-meta{display:flex;gap:.625rem;flex-wrap:wrap;font-size:.7rem;color:var(--t3);margin-bottom:.875rem;padding-bottom:.875rem;border-bottom:1px solid var(--border)}
+.det-meta span{display:flex;align-items:center;gap:3px}
+.det-stat-bar{display:flex;gap:1.25rem;padding:.55rem 1rem;background:var(--leaf-pale);border-top:1px solid var(--border);font-size:.65rem;color:var(--t3)}
+.det-stat-bar span{display:flex;align-items:center;gap:3px}
+.det-stat-bar strong{color:var(--leaf);font-weight:700}
+.det-sec-title{font-size:.625rem;font-weight:900;color:var(--t2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.55rem}
+.det-section{margin-bottom:.875rem;padding:.875rem 1rem;border-bottom:1px solid var(--border)}
+.attrs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem}
+.attr-item{background:var(--leaf-pale);border-radius:6px;padding:.4rem .55rem}
+.attr-k{font-size:.575rem;font-weight:700;color:var(--t3);margin-bottom:1px}
+.attr-v{font-size:.775rem;font-weight:600;color:var(--text)}
+.seller-card{display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:.75rem;cursor:pointer;transition:box-shadow .2s}
+.seller-card:hover{box-shadow:0 4px 14px rgba(20,60,25,.1)}
+.seller-av{width:44px;height:44px;border-radius:50%;background:var(--leaf-pale);display:flex;align-items:center;justify-content:center;font-size:1.375rem;flex-shrink:0;border:2px solid var(--border)}
+.seller-info{flex:1;min-width:0}
+.seller-nm{font-weight:700;color:var(--text);font-size:.8125rem}
+.seller-pl{font-size:.5rem;font-weight:900;padding:2px 6px;border-radius:9999px;display:inline-block;margin:.15rem 0}
+.seller-pl.g{background:var(--gold-b);color:#000}.seller-pl.gr{background:var(--green-p);color:#fff}
+.seller-pl.a{background:var(--amber-e);color:#fff}.seller-pl.b{background:var(--fog);color:var(--t2)}
+.seller-loc{font-size:.625rem;color:var(--t3)}
+.seller-sts{display:flex;gap:.75rem;margin-top:.2rem;font-size:.575rem;color:var(--t3)}
+.seller-sts strong{color:var(--text);font-weight:700}
+.seller-go{color:var(--leaf);font-size:.875rem;flex-shrink:0}
+.det-cta{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:.6rem .875rem;display:flex;gap:.45rem;box-shadow:0 -3px 10px rgba(0,0,0,.07);z-index:4}
+.btn-contact-lg{flex:1;padding:.7rem;background:var(--leaf);color:#fff;border-radius:8px;font-size:.875rem;font-weight:800;border:none;cursor:pointer;transition:opacity .2s}
+.btn-contact-lg:hover{opacity:.88}
+.btn-chat-lg{width:46px;padding:.7rem;background:var(--leaf-pale);color:var(--leaf);border-radius:8px;font-size:1.1rem;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.btn-chat-lg:hover{background:var(--fog)}
+.similar-sec{padding:.875rem 1rem 0}
+
+/* ── WISHLIST / NEARBY / SEARCH ── */
+.empty-state{padding:3rem 1.5rem;text-align:center}
+.empty-state .ei{font-size:3.25rem;margin-bottom:.65rem}
+.empty-state h3{font-family:Georgia,serif;font-size:1.0625rem;font-weight:700;margin-bottom:.35rem}
+.empty-state p{font-size:.8125rem;color:var(--t3);max-width:26ch;margin:0 auto .75rem}
+.btn-green{padding:.55rem 1.375rem;background:var(--leaf);color:#fff;border-radius:7px;font-size:.8125rem;font-weight:700;border:none;cursor:pointer}
+.pad-grid{padding:1rem}
+.pad-grid .rgrid{grid-template-columns:repeat(2,1fr)}
+@media(min-width:480px){.pad-grid .rgrid{grid-template-columns:repeat(3,1fr)}}
+
+/* nearby banner */
+.nb-banner{background:linear-gradient(135deg,var(--leaf),var(--leaf-mid));color:#fff;padding:1.25rem 1rem;text-align:center}
+.nb-banner h3{font-family:Georgia,serif;font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.nb-banner p{font-size:.725rem;opacity:.85;margin-bottom:.7rem}
+.btn-gps{padding:.5rem 1.25rem;background:#fff;color:var(--leaf);border-radius:7px;font-size:.775rem;font-weight:800;border:none;cursor:pointer}
+.nb-rad{display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap;padding:.6rem 1rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.nb-radc{padding:4px 11px;border-radius:9999px;border:1.5px solid var(--border);font-size:.65rem;font-weight:700;color:var(--t2);cursor:pointer;transition:all .2s;background:var(--surface)}
+.nb-radc:hover,.nb-radc.on{background:var(--leaf);border-color:var(--leaf);color:#fff}
+
+/* search header */
+.srch-hdr{gap:.5rem;padding:.45rem .875rem}
+.srch-qw{flex:1;position:relative;min-width:0}
+.srch-qw svg{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);color:#999;pointer-events:none}
+.srch-q{width:100%;height:2.1rem;padding:0 .75rem 0 2.1rem;border:none;border-radius:6px;font-size:.875rem;background:#fff;color:#1A2410;outline:none}
+.srch-q:focus{box-shadow:0 0 0 3px rgba(212,146,10,.4)}
+.sort-bar{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none;padding:.45rem .875rem;border-bottom:1px solid var(--border);background:var(--surface)}
+.sort-bar::-webkit-scrollbar{display:none}
+.sort-btn{padding:4px 11px;border-radius:9999px;border:1.5px solid var(--border);font-size:.625rem;font-weight:700;color:var(--t2);white-space:nowrap;flex-shrink:0;transition:all .2s;background:var(--surface)}
+.sort-btn.on,.sort-btn:hover{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.srch-results{padding:1rem}
+.srch-meta{font-size:.65rem;color:var(--t3);margin-bottom:.65rem}
+.srch-meta strong{color:var(--text);font-weight:700}
+
+/* ── FILTER PANEL ── */
+.fp-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .28s}
+.fp-ov.open{opacity:1;pointer-events:all}
+.fp{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:14px 14px 0 0;z-index:201;transform:translateY(105%);transition:transform .36s cubic-bezier(.4,0,.2,1);max-height:88vh;display:flex;flex-direction:column}
+.fp.open{transform:translateY(0)}
+@media(min-width:768px){.fp{left:auto;right:0;top:0;bottom:0;width:370px;border-radius:0;max-height:100vh;border-left:1px solid var(--border)}}
+.fp-hd{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.125rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.fp-title{font-family:Georgia,serif;font-size:.9rem;font-weight:700;color:var(--text)}
+.fp-reset{font-size:.725rem;color:var(--leaf);font-weight:700;cursor:pointer;border:none;background:none}
+.fp-close{width:25px;height:25px;border-radius:50%;background:var(--fog);color:var(--t2);display:flex;align-items:center;justify-content:center;font-size:.9rem;border:none;cursor:pointer}
+.fp-body{overflow-y:auto;flex:1}
+.fp-sec{padding:.75rem 1.125rem;border-bottom:1px solid var(--border)}
+.fp-lbl{font-size:.6rem;font-weight:900;color:var(--t2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.55rem}
+.rg{display:flex;gap:.3rem}
+.ro{flex:1}.ro input{position:absolute;opacity:0;width:0;height:0}
+.ro label{display:flex;align-items:center;justify-content:center;padding:6px 8px;border-radius:7px;border:1.5px solid var(--border);font-size:.725rem;font-weight:600;color:var(--t2);cursor:pointer;transition:all .2s}
+.ro input:checked+label{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.ro label:hover{border-color:var(--leaf);color:var(--leaf)}
+.price-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.45rem}
+.pinp{flex:1;padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:.8125rem;background:var(--surface);color:var(--text);outline:none;transition:border .2s}
+.pinp:focus{border-color:var(--leaf)}
+.price-sep{color:var(--t3);font-size:.7rem;flex-shrink:0}
+.price-track{height:4px;background:var(--fog);border-radius:2px;position:relative}
+.price-fill{position:absolute;top:0;height:4px;background:var(--leaf);border-radius:2px;left:0;width:65%}
+.rad-g{display:flex;flex-wrap:wrap;gap:.3rem}
+.radc{padding:4px 11px;border-radius:9999px;border:1.5px solid var(--border);font-size:.675rem;font-weight:700;color:var(--t2);cursor:pointer;transition:all .2s;background:var(--surface)}
+.radc:hover,.radc.on{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.tog-g{display:flex;gap:.3rem}
+.tog{flex:1}.tog input{position:absolute;opacity:0;width:0;height:0}
+.tog label{display:flex;align-items:center;justify-content:center;padding:6px 8px;border-radius:7px;border:1.5px solid var(--border);font-size:.675rem;font-weight:600;color:var(--t2);cursor:pointer;transition:all .2s;text-align:center}
+.tog input:checked+label{background:var(--leaf-pale);border-color:var(--leaf);color:var(--leaf)}
+.seg{display:flex;background:var(--fog);border-radius:7px;padding:3px;gap:2px}
+.sgo{flex:1;text-align:center}.sgo input{position:absolute;opacity:0;width:0;height:0}
+.sgo label{display:block;padding:5px 2px;border-radius:5px;font-size:.6rem;font-weight:700;color:var(--t2);cursor:pointer;transition:all .2s}
+.sgo input:checked+label{background:var(--surface);color:var(--leaf);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.fselect{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:7px;font-size:.775rem;background:var(--surface);color:var(--text);outline:none;cursor:pointer;margin-bottom:.35rem}
+.fselect:focus{border-color:var(--leaf)}
+.fp-foot{padding:.75rem 1.125rem;border-top:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.btn-apply{width:100%;padding:.7rem;background:var(--leaf);color:#fff;border-radius:8px;font-size:.875rem;font-weight:800;border:none;cursor:pointer}
+.btn-apply:hover{opacity:.88}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--bnav-h) + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:flex-start;z-index:150;box-shadow:0 -3px 10px rgba(0,0,0,.06)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 4px;font-size:.5rem;font-weight:800;color:var(--t3);border:none;background:none;position:relative;min-height:var(--bnav-h);text-transform:uppercase;cursor:pointer;letter-spacing:.02em;transition:color .2s}
+.bn-item.on{color:var(--leaf)}
+.bn-item .bni{font-size:1.15rem;line-height:1}
+.bnav-sw{flex:1;display:flex;align-items:center;justify-content:center}
+.bn-sell-btn{width:44px;height:44px;background:var(--leaf);border-radius:50%;color:#fff;font-size:1.375rem;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(30,86,49,.4);border:none;cursor:pointer;margin-top:-8px;transition:transform .2s}
+.bn-sell-btn:hover{transform:scale(1.08)}
+.bn-badge{position:absolute;top:5px;right:calc(50% - 16px);background:#E53935;color:#fff;font-size:.45rem;font-weight:900;border-radius:9999px;padding:1px 4px;min-width:13px;text-align:center}
+
+/* ── MISC ── */
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
+@media(prefers-reduced-motion:reduce){.sco,.c-track,.lc,.fp{transition:none!important}}
+
+/* ── MANDI TICKER ── */
+.ticker-wrap{background:#0A1A0C;border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden;height:26px;display:flex;align-items:center}
+.ticker-label{background:var(--gold);color:#000;font-size:.5rem;font-weight:900;padding:0 9px;white-space:nowrap;flex-shrink:0;letter-spacing:.05em;height:100%;display:flex;align-items:center}
+.ticker-track{display:flex;animation:ticker 38s linear infinite;white-space:nowrap}
+.ticker-wrap:hover .ticker-track{animation-play-state:paused}
+.ticker-item{display:inline-flex;align-items:center;gap:4px;padding:0 1.25rem;font-size:.575rem;color:rgba(255,255,255,.82);font-variant-numeric:tabular-nums;border-right:1px solid rgba(255,255,255,.08)}
+.ticker-item .up{color:#66BB6A}.ticker-item .dn{color:#EF5350}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── WEATHER PILL ── */
+.weather-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:9999px;padding:2px 9px;font-size:.575rem;color:rgba(255,255,255,.85);flex-shrink:0}
+
+/* ── TRUST STATS BAR ── */
+.trust-bar{background:linear-gradient(90deg,var(--leaf),var(--leaf-mid));padding:.55rem .875rem;border-bottom:2px solid rgba(0,0,0,.15)}
+.trust-inner{max-width:1200px;margin-inline:auto;display:flex;justify-content:space-around;align-items:center}
+.trust-item{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1}
+.trust-num{font-family:Georgia,serif;font-size:1rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.trust-lbl{font-size:.48rem;color:rgba(255,255,255,.65);text-align:center;text-transform:uppercase;letter-spacing:.04em}
+.trust-sep{width:1px;height:28px;background:rgba(255,255,255,.2);flex-shrink:0}
+
+/* ── DUAL MINI BANNERS ── */
+.dual-banners{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;padding:.6rem .875rem;max-width:1200px;margin:0 auto}
+.mini-banner{border-radius:10px;overflow:hidden;position:relative;height:74px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;padding:.55rem .65rem;transition:transform .2s}
+.mini-banner:hover{transform:translateY(-2px)}
+.mini-banner h4{font-size:.6rem;font-weight:800;color:#fff;line-height:1.2;position:relative;z-index:1}
+.mini-banner p{font-size:.48rem;color:rgba(255,255,255,.8);position:relative;z-index:1;margin-top:1px}
+.mini-banner .mb-bg{position:absolute;inset:0}
+
+/* ── FLASH DEALS ── */
+.flash-sec{background:linear-gradient(135deg,#1A0C00,#3A1E00);border-radius:12px;padding:.875rem;margin-bottom:.875rem}
+.flash-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;flex-wrap:wrap;gap:.35rem}
+.flash-title{font-family:Georgia,serif;font-size:.9rem;font-weight:700;color:#FFD700;display:flex;align-items:center;gap:.35rem}
+.countdown{display:flex;align-items:center;gap:3px;background:rgba(255,215,0,.13);border:1px solid rgba(255,215,0,.3);border-radius:6px;padding:3px 8px}
+.cd-block{display:flex;flex-direction:column;align-items:center}
+.cd-num{font-family:Georgia,serif;font-size:.875rem;font-weight:800;color:#FFD700;font-variant-numeric:tabular-nums;line-height:1.1}
+.cd-lbl{font-size:.38rem;color:rgba(255,215,0,.6);text-transform:uppercase;letter-spacing:.06em}
+.cd-sep{font-size:.875rem;color:#FFD700;font-weight:800;opacity:.6;margin-bottom:6px}
+.flash-rail{display:flex;gap:.6rem;overflow-x:auto;scrollbar-width:none}
+.flash-rail::-webkit-scrollbar{display:none}
+.flash-card{flex:0 0 148px;background:rgba(255,255,255,.06);border:1px solid rgba(255,215,0,.2);border-radius:9px;overflow:hidden;cursor:pointer;transition:transform .2s}
+.flash-card:hover{transform:translateY(-2px)}
+.flash-img{height:88px;background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,255,255,.04));display:flex;align-items:center;justify-content:center;font-size:2.4rem;position:relative}
+.flash-disc-b{position:absolute;top:5px;left:5px;background:#E53935;color:#fff;font-size:.48rem;font-weight:900;padding:2px 5px;border-radius:3px}
+.flash-info{padding:.4rem .5rem .5rem}
+.flash-name{font-size:.6rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flash-price{font-size:.875rem;font-weight:800;color:#FFD700;font-variant-numeric:tabular-nums}
+.flash-old{font-size:.5rem;color:rgba(255,255,255,.38);text-decoration:line-through}
+
+/* ── CATEGORY EMOJI GRID ── */
+.cat-grid-sec{background:var(--surface);border-radius:12px;padding:.875rem;margin-bottom:.875rem;border:1px solid var(--border)}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.cat-cell{display:flex;flex-direction:column;align-items:center;gap:3px;padding:.6rem .25rem;border-radius:10px;cursor:pointer;transition:all .2s;background:var(--leaf-pale);border:1.5px solid transparent}
+.cat-cell:hover{background:var(--leaf);border-color:var(--leaf)}
+.cat-cell:hover .cat-lbl{color:#fff}
+.cat-icon{font-size:1.75rem;line-height:1}
+.cat-lbl{font-size:.5rem;font-weight:800;color:var(--leaf);text-align:center;text-transform:uppercase;letter-spacing:.03em;line-height:1.2}
+
+/* ── TRENDING SEARCHES ── */
+.trending-sec{margin-bottom:.875rem}
+.trending-lbl{font-size:.55rem;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;display:flex;align-items:center;gap:4px}
+.trending-row{display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.trending-row::-webkit-scrollbar{display:none}
+.trend-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:9999px;background:var(--surface);border:1.5px solid var(--border);font-size:.675rem;font-weight:600;color:var(--t2);white-space:nowrap;flex-shrink:0;cursor:pointer;transition:all .2s}
+.trend-chip:hover{background:var(--leaf);border-color:var(--leaf);color:#fff}
+
+/* ── MSP BANNER ── */
+.msp-banner{background:linear-gradient(135deg,var(--leaf-pale),var(--gold-lt));border:1.5px solid var(--gold);border-radius:10px;padding:.7rem 1rem;margin-bottom:.875rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:box-shadow .2s}
+.msp-banner:hover{box-shadow:0 4px 14px rgba(212,146,10,.15)}
+.msp-icon{font-size:1.75rem;flex-shrink:0}
+.msp-body{flex:1;min-width:0}
+.msp-title{font-size:.7rem;font-weight:800;color:var(--leaf);margin-bottom:2px}
+.msp-desc{font-size:.6rem;color:var(--t2);line-height:1.4}
+.msp-arr{color:var(--gold);font-size:1.1rem;flex-shrink:0}
+
+/* ── SELLER STORIES ── */
+.stories-sec{margin-bottom:.875rem}
+.stories-row{display:flex;gap:.65rem;overflow-x:auto;scrollbar-width:none;padding:.2rem .05rem}
+.stories-row::-webkit-scrollbar{display:none}
+.story-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0}
+.story-ring{width:58px;height:58px;border-radius:50%;padding:2.5px;background:linear-gradient(135deg,#F0C040,#1E5631);display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.story-ring:hover{transform:scale(1.06)}
+.story-ring.viewed{background:var(--border)}
+.story-av{width:100%;height:100%;border-radius:50%;background:var(--leaf-pale);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2.5px solid var(--surface)}
+.story-nm{font-size:.5rem;font-weight:700;color:var(--text);text-align:center;max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.story-sub{font-size:.44rem;color:var(--t3);text-align:center}
+
+/* ── GOVT SCHEME BANNER ── */
+.scheme-banner{background:linear-gradient(135deg,#0D47A1,#1565C0);border-radius:10px;padding:.75rem 1rem;margin-bottom:.875rem;cursor:pointer;display:flex;align-items:center;gap:.75rem;transition:opacity .2s}
+.scheme-banner:hover{opacity:.92}
+.scheme-icon{font-size:1.75rem;flex-shrink:0}
+.scheme-body{flex:1}
+.scheme-title{font-size:.7rem;font-weight:800;color:#fff;margin-bottom:2px}
+.scheme-desc{font-size:.575rem;color:rgba(255,255,255,.75);line-height:1.35}
+.scheme-arr{color:rgba(255,255,255,.55);font-size:1.1rem;flex-shrink:0}
+
+/* ── NEW BADGE & VERIFIED TICK ── */
+.new-badge{position:absolute;top:6px;left:6px;background:#1565C0;color:#fff;font-size:.44rem;font-weight:900;padding:2px 5px;border-radius:3px;letter-spacing:.04em;z-index:2}
+.vtick{display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;background:#1565C0;color:#fff;border-radius:50%;font-size:.42rem;margin-left:2px;flex-shrink:0}
+
+/* ── SOCIAL PROOF ── */
+.social-proof{font-size:.53rem;color:var(--t3);display:flex;align-items:center;gap:3px;margin-top:2px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#4CAF50;flex-shrink:0;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── SKELETON SHIMMER ── */
+@keyframes shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
+.skeleton-rail{display:flex;gap:.7rem;overflow:hidden;padding-bottom:.3rem}
+.sk-card{flex:0 0 168px;background:var(--surface);border-radius:10px;border:1.5px solid var(--border);overflow:hidden}
+.sk-img{height:120px;background:linear-gradient(90deg,var(--border) 0%,var(--fog) 50%,var(--border) 100%);background-size:600px 100%;animation:shimmer 1.4s infinite linear}
+.sk-line{height:10px;margin:.45rem .6rem .15rem;border-radius:3px;background:linear-gradient(90deg,var(--border) 0%,var(--fog) 50%,var(--border) 100%);background-size:600px 100%;animation:shimmer 1.4s infinite linear}
+.sk-line.sm{height:8px;width:70%;margin:.2rem .6rem}
+.sk-line.xs{height:7px;width:45%;margin:.15rem .6rem .5rem}
+
+/* ── NOTIFICATION BELL ── */
+.btn-notif{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;border:none;cursor:pointer;position:relative;flex-shrink:0;transition:background .2s}
+.btn-notif:hover{background:rgba(255,255,255,.2)}
+.notif-dot{position:absolute;top:3px;right:3px;width:7px;height:7px;background:#E53935;border-radius:50%;border:1.5px solid var(--hdr)}
+
+/* ── DARK MODE TOGGLE ── */
+.btn-theme{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.btn-theme:hover{background:rgba(255,255,255,.2)}
+
+/* ── ANIMATED TAB INDICATOR ── */
+.tab-indicator{position:absolute;bottom:0;height:2.5px;background:var(--leaf);border-radius:2px 2px 0 0;transition:left .25s cubic-bezier(.4,0,.2,1),width .25s cubic-bezier(.4,0,.2,1);pointer-events:none}
+
+/* ── VOICE SEARCH ── */
+.btn-voice{position:absolute;right:.45rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;font-size:.85rem;display:flex;align-items:center;line-height:1}
+.btn-voice:hover{color:var(--leaf)}
+
+/* ── PULL TO REFRESH ── */
+.ptr-wrap{display:flex;align-items:center;justify-content:center;height:0;overflow:hidden;transition:height .3s;background:var(--bg)}
+.ptr-spinner{width:22px;height:22px;border:2.5px solid var(--border);border-top-color:var(--leaf);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:460px){.hdr-acts .btn-in{display:none}}
+@media(max-width:340px){.hdr-acts .btn-lang{display:none}.hdr-acts .btn-sell{display:none}}
+@media(min-width:900px){
+  .bnav{display:none}
+  body{padding-bottom:0}
+  .sco{padding-bottom:0}
+  .mtabs-sec{top:88px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ MAIN HEADER ══════════════ -->
+<header class="mhdr" role="banner">
+  <div class="hdr-top">
+    <div class="logo">TAN<em>TRA</em></div>
+    <div class="srch-w">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="srch-inp" id="mainSrch" type="search" placeholder="Search crops, seeds, equipment…" aria-label="Search" onfocus="openSearch()" style="padding-right:2rem">
+      <button class="btn-voice" onclick="startVoiceSearch()" aria-label="Voice search">🎤</button>
+    </div>
+    <button class="btn-filter" onclick="openFilter()" id="filterBtn" aria-label="Filters">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      Filter
+    </button>
+    <div class="hdr-acts">
+      <button class="btn-notif" onclick="alert('3 new alerts')" aria-label="Notifications"><span>🔔</span><span class="notif-dot"></span></button>
+      <button class="btn-theme" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <button class="btn-lang" id="langBtn" onclick="toggleLang()">हिन्दी</button>
+      <button class="btn-in" onclick="alert('Login')">Login</button>
+      <button class="btn-sell" onclick="alert('Post an ad')">+ Sell</button>
+    </div>
+  </div>
+  <div class="loc-bar">
+    <div class="loc-i">
+      <button class="lpill" onclick="alert('Change district')"><span data-en="Pune" data-hi="पुणे">Pune</span> ▾</button>
+      <button class="rpill" id="radiusPill"><span data-en="25 km" data-hi="25 किमी">25 km</span> ▾</button>
+      <span class="weather-pill">☀️ 31°C · Good day to sell</span>
+      <span class="loc-st" data-en="Maharashtra, India" data-hi="महाराष्ट्र, भारत">Maharashtra, India</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════ MANDI TICKER ══════════════ -->
+<div class="ticker-wrap" aria-label="Live mandi prices">
+  <div class="ticker-label">📊 MANDI LIVE</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item">🌾 Wheat (Pune) <strong>₹2,275</strong>/q <span class="up">▲ 1.2%</span></span>
+      <span class="ticker-item">🫘 Tur Dal (Latur) <strong>₹8,800</strong>/q <span class="dn">▼ 0.8%</span></span>
+      <span class="ticker-item">🌿 Cotton (Akola) <strong>₹6,500</strong>/q <span class="up">▲ 2.1%</span></span>
+      <span class="ticker-item">🥜 Groundnut (Solapur) <strong>₹5,400</strong>/q <span class="up">▲ 0.5%</span></span>
+      <span class="ticker-item">🌾 Rice (Nagpur) <strong>₹3,100</strong>/q <span class="dn">▼ 0.3%</span></span>
+      <span class="ticker-item">🫘 Soybean (Latur) <strong>₹4,200</strong>/q <span class="up">▲ 1.8%</span></span>
+      <span class="ticker-item">🌽 Corn (Buldhana) <strong>₹1,650</strong>/q <span class="dn">▼ 0.6%</span></span>
+      <span class="ticker-item">🌾 Jowar (Osmanabad) <strong>₹2,100</strong>/q <span class="up">▲ 0.9%</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">🌾 Wheat (Pune) <strong>₹2,275</strong>/q <span class="up">▲ 1.2%</span></span>
+      <span class="ticker-item">🫘 Tur Dal (Latur) <strong>₹8,800</strong>/q <span class="dn">▼ 0.8%</span></span>
+      <span class="ticker-item">🌿 Cotton (Akola) <strong>₹6,500</strong>/q <span class="up">▲ 2.1%</span></span>
+      <span class="ticker-item">🥜 Groundnut (Solapur) <strong>₹5,400</strong>/q <span class="up">▲ 0.5%</span></span>
+      <span class="ticker-item">🌾 Rice (Nagpur) <strong>₹3,100</strong>/q <span class="dn">▼ 0.3%</span></span>
+      <span class="ticker-item">🫘 Soybean (Latur) <strong>₹4,200</strong>/q <span class="up">▲ 1.8%</span></span>
+      <span class="ticker-item">🌽 Corn (Buldhana) <strong>₹1,650</strong>/q <span class="dn">▼ 0.6%</span></span>
+      <span class="ticker-item">🌾 Jowar (Osmanabad) <strong>₹2,100</strong>/q <span class="up">▲ 0.9%</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- Active filter chips -->
+<div class="afc-bar" id="afcBar"><div class="afc-inner" id="afcInner"></div></div>
+
+<!-- ══════════════ MODULE TABS ══════════════ -->
+<nav class="mtabs-sec" aria-label="Categories" style="position:relative">
+  <div class="tab-indicator" id="tabIndicator"></div>
+  <div class="mtabs" id="modTabs">
+    <button class="mt on" data-en="Crops" data-hi="फसल" onclick="setTab(this)"><span class="ic">🌾</span>Crops</button>
+    <button class="mt" data-en="Seeds" data-hi="बीज" onclick="setTab(this)"><span class="ic">🌱</span>Seeds</button>
+    <button class="mt" data-en="Fertilizers" data-hi="उर्वरक" onclick="setTab(this)"><span class="ic">🧪</span>Fertilizers</button>
+    <button class="mt" data-en="Equipment" data-hi="उपकरण" onclick="setTab(this)"><span class="ic">🚜</span>Equipment</button>
+    <button class="mt" data-en="Animals" data-hi="पशु" onclick="setTab(this)"><span class="ic">🐄</span>Animals</button>
+    <button class="mt" data-en="Vegetables" data-hi="सब्जियाँ" onclick="setTab(this)"><span class="ic">🥬</span>Vegetables</button>
+    <button class="mt" data-en="Fishery" data-hi="मत्स्य" onclick="setTab(this)"><span class="ic">🐟</span>Fishery</button>
+    <button class="mt" data-en="Poultry" data-hi="पोल्ट्री" onclick="setTab(this)"><span class="ic">🐔</span>Poultry</button>
+  </div>
+</nav>
+
+<!-- ══════════════ HOME SCREEN ══════════════ -->
+<section class="car-sec" aria-label="Promotions">
+  <div class="c-track" id="cTrack">
+    <div class="c-slide"><div class="c-bg"><svg viewBox="0 0 900 270" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7A4500"/><stop offset="60%" stop-color="#C47A0A"/><stop offset="100%" stop-color="#E8B020"/></linearGradient></defs><rect width="900" height="270" fill="url(#g1)"/><circle cx="760" cy="65" r="55" fill="#FFE066" opacity=".18"/><circle cx="760" cy="65" r="36" fill="#FFE066" opacity=".3"/><circle cx="760" cy="65" r="24" fill="#FFE066" opacity=".55"/><path d="M0 200 C120 178 250 195 380 185 S580 170 720 183 S820 196 900 183 L900 270 L0 270Z" fill="#5A3000" opacity=".4"/><path d="M0 228 C150 220 300 225 500 217 S720 213 900 223 L900 270 L0 270Z" fill="#3A1E00" opacity=".5"/></svg></div><div class="c-txt" style="color:#1A0C00"><h2 data-en="Rabi Season — Sell Your Wheat Faster" data-hi="रबी सीज़न — गेहूं जल्दी बेचें">Rabi Season — Sell Your Wheat Faster</h2><p data-en="Connect directly with buyers. No middlemen." data-hi="सीधे खरीदारों से जुड़ें। बेहतर दाम।">Connect directly with buyers. No middlemen.</p><button class="c-btn" style="background:#1E5631;color:#fff" data-en="Browse Crops →" data-hi="फसल देखें →">Browse Crops →</button></div></div>
+    <div class="c-slide"><div class="c-bg"><svg viewBox="0 0 900 270" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0A2A16"/><stop offset="60%" stop-color="#1E5631"/><stop offset="100%" stop-color="#2E7A45"/></linearGradient></defs><rect width="900" height="270" fill="url(#g2)"/><circle cx="620" cy="50" r="80" fill="#3A8050" opacity=".2"/><circle cx="790" cy="130" r="55" fill="#3A8050" opacity=".18"/><g transform="translate(680,55)" stroke="#6EC98A" stroke-width="3" fill="none" opacity=".5"><path d="M0 120 Q0 60 30 30 Q50 10 70 20"/><path d="M30 80 Q20 50 40 30"/><path d="M0 120 Q-10 80 -40 70"/></g></svg></div><div class="c-txt" style="color:#fff"><h2 data-en="Certified Seeds — Kharif 2026 Available" data-hi="प्रमाणित बीज — खरीफ 2026 उपलब्ध">Certified Seeds — Kharif 2026 Available</h2><p data-en="Verified sellers, guaranteed germination." data-hi="प्रमाणित विक्रेता, अंकुरण की गारंटी।">Verified sellers, guaranteed germination.</p><button class="c-btn" style="background:#F0C040;color:#1A0C00" data-en="Shop Seeds →" data-hi="बीज खरीदें →">Shop Seeds →</button></div></div>
+    <div class="c-slide"><div class="c-bg"><svg viewBox="0 0 900 270" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0F1E2D"/><stop offset="60%" stop-color="#1A3550"/><stop offset="100%" stop-color="#234D72"/></linearGradient></defs><rect width="900" height="270" fill="url(#g3)"/><g opacity=".14" fill="none" stroke="#5090C0" stroke-width="8"><circle cx="780" cy="100" r="68"/><circle cx="780" cy="100" r="48"/></g><circle cx="780" cy="100" r="17" fill="#E8A020" opacity=".7"/></svg></div><div class="c-txt" style="color:#fff"><h2 data-en="Rent Farm Equipment Near You" data-hi="अपने पास उपकरण किराए पर लें">Rent Farm Equipment Near You</h2><p data-en="Tractor, Rotavator &amp; more. Affordable daily rates." data-hi="ट्रैक्टर, रोटावेटर। सस्ती दैनिक दरें।">Tractor, Rotavator &amp; more. Affordable daily rates.</p><button class="c-btn" style="background:#E8A020;color:#000" data-en="View Equipment →" data-hi="उपकरण देखें →">View Equipment →</button></div></div>
+  </div>
+  <button class="c-arr p" onclick="moveSlide(-1)" aria-label="Previous">&#8592;</button>
+  <button class="c-arr n" onclick="moveSlide(1)" aria-label="Next">&#8594;</button>
+  <div class="c-dots" id="cDots" role="tablist"></div>
+</section>
+
+<!-- ══════════════ TRUST STATS BAR ══════════════ -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><span class="trust-num" data-target="12400" id="tFarmers">12,400+</span><span class="trust-lbl">Farmers</span></div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><span class="trust-num" data-target="48" id="tDistricts">48</span><span class="trust-lbl">Districts</span></div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><span class="trust-num" id="tTraded">₹4.2Cr+</span><span class="trust-lbl">Traded</span></div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><span class="trust-num" data-target="98" id="tSatisfied">98%</span><span class="trust-lbl">Satisfied</span></div>
+  </div>
+</div>
+
+<!-- ══════════════ DUAL MINI BANNERS ══════════════ -->
+<div class="dual-banners">
+  <div class="mini-banner" onclick="alert('Kharif Sale!')">
+    <div class="mb-bg"><svg viewBox="0 0 300 74" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="mb1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1E5631"/><stop offset="100%" stop-color="#4CAF50"/></linearGradient></defs><rect width="300" height="74" fill="url(#mb1)"/><circle cx="240" cy="20" r="35" fill="#fff" opacity=".07"/></svg></div>
+    <h4>🌱 Kharif Seeds Sale</h4>
+    <p>Upto 20% off · Limited stock</p>
+  </div>
+  <div class="mini-banner" onclick="alert('Tractor Rentals!')">
+    <div class="mb-bg"><svg viewBox="0 0 300 74" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><defs><linearGradient id="mb2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7A4500"/><stop offset="100%" stop-color="#D4920A"/></linearGradient></defs><rect width="300" height="74" fill="url(#mb2)"/><circle cx="240" cy="20" r="35" fill="#fff" opacity=".07"/></svg></div>
+    <h4>🚜 Rent a Tractor</h4>
+    <p>Starting ₹800/day · Near you</p>
+  </div>
+</div>
+
+<main class="hmain">
+  <div class="w">
+    <!-- CATEGORY EMOJI GRID -->
+    <div class="cat-grid-sec">
+      <div class="sechd" style="margin-bottom:.65rem"><h2 class="sttl" data-en="Browse Categories" data-hi="श्रेणियाँ">Browse Categories</h2></div>
+      <div class="cat-grid">
+        <div class="cat-cell" onclick="setTabById(0)"><div class="cat-icon">🌾</div><div class="cat-lbl">Crops</div></div>
+        <div class="cat-cell" onclick="setTabById(1)"><div class="cat-icon">🌱</div><div class="cat-lbl">Seeds</div></div>
+        <div class="cat-cell" onclick="setTabById(2)"><div class="cat-icon">🧪</div><div class="cat-lbl">Fertilizers</div></div>
+        <div class="cat-cell" onclick="setTabById(3)"><div class="cat-icon">🚜</div><div class="cat-lbl">Equipment</div></div>
+        <div class="cat-cell" onclick="setTabById(4)"><div class="cat-icon">🐄</div><div class="cat-lbl">Animals</div></div>
+        <div class="cat-cell" onclick="setTabById(5)"><div class="cat-icon">🥬</div><div class="cat-lbl">Vegetables</div></div>
+        <div class="cat-cell" onclick="setTabById(6)"><div class="cat-icon">🐟</div><div class="cat-lbl">Fishery</div></div>
+        <div class="cat-cell" onclick="setTabById(7)"><div class="cat-icon">🐔</div><div class="cat-lbl">Poultry</div></div>
+      </div>
+    </div>
+
+    <!-- TRENDING SEARCHES -->
+    <div class="trending-sec">
+      <div class="trending-lbl">🔥 Trending Searches</div>
+      <div class="trending-row">
+        <button class="trend-chip" onclick="trendSearch('Wheat')">🌾 Wheat</button>
+        <button class="trend-chip" onclick="trendSearch('Gir Cow')">🐄 Gir Cow</button>
+        <button class="trend-chip" onclick="trendSearch('Rotavator')">🚜 Rotavator</button>
+        <button class="trend-chip" onclick="trendSearch('BT Cotton')">🌿 BT Cotton</button>
+        <button class="trend-chip" onclick="trendSearch('Tomato Seeds')">🍅 Tomato Seeds</button>
+        <button class="trend-chip" onclick="trendSearch('Urea')">🧪 Urea</button>
+        <button class="trend-chip" onclick="trendSearch('Buffalo')">🐃 Buffalo</button>
+        <button class="trend-chip" onclick="trendSearch('Soybean')">🫘 Soybean</button>
+      </div>
+    </div>
+
+    <!-- FLASH DEALS WITH COUNTDOWN -->
+    <div class="flash-sec" aria-label="Flash Deals">
+      <div class="flash-hd">
+        <div class="flash-title">⚡ Flash Deals</div>
+        <div class="countdown" aria-label="Time remaining">
+          <div class="cd-block"><span class="cd-num" id="cdH">02</span><span class="cd-lbl">Hrs</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-block"><span class="cd-num" id="cdM">14</span><span class="cd-lbl">Min</span></div>
+          <span class="cd-sep">:</span>
+          <div class="cd-block"><span class="cd-num" id="cdS">33</span><span class="cd-lbl">Sec</span></div>
+        </div>
+      </div>
+      <div class="flash-rail" id="flashRail"></div>
+    </div>
+
+    <!-- MSP PRICE BANNER -->
+    <div class="msp-banner" onclick="alert('MSP 2025-26: Wheat ₹2,275 | Paddy ₹2,300 | Tur ₹7,550 | Cotton ₹7,121 per quintal')">
+      <div class="msp-icon">🏛️</div>
+      <div class="msp-body">
+        <div class="msp-title">Govt MSP for Wheat: ₹2,275/q — Know your rights</div>
+        <div class="msp-desc">Minimum Support Price 2025-26 · Tap to view all crops MSP rates</div>
+      </div>
+      <div class="msp-arr">›</div>
+    </div>
+
+    <!-- GOVT SCHEME BANNER -->
+    <div class="scheme-banner" onclick="alert('PM-KISAN: ₹6,000/year direct benefit. Check eligibility at pmkisan.gov.in')">
+      <div class="scheme-icon">🇮🇳</div>
+      <div class="scheme-body">
+        <div class="scheme-title">PM-KISAN — ₹6,000/year direct to your account</div>
+        <div class="scheme-desc">Check eligibility · Apply online · Instant status update</div>
+      </div>
+      <div class="scheme-arr">›</div>
+    </div>
+
+    <!-- TOP SELLER STORIES -->
+    <div class="stories-sec">
+      <div class="sechd" style="margin-bottom:.55rem"><h2 class="sttl" data-en="🌟 Top Sellers" data-hi="🌟 शीर्ष विक्रेता">🌟 Top Sellers</h2></div>
+      <div class="stories-row">
+        <div class="story-item" onclick="alert('Krishnamurthy Seeds — 45 listings')"><div class="story-ring"><div class="story-av">🌱</div></div><div class="story-nm">Krishnamurthy</div><div class="story-sub">45 listings</div></div>
+        <div class="story-item" onclick="alert('Satish Dairy Farm — 28 listings')"><div class="story-ring"><div class="story-av">🐄</div></div><div class="story-nm">Satish Dairy</div><div class="story-sub">28 listings</div></div>
+        <div class="story-item" onclick="alert('Shree Agro — 18 listings')"><div class="story-ring"><div class="story-av">🌿</div></div><div class="story-nm">Shree Agro</div><div class="story-sub">18 listings</div></div>
+        <div class="story-item" onclick="alert('Kisan Equipment — 12 listings')"><div class="story-ring viewed"><div class="story-av">🚜</div></div><div class="story-nm">Kisan Equip.</div><div class="story-sub">12 listings</div></div>
+        <div class="story-item" onclick="alert('Ramesh Patil — 12 listings')"><div class="story-ring viewed"><div class="story-av">👨‍🌾</div></div><div class="story-nm">Ramesh Patil</div><div class="story-sub">12 listings</div></div>
+        <div class="story-item" onclick="alert('Nashik Poultry — 8 listings')"><div class="story-ring"><div class="story-av">🐔</div></div><div class="story-nm">Nashik Poultry</div><div class="story-sub">8 listings</div></div>
+      </div>
+    </div>
+
+    <!-- PULL TO REFRESH -->
+    <div class="ptr-wrap" id="ptrWrap"><div class="ptr-spinner" id="ptrSpinner" style="display:none"></div></div>
+
+    <section class="sec" aria-labelledby="feat-h">
+      <div class="sechd"><h2 class="sttl" id="feat-h" data-en="⭐ Featured" data-hi="⭐ विशेष">⭐ Featured</h2><button class="see" data-en="See all →" data-hi="सभी →">See all →</button></div>
+      <div class="skeleton-rail" id="featSkel"><div class="sk-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line sm"></div><div class="sk-line xs"></div></div><div class="sk-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line sm"></div><div class="sk-line xs"></div></div><div class="sk-card"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line sm"></div><div class="sk-line xs"></div></div></div>
+      <div class="rail" id="featRail" role="list" style="display:none"></div>
+    </section>
+    <div class="msec">
+      <div class="msechd"><h2 class="sttl" data-en="🌾 Crops" data-hi="🌾 फसल">🌾 Crops</h2><button class="see" data-en="See all →" data-hi="सभी →">See all →</button></div>
+      <div class="cchips"><button class="chip on">🌾 Wheat</button><button class="chip">🌾 Rice</button><button class="chip">🌽 Corn</button><button class="chip">🫘 Soybean</button><button class="chip">🫘 Tur Dal</button><button class="chip">🌿 Cotton</button></div>
+      <div class="rail" id="cropsRail" role="list"></div>
+    </div>
+    <div class="msec">
+      <div class="msechd"><h2 class="sttl" data-en="🌱 Seeds" data-hi="🌱 बीज">🌱 Seeds</h2><button class="see" data-en="See all →" data-hi="सभी →">See all →</button></div>
+      <div class="cchips"><button class="chip on">🌾 Wheat Seeds</button><button class="chip">🌾 Paddy</button><button class="chip">🌿 Cotton</button><button class="chip">🍅 Tomato</button><button class="chip">🧅 Onion</button><button class="chip">🥜 Groundnut</button></div>
+      <div class="rail" id="seedsRail" role="list"></div>
+    </div>
+    <section class="sec" aria-labelledby="biz-h">
+      <div class="sechd"><h2 class="sttl" id="biz-h" data-en="🏪 Businesses" data-hi="🏪 व्यापारी">🏪 Businesses</h2><button class="see" data-en="See all →" data-hi="सभी →">See all →</button></div>
+      <div class="bgrid" id="bizGrid" role="list"></div>
+    </section>
+    <section class="sec" aria-labelledby="rec-h">
+      <div class="sechd"><h2 class="sttl" id="rec-h" data-en="🕐 Recently Added" data-hi="🕐 हाल में जोड़े">🕐 Recently Added</h2><button class="see" data-en="See all →" data-hi="सभी →">See all →</button></div>
+      <div class="rgrid" id="recentGrid" role="list"></div>
+    </section>
+  </div>
+  <footer class="ft"><div class="ftg"><div><div class="ftlogo">TAN<em>TRA</em></div><div class="fttag" data-en="India's hyperlocal agri-marketplace." data-hi="भारत का हाइपरलोकल कृषि बाजार।">India's hyperlocal agri-marketplace.</div></div><div class="ftcol"><h4>Browse</h4><ul class="ftlinks"><li><a href="#">Crops</a></li><li><a href="#">Seeds</a></li><li><a href="#">Equipment</a></li><li><a href="#">Animals</a></li></ul></div><div class="ftcol"><h4>Sellers</h4><ul class="ftlinks"><li><a href="#">Post Listing</a></li><li><a href="#">Premium Plans</a></li><li><a href="#">Seller Guide</a></li></ul></div><div class="ftcol"><h4>Help</h4><ul class="ftlinks"><li><a href="#">Contact Us</a></li><li><a href="#">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div></div><div class="ftbot">© 2026 Tantra Agri Technologies Pvt. Ltd. — Empowering Indian Farmers</div></footer>
+</main>
+
+<!-- ══════════════ DETAIL SCREEN ══════════════ -->
+<div id="sc-detail" class="sco" role="dialog" aria-modal="true">
+  <div class="sco-hdr">
+    <button class="sco-back" onclick="goBack()" aria-label="Back">&#8592;</button>
+    <span class="sco-title" id="detTitle">Listing Detail</span>
+    <div class="sco-acts">
+      <button class="sco-ib" id="detHrtBtn" onclick="toggleWishlistDetail()" aria-label="Save">🤍</button>
+      <button class="sco-ib" onclick="alert('Share link copied!')" aria-label="Share">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="detContent"></div>
+  <div class="det-cta">
+    <button class="btn-contact-lg" onclick="revealContact(null, true)">📞 View Contact</button>
+    <button class="btn-chat-lg" onclick="alert('Chat coming soon')">💬</button>
+  </div>
+</div>
+
+<!-- ══════════════ WISHLIST SCREEN ══════════════ -->
+<div id="sc-wishlist" class="sco" role="dialog" aria-modal="true">
+  <div class="sco-hdr">
+    <button class="sco-back" onclick="goBack()" aria-label="Back">&#8592;</button>
+    <span class="sco-title" data-en="Saved Listings" data-hi="सहेजी गई">Saved Listings</span>
+    <div class="sco-acts"><span id="wlCount" style="font-size:.7rem;opacity:.7"></span></div>
+  </div>
+  <div id="wlContent"></div>
+</div>
+
+<!-- ══════════════ NEARBY SCREEN ══════════════ -->
+<div id="sc-nearby" class="sco" role="dialog" aria-modal="true">
+  <div class="sco-hdr">
+    <button class="sco-back" onclick="goBack()" aria-label="Back">&#8592;</button>
+    <span class="sco-title" data-en="Nearby Listings" data-hi="आस-पास">Nearby Listings</span>
+  </div>
+  <div class="nb-banner">
+    <h3 data-en="Find listings around you" data-hi="अपने पास लिस्टिंग खोजें">Find listings around you</h3>
+    <p data-en="Allow location access for distance-based results." data-hi="दूरी के अनुसार परिणाम के लिए स्थान की अनुमति दें।">Allow location access for distance-based results.</p>
+    <button class="btn-gps" onclick="requestGPS()">📍 Use My Location</button>
+  </div>
+  <div class="nb-rad">
+    <button class="nb-radc" data-v="5" onclick="setNbRad(this)">5 km</button>
+    <button class="nb-radc on" data-v="10" onclick="setNbRad(this)">10 km</button>
+    <button class="nb-radc" data-v="25" onclick="setNbRad(this)">25 km</button>
+    <button class="nb-radc" data-v="50" onclick="setNbRad(this)">50 km</button>
+    <button class="nb-radc" data-v="100" onclick="setNbRad(this)">100 km</button>
+  </div>
+  <div class="pad-grid"><div class="rgrid" id="nbGrid" role="list"></div></div>
+</div>
+
+<!-- ══════════════ SEARCH SCREEN ══════════════ -->
+<div id="sc-search" class="sco" role="dialog" aria-modal="true">
+  <div class="sco-hdr srch-hdr">
+    <button class="sco-back" onclick="goBack()" aria-label="Back">&#8592;</button>
+    <div class="srch-qw">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="srch-q" id="srchQ" type="search" placeholder="Search crops, seeds, equipment…" oninput="doSearch()" aria-label="Search">
+    </div>
+    <button onclick="goBack()" style="color:#fff;font-size:.75rem;white-space:nowrap;border:none;background:none;cursor:pointer">Cancel</button>
+  </div>
+  <div class="sort-bar">
+    <button class="sort-btn on" onclick="setSort(this,'rel')">Relevance</button>
+    <button class="sort-btn" onclick="setSort(this,'new')">Newest</button>
+    <button class="sort-btn" onclick="setSort(this,'asc')">Price ↑</button>
+    <button class="sort-btn" onclick="setSort(this,'desc')">Price ↓</button>
+    <button class="sort-btn" onclick="setSort(this,'near')">Nearest</button>
+  </div>
+  <div class="srch-results">
+    <div class="srch-meta" id="srchMeta"></div>
+    <div class="rgrid" id="srchGrid" role="list"></div>
+  </div>
+</div>
+
+<!-- ══════════════ FILTER PANEL ══════════════ -->
+<div class="fp-ov" id="fpOv" onclick="closeFilter()"></div>
+<aside class="fp" id="fp" role="dialog" aria-modal="true" aria-label="Filters">
+  <div class="fp-hd">
+    <span class="fp-title">Filters</span>
+    <div style="display:flex;align-items:center;gap:.6rem">
+      <button class="fp-reset" onclick="resetFilters()">Reset all</button>
+      <button class="fp-close" onclick="closeFilter()">✕</button>
+    </div>
+  </div>
+  <div class="fp-body">
+    <div class="fp-sec">
+      <div class="fp-lbl">Listing Type</div>
+      <div class="rg">
+        <div class="ro"><input type="radio" name="lt" id="lt-all" value="" checked><label for="lt-all">All</label></div>
+        <div class="ro"><input type="radio" name="lt" id="lt-sell" value="SELL"><label for="lt-sell">🏷 Sell</label></div>
+        <div class="ro"><input type="radio" name="lt" id="lt-rent" value="RENT"><label for="lt-rent">🔄 Rent</label></div>
+      </div>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-lbl">Price Range (₹)</div>
+      <div class="price-row">
+        <input class="pinp" type="number" id="pmin" placeholder="Min" min="0" step="100">
+        <span class="price-sep">—</span>
+        <input class="pinp" type="number" id="pmax" placeholder="Max" min="0" step="100">
+      </div>
+      <div class="price-track"><div class="price-fill"></div></div>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-lbl">Location</div>
+      <select class="fselect" id="fdistrict">
+        <option value="">All Districts</option>
+        <option>Pune</option><option>Nashik</option><option>Solapur</option>
+        <option>Kolhapur</option><option>Aurangabad</option><option>Nagpur</option>
+        <option>Satara</option><option>Sangli</option><option>Latur</option>
+        <option>Nanded</option><option>Akola</option><option>Amravati</option>
+      </select>
+      <select class="fselect" id="fstate">
+        <option value="">All States</option>
+        <option>Maharashtra</option><option>Karnataka</option>
+        <option>Madhya Pradesh</option><option>Uttar Pradesh</option>
+        <option>Punjab</option><option>Gujarat</option>
+      </select>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-lbl">Nearby Radius</div>
+      <div class="rad-g" id="radG">
+        <button class="radc" data-v="5" onclick="setRadius(this)">5 km</button>
+        <button class="radc" data-v="10" onclick="setRadius(this)">10 km</button>
+        <button class="radc on" data-v="25" onclick="setRadius(this)">25 km ✓</button>
+        <button class="radc" data-v="50" onclick="setRadius(this)">50 km</button>
+        <button class="radc" data-v="100" onclick="setRadius(this)">100 km</button>
+        <button class="radc" data-v="" onclick="setRadius(this)">All India</button>
+      </div>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-lbl">Seller Type</div>
+      <div class="tog-g">
+        <div class="tog"><input type="radio" name="st" id="st-all" value="ALL" checked><label for="st-all">All Sellers</label></div>
+        <div class="tog"><input type="radio" name="st" id="st-sub" value="SUBSCRIBED"><label for="st-sub">⭐ Premium Only</label></div>
+      </div>
+    </div>
+    <div class="fp-sec" style="border-bottom:none">
+      <div class="fp-lbl">Posted Within</div>
+      <div class="seg">
+        <div class="sgo"><input type="radio" name="pw" id="pw-all" value="ALL" checked><label for="pw-all">Any</label></div>
+        <div class="sgo"><input type="radio" name="pw" id="pw-t" value="TODAY"><label for="pw-t">Today</label></div>
+        <div class="sgo"><input type="radio" name="pw" id="pw-w" value="WEEK"><label for="pw-w">Week</label></div>
+        <div class="sgo"><input type="radio" name="pw" id="pw-m" value="MONTH"><label for="pw-m">Month</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="fp-foot"><button class="btn-apply" onclick="applyFilters()">Apply Filters</button></div>
+</aside>
+
+<!-- ══════════════ BOTTOM NAV ══════════════ -->
+<nav class="bnav" role="navigation" aria-label="App navigation">
+  <button class="bn-item on" id="bnHome" onclick="goHome()" aria-label="Home"><span class="bni">🏠</span>Home</button>
+  <button class="bn-item" id="bnNearby" onclick="showNearby()" aria-label="Nearby"><span class="bni">📍</span>Nearby</button>
+  <div class="bnav-sw"><button class="bn-sell-btn" onclick="alert('Post an ad')" aria-label="Sell">+</button></div>
+  <button class="bn-item" id="bnWishlist" onclick="showWishlist()" aria-label="Saved"><span class="bni">♥</span>Saved<span class="bn-badge" id="wlBadge" style="display:none">0</span></button>
+  <button class="bn-item" id="bnMe" onclick="alert('Login to view profile')" aria-label="Profile"><span class="bni">👤</span>Me</button>
+</nav>
+
+<script>
+/* ══ DATA ══ */
+const LISTINGS = [
+  {id:'L001',emoji:'🌾',name:'Wheat — Sharbati Grade',cat:'Crops',catId:1,type:'SELL',price:1936,unit:'quintal',actualPrice:2200,disc:12,neg:true,plan:'PREMIUM',bc:'gb',loc:{v:'Solapur',d:'Solapur',s:'Maharashtra'},dist:3.2,ago:'2 days ago',qty:50,attrs:{Variety:'Sharbati',Grade:'A+',Moisture:'12%',Season:'Rabi 2026',Cleaned:'Yes','Min Order':'5 quintal'},seller:{name:'Ramesh Patil',plan:'PREMIUM',loc:'Solapur, Maharashtra',emoji:'👨‍🌾',rating:4.8,count:12},views:248,reveals:18,section:'featured'},
+  {id:'L002',emoji:'🐄',name:'Gir Desi Cow (Milch)',cat:'Animals',catId:5,type:'SELL',price:38000,unit:'head',neg:false,plan:'ENTERPRISE',bc:'amb',loc:{v:'Kolhapur',d:'Kolhapur',s:'Maharashtra'},dist:8.1,ago:'1 day ago',qty:2,attrs:{Breed:'Gir',Age:'4 years',MilkPerDay:'10–12 L',Pregnant:'Yes',Vaccinated:'Yes','Horn Type':'Natural'},seller:{name:'Satish Dairy Farm',plan:'ENTERPRISE',loc:'Kolhapur, Maharashtra',emoji:'🧑‍🌾',rating:4.9,count:28},views:189,reveals:24,section:'featured'},
+  {id:'L003',emoji:'🚜',name:'Rotavator — 7 ft, 55 HP',cat:'Equipment',catId:4,type:'RENT',price:1200,unit:'day',neg:false,plan:'STANDARD',bc:'greenb',loc:{v:'Pune',d:'Pune',s:'Maharashtra'},dist:5.7,ago:'3 days ago',qty:1,attrs:{Brand:'Fieldking',Width:'7 ft',HP:'55','Condition':'Good','Fuel Type':'Diesel','Availability':'Weekends'},seller:{name:'Kisan Equipment Rentals',plan:'STANDARD',loc:'Pune, Maharashtra',emoji:'👨‍🔧',rating:4.5,count:8},views:312,reveals:41,section:'featured'},
+  {id:'L004',emoji:'🌱',name:'Hybrid Tomato Seeds',cat:'Seeds',catId:2,type:'SELL',price:480,unit:'kg',neg:false,plan:'PREMIUM',bc:'gb',loc:{v:'Nashik',d:'Nashik',s:'Maharashtra'},dist:12.4,ago:'5 hours ago',qty:100,attrs:{Variety:'Arka Rakshak',Germination:'92%','Packet Size':'10g','Certified By':'ICAR','Shelf Life':'2 years'},seller:{name:'Krishnamurthy Seeds',plan:'ENTERPRISE',loc:'Pune, Maharashtra',emoji:'🌱',rating:4.9,count:45},views:156,reveals:9,section:'featured'},
+  {id:'L005',emoji:'🧪',name:'DAP Fertilizer — 50 kg',cat:'Fertilizers',catId:3,type:'SELL',price:1350,unit:'bag',neg:false,plan:'STANDARD',bc:'greenb',loc:{v:'Satara',d:'Satara',s:'Maharashtra'},dist:18,ago:'1 day ago',qty:200,attrs:{Brand:'IFFCO',Composition:'18:46:0',Weight:'50 kg',Validity:'2027',MRP:'₹1,400'},seller:{name:'Bharat Agro Inputs',plan:'STANDARD',loc:'Satara, Maharashtra',emoji:'🧑‍🌾',rating:4.3,count:6},views:98,reveals:12,section:'featured'},
+  {id:'L006',emoji:'🐔',name:'Country Chicken (Desi)',cat:'Poultry',catId:8,type:'SELL',price:280,unit:'bird',neg:true,plan:'BASIC',bc:'',loc:{v:'Amravati',d:'Amravati',s:'Maharashtra'},dist:22,ago:'4 hours ago',qty:30,attrs:{Breed:'Desi',Age:'4 months','Avg Weight':'1.2 kg','Raised':'Free range'},seller:{name:'Suresh Poultry',plan:'BASIC',loc:'Amravati, Maharashtra',emoji:'👩‍🌾',rating:4.0,count:3},views:67,reveals:5,section:'featured'},
+  {id:'L007',emoji:'🌾',name:'Wheat — 147 Variety',cat:'Crops',catId:1,type:'SELL',price:1794,unit:'quintal',actualPrice:1950,disc:8,neg:true,plan:'BASIC',bc:'',loc:{v:'Ahmednagar',d:'Ahmednagar',s:'Maharashtra'},dist:null,ago:'2 days ago',qty:80,attrs:{Variety:'147',Season:'Rabi',Moisture:'11%',Grade:'B+'},seller:{name:'Anil Shinde',plan:'BASIC',loc:'Ahmednagar, Maharashtra',emoji:'👨‍🌾',rating:3.9,count:2},views:87,reveals:6,section:'crops'},
+  {id:'L008',emoji:'🫘',name:'Soybean — Yellow Grade',cat:'Crops',catId:1,type:'SELL',price:4200,unit:'quintal',neg:false,plan:'BASIC',bc:'',loc:{v:'Latur',d:'Latur',s:'Maharashtra'},dist:null,ago:'3 days ago',qty:40,attrs:{Grade:'FAQ',Moisture:'8%',Season:'Kharif',Purity:'99%'},seller:{name:'Praveen Kulkarni',plan:'BASIC',loc:'Latur, Maharashtra',emoji:'🧑‍🌾',rating:4.1,count:4},views:112,reveals:8,section:'crops'},
+  {id:'L009',emoji:'🌿',name:'Cotton — Long Staple',cat:'Crops',catId:1,type:'SELL',price:6500,unit:'quintal',neg:false,plan:'PREMIUM',bc:'gb',loc:{v:'Aurangabad',d:'Aurangabad',s:'Maharashtra'},dist:null,ago:'1 day ago',qty:20,attrs:{Variety:'Bt Cotton',Staple:'32mm',Grade:'MECH-1',Season:'Kharif'},seller:{name:'Shree Agro Traders',plan:'PREMIUM',loc:'Aurangabad, Maharashtra',emoji:'🌿',rating:4.7,count:18},views:203,reveals:15,section:'crops'},
+  {id:'L010',emoji:'🌾',name:'Jowar — White Premium',cat:'Crops',catId:1,type:'SELL',price:2100,unit:'quintal',neg:true,plan:'BASIC',bc:'',loc:{v:'Osmanabad',d:'Osmanabad',s:'Maharashtra'},dist:null,ago:'4 days ago',qty:60,attrs:{Color:'White',Grade:'A',Season:'Rabi',Moisture:'9%'},seller:{name:'Maruti Jadhav',plan:'BASIC',loc:'Osmanabad, Maharashtra',emoji:'👨‍🌾',rating:4.0,count:3},views:54,reveals:3,section:'crops'},
+  {id:'L011',emoji:'🫘',name:'Tur Dal — Cleaned',cat:'Crops',catId:1,type:'SELL',price:8800,unit:'quintal',neg:false,plan:'PREMIUM',bc:'gb',loc:{v:'Nanded',d:'Nanded',s:'Maharashtra'},dist:null,ago:'6 hours ago',qty:15,attrs:{Grade:'A+',Cleaned:'Yes',Moisture:'10%',Origin:'Marathwada'},seller:{name:'Nanded Agro Traders',plan:'PREMIUM',loc:'Nanded, Maharashtra',emoji:'🧑‍🌾',rating:4.6,count:11},views:178,reveals:19,section:'crops'},
+  {id:'L012',emoji:'🌽',name:'Sweet Corn',cat:'Crops',catId:1,type:'SELL',price:1650,unit:'quintal',neg:false,plan:'BASIC',bc:'',loc:{v:'Buldhana',d:'Buldhana',s:'Maharashtra'},dist:null,ago:'5 days ago',qty:25,attrs:{Variety:'Sweet',Season:'Rabi',Grade:'FAQ',Moisture:'13%'},seller:{name:'Ram Deshmukh',plan:'BASIC',loc:'Buldhana, Maharashtra',emoji:'👩‍🌾',rating:3.8,count:1},views:43,reveals:2,section:'crops'},
+  {id:'L013',emoji:'🌱',name:'Rabi Wheat Seeds HD 2967',cat:'Seeds',catId:2,type:'SELL',price:65,unit:'kg',neg:false,plan:'BASIC',bc:'',loc:{v:'Pune',d:'Pune',s:'Maharashtra'},dist:null,ago:'1 day ago',qty:500,attrs:{Variety:'HD 2967',Germination:'95%',Treated:'Yes',Certified:'MSSC'},seller:{name:'Satish Seeds',plan:'BASIC',loc:'Pune, Maharashtra',emoji:'🌱',rating:4.2,count:5},views:91,reveals:7,section:'seeds'},
+  {id:'L014',emoji:'🌾',name:'Hybrid Rice — Pusa 1121',cat:'Seeds',catId:2,type:'SELL',price:320,unit:'kg',neg:false,plan:'STANDARD',bc:'greenb',loc:{v:'Nagpur',d:'Nagpur',s:'Maharashtra'},dist:null,ago:'2 days ago',qty:200,attrs:{Variety:'Pusa 1121',Germination:'90%',Season:'Kharif',Certified:'ICAR'},seller:{name:'Nagpur Seeds Co.',plan:'STANDARD',loc:'Nagpur, Maharashtra',emoji:'🌱',rating:4.4,count:9},views:134,reveals:11,section:'seeds'},
+  {id:'L015',emoji:'🌿',name:'BT Cotton Seeds 450g',cat:'Seeds',catId:2,type:'SELL',price:765,unit:'pkt',actualPrice:850,disc:10,neg:false,plan:'PREMIUM',bc:'gb',loc:{v:'Akola',d:'Akola',s:'Maharashtra'},dist:null,ago:'3 hours ago',qty:1000,attrs:{Hybrid:'Bt Hybrid','Pkt Weight':'450g',Season:'Kharif',Germination:'88%'},seller:{name:'Krishnamurthy Seeds',plan:'ENTERPRISE',loc:'Pune, Maharashtra',emoji:'🌱',rating:4.9,count:45},views:267,reveals:32,section:'seeds'},
+  {id:'L016',emoji:'🥜',name:'Groundnut Seeds — Bold',cat:'Seeds',catId:2,type:'SELL',price:120,unit:'kg',neg:false,plan:'BASIC',bc:'',loc:{v:'Solapur',d:'Solapur',s:'Maharashtra'},dist:null,ago:'2 days ago',qty:300,attrs:{Grade:'Bold',Germination:'88%',Season:'Kharif',Variety:'JL-24'},seller:{name:'Solapur Seeds',plan:'BASIC',loc:'Solapur, Maharashtra',emoji:'🥜',rating:4.0,count:3},views:55,reveals:4,section:'seeds'},
+  {id:'L017',emoji:'🐟',name:'Rohu Fish — Fresh',cat:'Fishery',catId:7,type:'SELL',price:220,unit:'kg',neg:false,plan:'BASIC',bc:'',loc:{v:'Raigad',d:'Raigad',s:'Maharashtra'},dist:null,ago:'2h ago',qty:50,attrs:{Species:'Rohu',Size:'500g–1kg',Fresh:'Yes',Delivery:'Available'},seller:{name:'Nilesh Fish Farm',plan:'BASIC',loc:'Raigad, Maharashtra',emoji:'🐟',rating:4.0,count:2},views:34,reveals:2,section:'recent'},
+  {id:'L018',emoji:'🥬',name:'Spinach — Fresh Batch',cat:'Vegetables',catId:6,type:'SELL',price:32,unit:'kg',neg:false,plan:'BASIC',bc:'',loc:{v:'Pune',d:'Pune',s:'Maharashtra'},dist:null,ago:'3h ago',qty:200,attrs:{Variety:'Palak',Organic:'No',Harvested:'Today',Bundle:'500g each'},seller:{name:'Suresh Farms',plan:'BASIC',loc:'Pune, Maharashtra',emoji:'🥬',rating:3.9,count:1},views:28,reveals:1,section:'recent'},
+  {id:'L019',emoji:'🚜',name:'Power Tiller 7HP Rental',cat:'Equipment',catId:4,type:'RENT',price:800,unit:'day',neg:false,plan:'BASIC',bc:'',loc:{v:'Thane',d:'Thane',s:'Maharashtra'},dist:null,ago:'4h ago',qty:1,attrs:{Brand:'VST Shakti',HP:'7',Condition:'Good',Fuel:'Diesel'},seller:{name:'Ganesh Tools',plan:'BASIC',loc:'Thane, Maharashtra',emoji:'🔧',rating:4.1,count:3},views:76,reveals:6,section:'recent'},
+  {id:'L020',emoji:'🥜',name:'Groundnut Bold — Export',cat:'Crops',catId:1,type:'SELL',price:5400,unit:'quintal',neg:true,plan:'BASIC',bc:'',loc:{v:'Solapur',d:'Solapur',s:'Maharashtra'},dist:null,ago:'5h ago',qty:30,attrs:{Grade:'Bold',Moisture:'7%',Shelled:'No',Season:'Kharif'},seller:{name:'Vijay Groundnuts',plan:'BASIC',loc:'Solapur, Maharashtra',emoji:'🧑‍🌾',rating:4.2,count:6},views:89,reveals:7,section:'recent'},
+  {id:'L021',emoji:'🐔',name:'Broiler — Live Weight',cat:'Poultry',catId:8,type:'SELL',price:195,unit:'kg',neg:false,plan:'BASIC',bc:'',loc:{v:'Nashik',d:'Nashik',s:'Maharashtra'},dist:null,ago:'6h ago',qty:500,attrs:{Age:'6 weeks','Avg Weight':'2.5 kg',Vaccinated:'Yes','Batch Size':'500'},seller:{name:'Nashik Poultry',plan:'BASIC',loc:'Nashik, Maharashtra',emoji:'🐔',rating:4.3,count:8},views:142,reveals:10,section:'recent'},
+  {id:'L022',emoji:'🧪',name:'Urea — 50 kg Bag',cat:'Fertilizers',catId:3,type:'SELL',price:420,unit:'bag',neg:false,plan:'BASIC',bc:'',loc:{v:'Sangli',d:'Sangli',s:'Maharashtra'},dist:null,ago:'8h ago',qty:500,attrs:{Brand:'IFFCO',Nitrogen:'46%',Weight:'50 kg',Validity:'2027'},seller:{name:'Sangli Agro Store',plan:'BASIC',loc:'Sangli, Maharashtra',emoji:'🧪',rating:4.0,count:4},views:65,reveals:4,section:'recent'},
+  {id:'L023',emoji:'🌾',name:'Basmati Paddy — 1121',cat:'Crops',catId:1,type:'SELL',price:3100,unit:'quintal',neg:false,plan:'BASIC',bc:'',loc:{v:'Beed',d:'Beed',s:'Maharashtra'},dist:null,ago:'10h ago',qty:45,attrs:{Variety:'1121',Grade:'A',Moisture:'13%',Season:'Kharif'},seller:{name:'Beed Paddy Traders',plan:'BASIC',loc:'Beed, Maharashtra',emoji:'🌾',rating:4.1,count:5},views:77,reveals:6,section:'recent'},
+  {id:'L024',emoji:'🐄',name:'Buffalo — Murrah',cat:'Animals',catId:5,type:'SELL',price:22000,unit:'head',neg:true,plan:'BASIC',bc:'',loc:{v:'Jalgaon',d:'Jalgaon',s:'Maharashtra'},dist:null,ago:'11h ago',qty:1,attrs:{Breed:'Murrah',Age:'3 years',MilkPerDay:'8–10 L',Pregnant:'No'},seller:{name:'Jalgaon Dairy',plan:'BASIC',loc:'Jalgaon, Maharashtra',emoji:'🐄',rating:4.0,count:2},views:93,reveals:8,section:'recent'},
+];
+
+const BUSINESSES = [
+  {name:'Krishnamurthy Seeds',loc:'Pune',emoji:'🌱',plan:'ENTERPRISE',bc:'amb',bdt:'a'},
+  {name:'Shree Agro Supplies',loc:'Nashik',emoji:'🧪',plan:'PREMIUM',bc:'gb',bdt:'g'},
+  {name:'Bharat Fertilizers',loc:'Kolhapur',emoji:'🌿',plan:'PREMIUM',bc:'gb',bdt:'g'},
+  {name:'Kisan Equipment',loc:'Satara',emoji:'🚜',plan:'STANDARD',bc:'',bdt:'gr'},
+  {name:'Om Dairy Farm',loc:'Sangli',emoji:'🐄',plan:'STANDARD',bc:'',bdt:'gr'},
+  {name:'Green Earth Organics',loc:'Aurangabad',emoji:'🥬',plan:'BASIC',bc:'',bdt:''},
+];
+
+/* ══ STATE ══ */
+let lang = 'en';
+let wishlist = new Set();
+let currentDetailId = null;
+let currentScreen = 'home';
+let activeRadius = '25';
+let activeFilters = [];
+let sortMode = 'rel';
+
+/* ══ UTILS ══ */
+function fmt(n) { return n ? Number(n).toLocaleString('en-IN') : ''; }
+
+function planBadgeCard(l) {
+  if (l.plan === 'PREMIUM') return '<span class="plan-b g">⭐ PREM</span>';
+  if (l.plan === 'STANDARD') return '<span class="plan-b gr">✔ STD</span>';
+  if (l.plan === 'ENTERPRISE') return '<span class="plan-b a">🏆 TOP</span>';
+  return '';
+}
+
+/* ══ CARD RENDERER ══ */
+function isNewListing(agoStr) {
+  return /^(\d+)h/.test(agoStr) || agoStr === '1 day ago';
+}
+function isVerifiedSeller(l) {
+  return l.plan === 'PREMIUM' || l.plan === 'ENTERPRISE';
+}
+
+function renderCard(l) {
+  const saved = wishlist.has(l.id);
+  const disc = l.disc ? `<span class="disc-b">${l.disc}% OFF</span>` : '';
+  const newBadge = (!l.disc && isNewListing(l.ago)) ? '<span class="new-badge">NEW</span>' : '';
+  const old = l.actualPrice ? `<span class="pro">₹${fmt(l.actualPrice)}</span>` : '';
+  const dist = l.dist ? `· ${l.dist} km` : '';
+  const vtick = isVerifiedSeller(l) ? '<span class="vtick" title="Verified Seller">✓</span>' : '';
+  const views = l.views > 100 ? `<span class="social-proof"><span class="live-dot"></span>${l.views} viewing</span>` : '';
+  return `<article class="lc ${l.bc}" onclick="openDetail('${l.id}')" role="listitem" tabindex="0" onkeydown="if(event.key==='Enter')openDetail('${l.id}')">
+    <div class="ci">
+      <div class="ciph">${l.emoji}</div>
+      ${disc}${newBadge}${planBadgeCard(l)}
+      <button class="hrt ${saved?'on':''}" onclick="event.stopPropagation();toggleWishlist('${l.id}',this)" aria-label="${saved?'Remove':'Save'}">${saved?'❤️':'🤍'}</button>
+    </div>
+    <div class="cb">
+      <div class="pr"><span class="prm">₹${fmt(l.price)}</span>${l.unit?`<span class="pru">/${l.unit}</span>`:''}${old}</div>
+      <div class="cn">${l.name}${vtick}</div>
+      <div class="cm"><span>📍 ${l.loc.d}</span><span>${dist}</span><span>· ${l.ago}</span></div>
+      <div class="ctags"><span class="ct ${l.type==='SELL'?'s':'r'}">${l.type}</span>${l.neg?'<span class="ct n">Neg</span>':''}</div>
+      ${views}
+    </div>
+    <div class="cacts">
+      <button class="btc-sm" onclick="event.stopPropagation();revealContact('${l.id}',false)">📞 Contact</button>
+      <button class="btch-sm" onclick="event.stopPropagation();alert('Chat coming soon')">💬</button>
+    </div>
+  </article>`;
+}
+
+/* ══ FLASH DEALS RENDER ══ */
+function renderFlashDeals() {
+  const deals = LISTINGS.filter(l=>l.disc).slice(0,4);
+  document.getElementById('flashRail').innerHTML = deals.map(l => `
+    <div class="flash-card" onclick="openDetail('${l.id}')">
+      <div class="flash-img"><span>${l.emoji}</span><span class="flash-disc-b">${l.disc}% OFF</span></div>
+      <div class="flash-info">
+        <div class="flash-name">${l.name}</div>
+        <div class="flash-price">₹${fmt(l.price)}<span style="font-size:.5rem;font-weight:400;opacity:.6">/${l.unit}</span></div>
+        <div class="flash-old">₹${fmt(l.actualPrice)}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ HOME RENDER ══ */
+function renderHome() {
+  // skeleton → real cards with small delay for effect
+  setTimeout(() => {
+    const skel = document.getElementById('featSkel');
+    const rail = document.getElementById('featRail');
+    if (skel) skel.style.display = 'none';
+    if (rail) rail.style.display = 'flex';
+    rail.innerHTML = LISTINGS.filter(l=>l.section==='featured').map(renderCard).join('');
+  }, 600);
+
+  document.getElementById('cropsRail').innerHTML = LISTINGS.filter(l=>l.section==='crops').map(renderCard).join('');
+  document.getElementById('seedsRail').innerHTML = LISTINGS.filter(l=>l.section==='seeds').map(renderCard).join('');
+  document.getElementById('recentGrid').innerHTML = LISTINGS.filter(l=>l.section==='recent').map(renderCard).join('');
+  renderFlashDeals();
+
+  document.getElementById('bizGrid').innerHTML = BUSINESSES.map(b => {
+    const dot = b.bdt ? `<span class="bdt ${b.bdt}">${b.plan==='ENTERPRISE'?'🏆':b.plan==='PREMIUM'?'⭐':'✔'}</span>` : '';
+    const plc = b.plan==='ENTERPRISE'?'a':b.plan==='PREMIUM'?'g':b.plan==='STANDARD'?'gr':'b';
+    return `<article class="bcd ${b.bc}" role="listitem" onclick="alert('Seller: ${b.name}')">
+      <div class="bav"><span>${b.emoji}</span>${dot}</div>
+      <div class="bnm">${b.name}</div><div class="blc">📍 ${b.loc}</div>
+      <div class="bpl ${plc}">${b.plan}</div>
+    </article>`;
+  }).join('');
+}
+
+/* ══ DETAIL ══ */
+function openDetail(id) {
+  const l = LISTINGS.find(x=>x.id===id);
+  if (!l) return;
+  currentDetailId = id;
+  document.getElementById('detTitle').textContent = l.name;
+  const hb = document.getElementById('detHrtBtn');
+  hb.textContent = wishlist.has(id) ? '❤️' : '🤍';
+  hb.classList.toggle('on', wishlist.has(id));
+
+  const discBadge = l.disc ? `<div class="det-disc-b">${l.disc}% OFF</div>` : '';
+  const planB = l.plan==='PREMIUM' ? '<div class="det-plan-b g">⭐ PREMIUM</div>' :
+                l.plan==='STANDARD' ? '<div class="det-plan-b gr">✔ STANDARD</div>' :
+                l.plan==='ENTERPRISE' ? '<div class="det-plan-b a">🏆 TOP SELLER</div>' : '';
+  const oldPr = l.actualPrice ? `<span class="det-pro">₹${fmt(l.actualPrice)}</span><span class="det-disc">${l.disc}% OFF</span>` : '';
+  const attrHtml = Object.entries(l.attrs).map(([k,v]) =>
+    `<div class="attr-item"><div class="attr-k">${k}</div><div class="attr-v">${v}</div></div>`).join('');
+  const plcls = l.seller.plan==='ENTERPRISE'?'a':l.seller.plan==='PREMIUM'?'g':l.seller.plan==='STANDARD'?'gr':'b';
+  const typeTag = `<span class="det-tag ${l.type==='SELL'?'s':'r'}">${l.type}</span>`;
+  const negTag = l.neg ? '<span class="det-tag n">Negotiable</span>' : '';
+  const planTag = l.plan!=='BASIC' ? `<span class="det-tag ${l.plan==='PREMIUM'?'prem':l.plan==='STANDARD'?'std':'ent'}">${l.plan}</span>` : '';
+  const similar = LISTINGS.filter(x=>x.catId===l.catId&&x.id!==l.id).slice(0,4);
+
+  document.getElementById('detContent').innerHTML = `
+    <div class="det-hero">${l.emoji}${discBadge}${planB}</div>
+    <div class="det-stat-bar">
+      <span>👁 <strong>${l.views}</strong> views</span>
+      <span>📞 <strong>${l.reveals}</strong> contacts</span>
+      <span>📦 <strong>${l.qty}</strong> ${l.unit||'units'} avail.</span>
+    </div>
+    <div class="det-body">
+      <div class="det-pr">
+        <span class="det-prm">₹${fmt(l.price)}</span>
+        ${l.unit?`<span class="det-pru">/${l.unit}</span>`:''}
+        ${oldPr}
+      </div>
+      <div class="det-name">${l.name}</div>
+      <div class="det-tags">${typeTag}${negTag}${planTag}<span class="det-tag s">${l.cat}</span></div>
+      <div class="det-meta">
+        <span>📍 ${l.loc.v}, ${l.loc.d}</span>
+        ${l.dist?`<span>· ${l.dist} km away</span>`:''}
+        <span>🕐 ${l.ago}</span>
+      </div>
+    </div>
+    <div class="det-section">
+      <div class="det-sec-title">Details</div>
+      <div class="attrs-grid">${attrHtml}</div>
+    </div>
+    <div class="det-section">
+      <div class="det-sec-title">Seller</div>
+      <div class="seller-card" onclick="alert('View ${l.seller.name} profile')">
+        <div class="seller-av">${l.seller.emoji}</div>
+        <div class="seller-info">
+          <div class="seller-nm">${l.seller.name}</div>
+          <div class="seller-pl ${plcls}">${l.seller.plan}</div>
+          <div class="seller-loc">📍 ${l.seller.loc}</div>
+          <div class="seller-sts"><span>⭐ <strong>${l.seller.rating}</strong></span><span>📋 <strong>${l.seller.count}</strong> listings</span></div>
+        </div>
+        <span class="seller-go">›</span>
+      </div>
+    </div>
+    ${similar.length?`<div class="similar-sec"><div class="det-sec-title" style="padding:0 0 .55rem">Similar Listings</div><div class="rail" style="padding-bottom:.875rem">${similar.map(renderCard).join('')}</div></div>`:''}
+    <div style="height:1rem"></div>`;
+
+  showScreen('detail');
+}
+
+function toggleWishlistDetail() {
+  if (!currentDetailId) return;
+  const btn = document.getElementById('detHrtBtn');
+  if (wishlist.has(currentDetailId)) { wishlist.delete(currentDetailId); btn.textContent='🤍'; btn.classList.remove('on'); }
+  else { wishlist.add(currentDetailId); btn.textContent='❤️'; btn.classList.add('on'); }
+  updateWlBadge(); refreshAllHearts();
+}
+
+/* ══ WISHLIST ══ */
+function toggleWishlist(id, btn) {
+  if (wishlist.has(id)) { wishlist.delete(id); btn.textContent='🤍'; btn.classList.remove('on'); }
+  else { wishlist.add(id); btn.textContent='❤️'; btn.classList.add('on'); }
+  updateWlBadge();
+}
+
+function updateWlBadge() {
+  const badge = document.getElementById('wlBadge');
+  badge.style.display = wishlist.size > 0 ? 'block' : 'none';
+  badge.textContent = wishlist.size;
+}
+
+function refreshAllHearts() {
+  document.querySelectorAll('.hrt').forEach(btn => {
+    const m = btn.closest('article')?.getAttribute('onclick')?.match(/'(L\d+)'/);
+    if (!m) return;
+    const on = wishlist.has(m[1]);
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '❤️' : '🤍';
+  });
+}
+
+function showWishlist() {
+  setBottomNav('bnWishlist');
+  document.getElementById('wlCount').textContent = wishlist.size ? `${wishlist.size} saved` : '';
+  const content = document.getElementById('wlContent');
+  if (!wishlist.size) {
+    content.innerHTML = `<div class="empty-state"><div class="ei">🤍</div><h3>Nothing saved yet</h3><p>Tap the heart on any listing to save it here.</p><button class="btn-green" onclick="goHome()">Browse Listings</button></div>`;
+  } else {
+    const items = LISTINGS.filter(l => wishlist.has(l.id));
+    content.innerHTML = `<div class="pad-grid"><div class="rgrid">${items.map(renderCard).join('')}</div></div>`;
+  }
+  showScreen('wishlist');
+}
+
+/* ══ NEARBY ══ */
+function showNearby() {
+  setBottomNav('bnNearby');
+  const near = LISTINGS.filter(l=>l.section==='featured').concat(LISTINGS.filter(l=>l.section==='crops').slice(0,4))
+    .map((l,i) => ({...l, dist: +(i*2.1+0.9).toFixed(1)}));
+  document.getElementById('nbGrid').innerHTML = near.map(renderCard).join('');
+  showScreen('nearby');
+}
+
+function requestGPS() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      () => alert('📍 Location found! Showing nearest listings.'),
+      () => alert('Location denied. Showing district listings.')
+    );
+  } else { alert('GPS unavailable.'); }
+}
+
+function setNbRad(el) {
+  document.querySelectorAll('.nb-radc').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ══ SEARCH ══ */
+function openSearch() {
+  document.getElementById('mainSrch').blur();
+  showScreen('search');
+  setTimeout(() => document.getElementById('srchQ').focus(), 380);
+}
+
+function doSearch() {
+  const q = document.getElementById('srchQ').value.trim().toLowerCase();
+  let results = q ? LISTINGS.filter(l=>l.name.toLowerCase().includes(q)||l.cat.toLowerCase().includes(q)||l.loc.d.toLowerCase().includes(q)) : [...LISTINGS];
+  if (sortMode==='asc') results.sort((a,b)=>a.price-b.price);
+  else if (sortMode==='desc') results.sort((a,b)=>b.price-a.price);
+  document.getElementById('srchMeta').innerHTML = q
+    ? `<strong>${results.length}</strong> results for "<strong>${q}</strong>"`
+    : `All <strong>${results.length}</strong> listings`;
+  document.getElementById('srchGrid').innerHTML = results.length
+    ? results.map(renderCard).join('')
+    : '<p style="color:var(--t3);font-size:.8rem;padding:1rem 0">No listings found.</p>';
+}
+
+function setSort(btn, mode) {
+  sortMode = mode;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  doSearch();
+}
+
+/* ══ SCREEN MANAGEMENT ══ */
+function showScreen(name) {
+  ['detail','wishlist','nearby','search'].forEach(s => {
+    document.getElementById('sc-'+s).classList.toggle('active', s===name);
+  });
+  currentScreen = name;
+}
+
+function goHome() {
+  showScreen('__none__');
+  setBottomNav('bnHome');
+  document.getElementById('mainSrch').value = '';
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  if (currentScreen === 'detail') {
+    showScreen('__none__');
+    setBottomNav('bnHome');
+  } else {
+    showScreen('__none__');
+    setBottomNav('bnHome');
+  }
+}
+
+function setBottomNav(activeId) {
+  ['bnHome','bnNearby','bnWishlist','bnMe'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('on', id===activeId);
+  });
+}
+
+/* ══ CONTACT REVEAL ══ */
+function revealContact(id, fromDetail) {
+  const lid = fromDetail ? currentDetailId : id;
+  const l = LISTINGS.find(x=>x.id===lid);
+  const nm = l ? l.seller.name : 'Seller';
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;display:flex;align-items:center;justify-content:center;padding:1rem';
+  modal.innerHTML = `<div style="background:var(--surface);border-radius:14px;padding:1.5rem;max-width:310px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.3)">
+    <p style="font-size:.675rem;color:var(--t3);margin-bottom:.2rem">📞 ${nm}</p>
+    <p style="font-family:Georgia,serif;font-size:1.5rem;font-weight:800;color:var(--leaf);letter-spacing:.08em">+91 98765 43210</p>
+    <p style="font-size:.65rem;color:var(--t3);margin:.35rem 0 .875rem">Contact revealed · Expires in 24h</p>
+    <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+      <a href="tel:+919876543210" style="flex:1;padding:.65rem;background:var(--leaf);color:#fff;border-radius:7px;text-align:center;font-weight:800;font-size:.8125rem;display:block">📞 Call</a>
+      <button onclick="navigator.clipboard.writeText('+919876543210').then(()=>{this.textContent='Copied ✓';this.style.background='var(--leaf)';this.style.color='#fff'})" style="flex:1;padding:.65rem;background:var(--leaf-pale);color:var(--leaf);border-radius:7px;font-weight:700;font-size:.8125rem;border:none;cursor:pointer">📋 Copy</button>
+    </div>
+    <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
+      <a href="https://wa.me/919876543210" target="_blank" style="flex:1;padding:.65rem;background:#25D366;color:#fff;border-radius:7px;text-align:center;font-weight:800;font-size:.8125rem;display:block">🟢 WhatsApp</a>
+      <button onclick="navigator.share?navigator.share({title:'Tantra Listing',text:'Check this listing on Tantra',url:window.location.href}):alert('Share link copied!')" style="flex:1;padding:.65rem;background:var(--leaf-pale);color:var(--leaf);border-radius:7px;font-weight:700;font-size:.8125rem;border:none;cursor:pointer">🔗 Share</button>
+    </div>
+    <button onclick="this.closest('[style]').remove()" style="width:100%;padding:.5rem;background:none;color:var(--t3);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:.75rem">Close</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', ev => { if (ev.target===modal) modal.remove(); });
+}
+
+/* ══ CAROUSEL ══ */
+let cur = 0;
+const slides = document.querySelectorAll('.c-slide');
+const cTrack = document.getElementById('cTrack');
+const cDots = document.getElementById('cDots');
+let carTimer;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i===0?' on':'');
+  d.setAttribute('aria-label','Slide '+(i+1));
+  d.setAttribute('role','tab');
+  d.onclick = () => goSlide(i);
+  cDots.appendChild(d);
+});
+
+function goSlide(n) {
+  cur = (n + slides.length) % slides.length;
+  cTrack.style.transform = `translateX(-${cur*100}%)`;
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i===cur));
+}
+function moveSlide(d) { clearInterval(carTimer); goSlide(cur+d); startCar(); }
+function startCar() { carTimer = setInterval(() => goSlide(cur+1), 3400); }
+startCar();
+cTrack.addEventListener('mouseenter', () => clearInterval(carTimer));
+cTrack.addEventListener('mouseleave', startCar);
+
+let touchX = 0;
+cTrack.addEventListener('touchstart', e=>{touchX=e.touches[0].clientX;clearInterval(carTimer);},{passive:true});
+cTrack.addEventListener('touchend', e=>{
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx)>40) goSlide(cur+(dx<0?1:-1));
+  startCar();
+},{passive:true});
+
+/* ══ MODULE TABS ══ */
+function setTab(el) {
+  document.querySelectorAll('.mt').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  moveTabIndicator(el);
+}
+
+function moveTabIndicator(el) {
+  const ind = document.getElementById('tabIndicator');
+  if (!ind || !el) return;
+  const tabsEl = document.getElementById('modTabs');
+  const rect = el.getBoundingClientRect();
+  const tabsRect = tabsEl.getBoundingClientRect();
+  ind.style.left = (el.offsetLeft) + 'px';
+  ind.style.width = rect.width + 'px';
+}
+
+function setTabById(idx) {
+  const tabs = document.querySelectorAll('.mt');
+  if (tabs[idx]) setTab(tabs[idx]);
+}
+
+/* ══ TRENDING SEARCH ══ */
+function trendSearch(q) {
+  openSearch();
+  setTimeout(() => {
+    document.getElementById('srchQ').value = q;
+    doSearch();
+  }, 420);
+}
+
+/* ══ VOICE SEARCH ══ */
+function startVoiceSearch() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice search not supported on this browser. Try Chrome.'); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r = new SR();
+  r.lang = 'hi-IN';
+  r.onresult = e => {
+    const q = e.results[0][0].transcript;
+    document.getElementById('mainSrch').blur();
+    openSearch();
+    setTimeout(() => { document.getElementById('srchQ').value = q; doSearch(); }, 400);
+  };
+  r.onerror = () => alert('Could not hear. Please try again.');
+  r.start();
+}
+
+/* ══ THEME TOGGLE ══ */
+function toggleTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeBtn');
+  const isDark = root.getAttribute('data-theme') === 'dark';
+  root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  btn.textContent = isDark ? '🌙' : '☀️';
+}
+
+/* ══ COUNTDOWN TIMER ══ */
+(function startCountdown() {
+  let total = 2 * 3600 + 14 * 60 + 33;
+  function tick() {
+    if (total <= 0) { total = 3 * 3600; }
+    const h = String(Math.floor(total / 3600)).padStart(2,'0');
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2,'0');
+    const s = String(total % 60).padStart(2,'0');
+    const ch = document.getElementById('cdH');
+    const cm = document.getElementById('cdM');
+    const cs = document.getElementById('cdS');
+    if (ch) ch.textContent = h;
+    if (cm) cm.textContent = m;
+    if (cs) cs.textContent = s;
+    total--;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ══ TRUST STATS ANIMATED COUNTER ══ */
+function animateCounter(el, target, suffix) {
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = Number(current).toLocaleString('en-IN') + suffix;
+    if (current >= target) clearInterval(timer);
+  }, 40);
+}
+
+const trustObs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    animateCounter(document.getElementById('tFarmers'), 12400, '+');
+    animateCounter(document.getElementById('tDistricts'), 48, '');
+    animateCounter(document.getElementById('tSatisfied'), 98, '%');
+    trustObs.disconnect();
+  }
+}, { threshold: 0.4 });
+const trustBar = document.querySelector('.trust-bar');
+if (trustBar) trustObs.observe(trustBar);
+
+/* ══ LANGUAGE ══ */
+function toggleLang() {
+  lang = lang==='en'?'hi':'en';
+  const btn = document.getElementById('langBtn');
+  btn.textContent = lang==='en'?'हिन्दी':'English';
+  btn.classList.toggle('hi', lang==='hi');
+  document.documentElement.lang = lang==='hi'?'hi':'en';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const v = el.dataset[lang];
+    if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('.mt').forEach(t => {
+    const ic = t.querySelector('.ic');
+    const txt = t.dataset[lang] || t.dataset['en'];
+    t.textContent = '';
+    if (ic) t.appendChild(ic);
+    t.append(txt);
+  });
+}
+
+/* ══ FILTER PANEL ══ */
+function openFilter() {
+  document.getElementById('fp').classList.add('open');
+  document.getElementById('fpOv').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeFilter() {
+  document.getElementById('fp').classList.remove('open');
+  document.getElementById('fpOv').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function setRadius(el) {
+  document.querySelectorAll('.radc').forEach(r=>r.classList.remove('on'));
+  el.classList.add('on');
+  activeRadius = el.dataset.v;
+}
+function applyFilters() {
+  const filters = [];
+  const lt = document.querySelector('input[name="lt"]:checked').value;
+  if (lt) filters.push({label:lt==='SELL'?'🏷 Sell':'🔄 Rent',key:'lt'});
+  const pmin = document.getElementById('pmin').value;
+  const pmax = document.getElementById('pmax').value;
+  if (pmin||pmax) filters.push({label:`₹${pmin||'0'} – ₹${pmax||'∞'}`,key:'price'});
+  const dist = document.getElementById('fdistrict').value;
+  if (dist) filters.push({label:dist,key:'district'});
+  const st = document.querySelector('input[name="st"]:checked').value;
+  if (st==='SUBSCRIBED') filters.push({label:'⭐ Premium only',key:'seller'});
+  const pw = document.querySelector('input[name="pw"]:checked').value;
+  if (pw&&pw!=='ALL') filters.push({label:{TODAY:'Today',WEEK:'This Week',MONTH:'Month'}[pw],key:'pw'});
+  if (activeRadius) filters.push({label:activeRadius+' km',key:'radius'});
+  activeFilters = filters;
+  renderFilterChips();
+  updateFilterBadge();
+  closeFilter();
+}
+function removeFilter(key) {
+  if (key==='lt') document.getElementById('lt-all').checked=true;
+  if (key==='price') {document.getElementById('pmin').value='';document.getElementById('pmax').value='';}
+  if (key==='district') document.getElementById('fdistrict').value='';
+  if (key==='seller') document.getElementById('st-all').checked=true;
+  if (key==='pw') document.getElementById('pw-all').checked=true;
+  if (key==='radius') {activeRadius='25';document.querySelectorAll('.radc').forEach(r=>r.classList.toggle('on',r.dataset.v==='25'));}
+  activeFilters = activeFilters.filter(f=>f.key!==key);
+  renderFilterChips(); updateFilterBadge();
+}
+function resetFilters() {
+  document.getElementById('lt-all').checked=true;
+  document.getElementById('pmin').value='';document.getElementById('pmax').value='';
+  document.getElementById('fdistrict').value='';document.getElementById('fstate').value='';
+  document.getElementById('st-all').checked=true;document.getElementById('pw-all').checked=true;
+  activeRadius='25';
+  document.querySelectorAll('.radc').forEach(r=>r.classList.toggle('on',r.dataset.v==='25'));
+  activeFilters=[];renderFilterChips();updateFilterBadge();
+}
+function renderFilterChips() {
+  const bar = document.getElementById('afcBar');
+  const inner = document.getElementById('afcInner');
+  inner.innerHTML='';
+  if (!activeFilters.length){bar.classList.remove('show');return;}
+  bar.classList.add('show');
+  activeFilters.forEach(f=>{
+    const c=document.createElement('button');
+    c.className='afc';c.innerHTML=`${f.label} ✕`;c.onclick=()=>removeFilter(f.key);inner.appendChild(c);
+  });
+  const clr=document.createElement('button');
+  clr.className='afc-clear';clr.textContent='Clear all';clr.onclick=resetFilters;inner.appendChild(clr);
+}
+function updateFilterBadge() {
+  const btn = document.getElementById('filterBtn');
+  const ex = btn.querySelector('.fc-badge');
+  if (ex) ex.remove();
+  if (activeFilters.length) {
+    const b=document.createElement('span');b.className='fc-badge';b.textContent=activeFilters.length;btn.appendChild(b);
+  }
+}
+
+/* ── category chips ── */
+document.querySelectorAll('.cchips').forEach(row => {
+  row.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = () => { row.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); chip.classList.add('on'); };
+  });
+});
+
+/* ── escape ── */
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') { closeFilter(); if (currentScreen!=='home') goBack(); }
+});
+
+/* ── init ── */
+renderHome();
+doSearch();
+
+/* init tab indicator */
+setTimeout(() => {
+  const firstTab = document.querySelector('.mt.on');
+  if (firstTab) moveTabIndicator(firstTab);
+}, 100);
+
+/* auto dark mode based on OS preference */
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = '☀️';
+}
+</script>
+</body>
+</html>
